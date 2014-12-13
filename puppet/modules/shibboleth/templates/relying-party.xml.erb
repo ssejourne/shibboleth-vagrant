@@ -14,9 +14,9 @@
     <!-- ========================================== -->
     <!--      Relying Party Configurations          -->
     <!-- ========================================== -->
-    <rp:AnonymousRelyingParty provider="<%= idp_entity_id %>" defaultSigningCredentialRef="IdPCredential"/>
+    <rp:AnonymousRelyingParty provider="<%= @idp_entity_id %>" defaultSigningCredentialRef="IdPCredential"/>
     
-    <rp:DefaultRelyingParty provider="<%= idp_entity_id %>" defaultSigningCredentialRef="IdPCredential">
+    <rp:DefaultRelyingParty provider="<%= @idp_entity_id %>" defaultSigningCredentialRef="IdPCredential">
         <!-- 
             Each attribute in these profiles configuration is set to its default value,
             that is, the values that would be in effect if those attributes were not present.
@@ -70,13 +70,13 @@
     
     	<!-- Load the IdP's own metadata.  This is necessary for artifact support. -->
         <metadata:MetadataProvider id="IdPMD" xsi:type="metadata:FilesystemMetadataProvider"
-                                   metadataFile="<%= idp_home %>/metadata/idp-metadata.xml"
+                                   metadataFile="<%= @idp_home %>/metadata/idp-metadata.xml"
                                    maxRefreshDelay="P1D" />
         
-<% service_providers.each_pair do |sp_id, metadata_url| %>
+<% @service_providers.each_pair do |sp_id, metadata_url| %>
         <metadata:MetadataProvider id="<%= sp_id %>" xsi:type="metadata:FileBackedHTTPMetadataProvider"
                           metadataURL="<%= metadata_url %>"
-                          backingFile="<%= idp_home %>/metadata/<%= sp_id %>.xml">
+                          backingFile="<%= @idp_home %>/metadata/<%= sp_id %>.xml">
         </metadata:MetadataProvider>
 <% end %>
         
@@ -87,8 +87,8 @@
     <!--     Security Configurations                -->
     <!-- ========================================== -->
     <security:Credential id="IdPCredential" xsi:type="security:X509Filesystem">
-        <security:PrivateKey><%= idp_home %>/credentials/idp.key</security:PrivateKey>
-        <security:Certificate><%= idp_home %>/credentials/idp.crt</security:Certificate>
+        <security:PrivateKey><%= @idp_home %>/credentials/idp.key</security:PrivateKey>
+        <security:Certificate><%= @idp_home %>/credentials/idp.crt</security:Certificate>
     </security:Credential>
      
     <!-- DO NOT EDIT BELOW THIS POINT -->

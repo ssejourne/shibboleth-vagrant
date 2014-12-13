@@ -27,7 +27,7 @@ class shibboleth::install(
     command     => 'chmod u+x install.sh && ./install.sh',
     cwd         => $shibboleth_src_dir,
     user        => 'root',
-    environment => 'JAVA_HOME=/usr/lib/jvm/java-6-openjdk',
+    environment => 'JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64',
     creates     => "${idp_home}/war",
     require     => [
       File['install.properties'],

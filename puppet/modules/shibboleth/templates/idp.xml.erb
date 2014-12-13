@@ -1,4 +1,4 @@
-<Context docBase="<%= idp_home %>/war/idp.war"
+<Context docBase="<%= @idp_home %>/war/idp.war"
          privileged="true"
          antiResourceLocking="false"
          antiJARLocking="false"
@@ -6,5 +6,5 @@
          swallowOutput="true">
 
   <Realm className="org.apache.catalina.realm.MemoryRealm"
-         pathname="<%= idp_home %>/conf/users.xml"/>
+         pathname="<%= @idp_home %>/conf/users.xml"/>
 </Context>
