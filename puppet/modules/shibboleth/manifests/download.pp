@@ -2,7 +2,7 @@ class shibboleth::download(
   $version
 ){
   $filename = "shibboleth-identityprovider-${version}-bin.zip"
-  $remote_url = "http://shibboleth.net/downloads/identity-provider/2.4.0/${filename}"
+  $remote_url = "http://shibboleth.net/downloads/identity-provider/${version}/${filename}"
 
   exec { 'download-shibboleth':
     timeout => 0,
