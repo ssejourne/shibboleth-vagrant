@@ -1,0 +1,12 @@
+[submodule "puppet/modules/apache"]
+	path = puppet/modules/apache
+	url = git@github.com:puppetlabs/puppetlabs-apache.git
+[submodule "puppet/modules/stdlib"]
+	path = puppet/modules/stdlib
+	url = git@github.com:puppetlabs/puppetlabs-stdlib.git
+[submodule "puppet/modules/concat"]
+	path = puppet/modules/concat
+	url = git@github.com:puppetlabs/puppetlabs-concat.git
+[submodule "puppet/modules/shibboleth"]
+	path = puppet/modules/shibboleth
+	url = git@github.com:Aethylred/puppet-shibboleth.git
