@@ -2,5 +2,3 @@
 .vagrant_dns.json
 
 shibboleth-identityprovider-*-bin.zip
-puppet/nodes/shibboleth.pp
-Vagrantfile
