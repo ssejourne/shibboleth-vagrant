@@ -17,7 +17,7 @@ node 'shibboleth-idp.vagrant.dev' {
   }
 
   # a few support packages
-  package { [ 'vim-nox', 'curl' ]: ensure => installed }
+  package { [ 'vim-nox', 'curl' , 'ntp' ]: ensure => installed }
 
 ### Shibboleth SP
   # Create self signed certificate for apache

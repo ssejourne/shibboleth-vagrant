@@ -17,7 +17,7 @@ node 'shibboleth-idp.vagrant.dev' {
   }
 
   # a few support packages
-  package { [ 'vim-nox', 'curl' ]: ensure => installed }
+  package { [ 'vim-nox', 'curl', 'ntp' ]: ensure => installed }
 
 ### Shibboleth IdP
   # Services to be configured in the IdP
