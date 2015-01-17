@@ -4,13 +4,36 @@
 Vagrant.configure("2") do |config|
   config.ssh.forward_agent = true
 
-  required_plugins = %w( landrush )
-  required_plugins.each do |plugin|
-    system "vagrant plugin install #{plugin}" unless Vagrant.has_plugin? plugin
+  # Configure plugins
+  unless ENV["VAGRANT_NO_PLUGINS"]
+
+    required_plugins = %w( vagrant-hostmanager vagrant-cachier landrush )
+    required_plugins.each do |plugin|
+      system "vagrant plugin install #{plugin}" unless Vagrant.has_plugin? plugin
+    end
+
+    if Vagrant.has_plugin?("landrush")
+      config.landrush.enabled = true
+    end
+   # $ vagrant plugin install vagrant-hostmanager
+    if Vagrant.has_plugin?("vagrant-hostmanager")
+      config.hostmanager.enabled = true
+    end
+    # $ vagrant plugin install vagrant-cachier
+    # Need nfs-kernel-server system package on debian/ubuntu host
+    if Vagrant.has_plugin?("vagrant-cachier")
+      config.cache.scope = :box
+      config.cache.synced_folder_opts = {
+        type: :nfs,
+        # The nolock option can be useful for an NFSv3 client that wants to avoid the
+        # NLM sideband protocol. Without this option, apt-get might hang if it tries
+        # to lock files needed for /var/cache/* operations. All of this can be avoided
+        # by using NFSv4 everywhere. Please note that the tcp option is not the default.
+        mount_options: ['rw', 'vers=3', 'tcp', 'nolock']
+      }
+    end
   end
-  if Vagrant.has_plugin?("landrush")
-    config.landrush.enabled = true
-  end
+
 
   config.vm.provider :virtualbox do |vb|
     vb.customize ['modifyvm', :id, '--memory', 2048]
