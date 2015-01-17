@@ -1,12 +1,30 @@
-node 'shibboleth.vagrant.dev' {
+Exec['apt-get-update'] -> Package <| |>
+
+Exec {
+  path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin'
+}
+
+exec { 'apt-get-update':
+  command => 'apt-get update'
+}
+
+
+node 'shibboleth-idp.vagrant.dev' {
+  exec { 'apt-get update':
+    command => 'apt-get update',
+    timeout => 60,
+    tries   => 3
+  }
+
   # a few support packages
   package { [ 'vim-nox', 'curl' ]: ensure => installed }
 
+### Shibboleth IdP
   # Services to be configured in the IdP
   #   key   - short name for service (used for config file names etc)
   #   value - URL where IdP can fetch metadata for said service
   $service_providers = {
-    'my-awesome-project' => 'http://my-awesome-project.dev/path/to/saml_meta_data'
+    'my-sp' => 'http://shibboleth-sp.vagrant.dev/Shibboleth.sso/Metadata'
   }
 
   # Users to be configured in the IdP (via tomcat container-based auth)
@@ -16,7 +34,7 @@ node 'shibboleth.vagrant.dev' {
     'shibadmin' => 'shibshib'
   }
 
-  class { 'shibboleth':
+  class { 'shibboleth-idp':
     service_providers => $service_providers,
     users             => $users
   }

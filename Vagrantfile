@@ -2,7 +2,6 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.box = 'ubuntu/trusty64'
   config.ssh.forward_agent = true
 
   required_plugins = %w( landrush )
@@ -17,15 +16,35 @@ Vagrant.configure("2") do |config|
     vb.customize ['modifyvm', :id, '--memory', 2048]
   end
 
-  config.vm.hostname = 'shibboleth.vagrant.dev'
-  config.vm.network :private_network, ip: '192.168.66.10'
+# IDP
+  config.vm.define "shibboleth-idp" do |config|
+    config.vm.box = 'ubuntu/trusty64'
+    config.vm.hostname = 'shibboleth-idp.vagrant.dev'
+    config.vm.network :private_network, ip: '192.168.66.10'
 
-  config.vm.provision :puppet do |puppet|
-    puppet.manifests_path = "puppet"
-    puppet.manifest_file = "site.pp"
-    puppet.module_path = "puppet/modules"
-    #puppet.options="--verbose"
-    puppet.options="--verbose --debug"
+    config.vm.provision :puppet do |puppet|
+      puppet.manifests_path = "puppet"
+      puppet.manifest_file = "nodes/shibboleth-idp.pp"
+      puppet.module_path = "puppet/modules"
+      #puppet.options="--verbose"
+      puppet.options="--verbose --debug"
+    end
   end
+
+# SP
+  config.vm.define "shibboleth-sp" do |config|
+    config.vm.box = 'ubuntu/trusty64'
+    config.vm.hostname = 'shibboleth-sp.vagrant.dev'
+    config.vm.network :private_network, ip: '192.168.66.11'
+  
+    config.vm.provision :puppet do |puppet|
+      puppet.manifests_path = "puppet"
+      puppet.manifest_file = "nodes/shibboleth-sp.pp"
+      puppet.module_path = "puppet/modules"
+      #puppet.options="--verbose"
+      puppet.options="--verbose --debug"
+    end
+  end
+
 end
 
