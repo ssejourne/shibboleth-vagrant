@@ -43,8 +43,6 @@ node 'shibboleth-sp.vagrant.dev' {
     default_vhost => false,
   }
   
-  class{'apache::mod::shib': }
-
   apache::vhost { 'shibboleth-sp.vagrant.dev': 
     port => 80,
     docroot => '/var/www/html',
@@ -61,6 +59,29 @@ node 'shibboleth-sp.vagrant.dev' {
       ssl_key         => $ssl_apache_key,
   }  
 
+  class{'apache::mod::shib': }
+
   # https://github.com/aethylred/puppet-shibboleth
-  class{'shibboleth': }
+  file{'/etc/shibboleth/vagrant.dev.crt':
+    ensure => 'file',
+    source => $ssl_apache_crt,
+  }
+  
+  class{'shibboleth': 
+    sp_cert  => 'vagrant.dev.crt'
+  }  
+
+  # Set up the Shibboleth Single Sign On (sso) module
+  shibboleth::sso{'federation_directory':
+    idpURL  => 'https://shibboleth-idp.vagrant.dev/idp/shibboleth',
+  }
+ 
+  # Set up the Shibboleth Metadata 
+  shibboleth::metadata{'federation_metadata':
+    provider_uri  => 'https://shibboleth-idp.vagrant.dev/idp/profile/Metadata/SAML',
+    cert_uri      => 'https://shibboleth-idp.vagrant.dev/idp.crt',
+#    cert_uri      => 'http://example.federation.org/metadata/fed-metadata-cert.pem',
+  }
+
 }
+  

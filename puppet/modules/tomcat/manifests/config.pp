@@ -33,4 +33,8 @@ class tomcat::config(
     mode   => '0755'
   }
 
+  # Remove ROOT apps
+  file { '/etc/tomcat6/Catalina/localhost/ROOT.xml':
+    ensure => absent,
+  }
 }
