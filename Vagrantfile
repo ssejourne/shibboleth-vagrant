@@ -40,12 +40,16 @@ Vagrant.configure("2") do |config|
   end
 
 # IDP
-  config.vm.define "shibboleth-idp" do |config|
-    config.vm.box = 'ubuntu/trusty64'
-    config.vm.hostname = 'shibboleth-idp.vagrant.dev'
-    config.vm.network :private_network, ip: '192.168.66.10'
+  config.vm.define "shibboleth-idp" do |idp|
+    idp.vm.box = 'ubuntu/trusty64'
+    idp.vm.hostname = 'shibboleth-idp.vagrant.dev'
+    idp.vm.network :private_network, ip: '192.168.66.10'
 
-    config.vm.provision :puppet do |puppet|
+    idp.vm.provider :virtualbox do |vb|
+      vb.customize ['modifyvm', :id, '--memory', '768']
+    end
+
+    idp.vm.provision :puppet do |puppet|
       puppet.manifests_path = "puppet"
       puppet.manifest_file = "nodes/shibboleth-idp.pp"
       puppet.module_path = "puppet/modules"
@@ -56,12 +60,16 @@ Vagrant.configure("2") do |config|
   end
 
 # SP
-  config.vm.define "shibboleth-sp" do |config|
-    config.vm.box = 'ubuntu/trusty64'
-    config.vm.hostname = 'shibboleth-sp.vagrant.dev'
-    config.vm.network :private_network, ip: '192.168.66.11'
+  config.vm.define "shibboleth-sp" do |sp|
+    sp.vm.box = 'ubuntu/trusty64'
+    sp.vm.hostname = 'shibboleth-sp.vagrant.dev'
+    sp.vm.network :private_network, ip: '192.168.66.11'
   
-    config.vm.provision :puppet do |puppet|
+    sp.vm.provider :virtualbox do |vb|
+      vb.customize ['modifyvm', :id, '--memory', '512']
+    end
+
+    sp.vm.provision :puppet do |puppet|
       puppet.manifests_path = "puppet"
       puppet.manifest_file = "nodes/shibboleth-sp.pp"
       puppet.module_path = "puppet/modules"
