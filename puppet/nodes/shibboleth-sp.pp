@@ -5,19 +5,26 @@ Exec {
 }
 
 exec { 'apt-get-update':
-  command => 'apt-get update'
+  command => 'apt-get update',
+  timeout => 60,
+  tries   => 3
 }
 
 
 node 'shibboleth-sp.vagrant.dev' {
-  exec { 'apt-get update':
-    command => 'apt-get update',
-    timeout => 60,
-    tries   => 3
-  }
-
   # a few support packages
   package { [ 'vim-nox', 'curl' , 'ntp' ]: ensure => installed }
+### Set timezone
+  file { '/etc/timezone':
+    content  => 'Europe/Paris',
+  }
+
+  exec { 'set_mytimezone':
+    exec   => 'dpkg-reconfigure -f noninteractive tzdata',
+    user   => 'root',
+  }
+
+  File['/etc/timezone'] -> Exec['set_mytimezone']
 
 ### Shibboleth SP
   # Create self signed certificate for apache
@@ -46,11 +53,12 @@ node 'shibboleth-sp.vagrant.dev' {
   apache::vhost { 'shibboleth-sp.vagrant.dev': 
     port => 80,
     docroot => '/var/www/html',
-    redirect_dest   => 'https://shibboleth-sp.vagrant.dev/',
-    redirect_status => 'permanent',
+    redirectmatch_status => 'permanent',
+    redirectmatch_regexp => ['^/(?!Shibboleth.sso)(.*)'],
+    redirectmatch_dest => 'https://shibboleth-sp.vagrant.dev/',
   }
 
-  apache::vhost { 'ssl-shibboleth-sp.vagrant.dev':
+  apache::vhost { 'shibboleth-sp.vagrant.dev':
       vhost_name      => 'shibboleth-sp.vagrant.dev',
       port            => 443,
       docroot         => '/var/www/html',
@@ -62,26 +70,31 @@ node 'shibboleth-sp.vagrant.dev' {
   class{'apache::mod::shib': }
 
   # https://github.com/aethylred/puppet-shibboleth
-  file{'/etc/shibboleth/vagrant.dev.crt':
-    ensure => 'file',
-    source => $ssl_apache_crt,
-  }
-  
   class{'shibboleth': 
-    sp_cert  => 'vagrant.dev.crt'
   }  
 
-  # Set up the Shibboleth Single Sign On (sso) module
-  shibboleth::sso{'federation_directory':
-    idpURL  => 'https://shibboleth-idp.vagrant.dev/idp/shibboleth',
-  }
- 
-  # Set up the Shibboleth Metadata 
-  shibboleth::metadata{'federation_metadata':
-    provider_uri  => 'https://shibboleth-idp.vagrant.dev/idp/profile/Metadata/SAML',
-    cert_uri      => 'https://shibboleth-idp.vagrant.dev/idp.crt',
-#    cert_uri      => 'http://example.federation.org/metadata/fed-metadata-cert.pem',
-  }
+  include shibboleth::backend_cert
 
+## Commented to use static files...
+##  # Set up the Shibboleth Single Sign On (sso) module
+##  shibboleth::sso{'federation_directory':
+##    idpURL         => 'https://shibboleth-idp.vagrant.dev/idp/shibboleth',
+##  }
+
+##  # Set up the Shibboleth Metadata 
+##  shibboleth::metadata{'federation_metadata':
+##    provider_uri  => 'https://shibboleth-idp.vagrant.dev/idp/profile/Metadata/SAML',
+##    cert_uri      => 'https://shibboleth-idp.vagrant.dev/idp.crt',
+##    require       => Class['apache::mod::shib']
+##  }
+
+## Copy shibboleth2.xml
+  file{'/etc/shibboleth/shibboleth2.xml':
+    ensure => file,
+    owner  => root,
+    mode   => root,
+    source => "puppet:///files/shibboleth2.xml",
+    notify  => Service['httpd','shibd'],
+  }
 }
-  
+
