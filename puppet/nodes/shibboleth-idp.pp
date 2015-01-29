@@ -15,6 +15,18 @@ node 'shibboleth-idp.vagrant.dev' {
     ensure => installed 
   }
 
+  ### Set timezone
+  file { '/etc/timezone':
+    content  => 'Europe/Paris',
+  }
+
+  exec { 'set_mytimezone':
+    exec   => 'dpkg-reconfigure -f noninteractive tzdata',
+    user   => 'root',
+  }
+
+  File['/etc/timezone'] -> Exec['set_mytimezone']
+
   ### Add a test LDAP
 ##  class { 'openldap::server': }
 ##  openldap::server::database { 'dc=vagrant,dc=dev':
@@ -30,7 +42,7 @@ node 'shibboleth-idp.vagrant.dev' {
   #   key   - short name for service (used for config file names etc)
   #   value - URL where IdP can fetch metadata for said service
   $service_providers = {
-  #TEMP    'my-sp' => 'http://shibboleth-sp.vagrant.dev/Shibboleth.sso/Metadata'
+  #TEMP    'my-sp' => 'https://shibboleth-sp.vagrant.dev/Shibboleth.sso/Metadata'
   }
 
   # Users to be configured in the IdP (via tomcat container-based auth)
