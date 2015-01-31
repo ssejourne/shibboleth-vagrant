@@ -21,8 +21,8 @@ node 'shibboleth-idp.vagrant.dev' {
   }
 
   exec { 'set_mytimezone':
-    exec   => 'dpkg-reconfigure -f noninteractive tzdata',
-    user   => 'root',
+    command   => 'dpkg-reconfigure -f noninteractive tzdata',
+    user      => 'root',
   }
 
   File['/etc/timezone'] -> Exec['set_mytimezone']
@@ -42,7 +42,7 @@ node 'shibboleth-idp.vagrant.dev' {
   #   key   - short name for service (used for config file names etc)
   #   value - URL where IdP can fetch metadata for said service
   $service_providers = {
-  #TEMP    'my-sp' => 'https://shibboleth-sp.vagrant.dev/Shibboleth.sso/Metadata'
+    'my-sp' => 'http://shibboleth-sp.vagrant.dev/Shibboleth.sso/Metadata'
   }
 
   # Users to be configured in the IdP (via tomcat container-based auth)
@@ -65,6 +65,8 @@ node 'shibboleth-idp.vagrant.dev' {
   }
   
   apache::vhost { 'shibboleth-idp': 
+    servername      => $::fqdn,
+    vhost_name      => $::fqdn,
     port            => 80,
     docroot         => '/var/www/html',
     redirect_dest   => "https://$::fqdn/",
@@ -75,7 +77,8 @@ node 'shibboleth-idp.vagrant.dev' {
 
   $ssl_apache_key="/etc/apache2/ssl/apache.key"
   $ssl_apache_crt="/etc/apache2/ssl/apache.crt"
-  apache::vhost { 'ssl-shibboleth-idp':
+  apache::vhost { 'shibboleth-idp-ssl':
+    servername      => $::fqdn,
     vhost_name      => $::fqdn,
     port            => 443,
     docroot         => '/var/www/html',
@@ -84,7 +87,6 @@ node 'shibboleth-idp.vagrant.dev' {
     ssl_key         => $ssl_apache_key,
     proxy_dest      => 'ajp://localhost:8009/',
     no_proxy_uris   => ['/idp.crt'],
-    tag             => "idp_apache_done",
   }  
 
   # Create self signed certificate for apache
@@ -95,38 +97,13 @@ node 'shibboleth-idp.vagrant.dev' {
     mode   => '0755'
   }
 
-#  exec { 'genapacheselfsigned':
-#    command     => "openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key} -out ${ssl_apache_crt} -subj \"/C=US/ST=Illinois/L=Chicago/O=vagrant/CN=$::fqdn\"",
-#    user        => 'root',
-#    cwd         => '/etc/apache2/',
-#    creates     => $ssl_apache_key,
-#  }
-
-  exec { 'copy_apache_certs':
-    command     => "cp /vagrant/static_conf/shibboleth-idp/apache2/ssl/* /etc/apache2/ssl/",
-    user	=> 'root',
+  exec { 'genapacheselfsigned':
+    command     => "openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key} -out ${ssl_apache_crt} -subj \"/C=US/ST=Illinois/L=Chicago/O=vagrant/CN=$::fqdn\"",
+    user        => 'root',
+    cwd         => '/etc/apache2/',
     creates     => $ssl_apache_key,
-    notify      => Class['apache::service'],
+    notify      => Service['httpd'],
   }
 
-  Apache::Vhost['ssl-shibboleth-idp'] -> Exec['copy_apache_certs']
-
-  # Use static idp's credentials for the tests
-  exec { 'copy_idp_credentials':
-    command         => 'cp /vagrant/static_conf/shibboleth-idp/shibboleth-idp/credentials/* /opt/shibboleth-idp/credentials/',
-    user            => 'root',
-    notify          => Class['tomcat::service'],
-    require         => Class['shibboleth-idp::tomcat_config'],
-  }
-
-#Class['shibboleth-idp'] -> Exec['copy_idp_credentials']
-#  Class['shibboleth-idp::tomcat_config'] -> Exec['copy_idp_credentials']
-
- # let the idp.crt file be downloadable through the vhost
-  file { '/var/www/html/idp.crt':
-    ensure       => link,
-    target       => '/opt/shibboleth-idp/credentials/idp.crt',
-    require      => Exec['copy_idp_credentials'],
-  }
-
+File['/etc/apache2/ssl/'] -> Exec['genapacheselfsigned'] -> Apache::Vhost['shibboleth-idp-ssl']
 }

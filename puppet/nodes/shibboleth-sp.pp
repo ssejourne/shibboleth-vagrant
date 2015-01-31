@@ -20,8 +20,8 @@ node 'shibboleth-sp.vagrant.dev' {
   }
 
   exec { 'set_mytimezone':
-    exec   => 'dpkg-reconfigure -f noninteractive tzdata',
-    user   => 'root',
+    command   => 'dpkg-reconfigure -f noninteractive tzdata',
+    user      => 'root',
   }
 
   File['/etc/timezone'] -> Exec['set_mytimezone']
@@ -50,7 +50,9 @@ node 'shibboleth-sp.vagrant.dev' {
     default_vhost => false,
   }
   
-  apache::vhost { 'shibboleth-sp.vagrant.dev': 
+  apache::vhost { 'shibboleth-sp': 
+    servername      => $::fqdn,
+    vhost_name      => $::fqdn,
     port => 80,
     docroot => '/var/www/html',
     redirectmatch_status => 'permanent',
@@ -58,13 +60,15 @@ node 'shibboleth-sp.vagrant.dev' {
     redirectmatch_dest => 'https://shibboleth-sp.vagrant.dev/',
   }
 
-  apache::vhost { 'shibboleth-sp.vagrant.dev':
-      vhost_name      => 'shibboleth-sp.vagrant.dev',
-      port            => 443,
-      docroot         => '/var/www/html',
-      ssl             => true,
-      ssl_cert        => $ssl_apache_crt,
-      ssl_key         => $ssl_apache_key,
+  apache::vhost { 'shibboleth-sp-ssl':
+    servername      => $::fqdn,
+    vhost_name      => $::fqdn,
+    port            => 443,
+    docroot         => '/var/www/html',
+    ssl             => true,
+    ssl_cert        => $ssl_apache_crt,
+    ssl_key         => $ssl_apache_key,
+    custom_fragment => 'UseCanonicalName On',
   }  
 
   class{'apache::mod::shib': }
@@ -73,28 +77,26 @@ node 'shibboleth-sp.vagrant.dev' {
   class{'shibboleth': 
   }  
 
-  include shibboleth::backend_cert
+  # Set up the Shibboleth Single Sign On (sso) module
+#  shibboleth::sso{'federation_directory':
+#    idpURL  => 'https://shibboleth-idp.vagrant.dev/idp/shibboleth',
+#  }
 
-## Commented to use static files...
-##  # Set up the Shibboleth Single Sign On (sso) module
-##  shibboleth::sso{'federation_directory':
-##    idpURL         => 'https://shibboleth-idp.vagrant.dev/idp/shibboleth',
-##  }
+#  shibboleth::metadata{'federation_metadata':
+#    provider_uri  => 'https://shibboleth-idp.vagrant.dev/idp/profile/Metadata/SAML',
+#    cert_uri      => 'http://shibboleth-idp.vagrant.dev/',
+#  }
 
-##  # Set up the Shibboleth Metadata 
-##  shibboleth::metadata{'federation_metadata':
-##    provider_uri  => 'https://shibboleth-idp.vagrant.dev/idp/profile/Metadata/SAML',
-##    cert_uri      => 'https://shibboleth-idp.vagrant.dev/idp.crt',
-##    require       => Class['apache::mod::shib']
-##  }
+#  include shibboleth::backend_cert
 
 ## Copy shibboleth2.xml
-  file{'/etc/shibboleth/shibboleth2.xml':
-    ensure => file,
-    owner  => root,
-    mode   => root,
-    source => "puppet:///files/shibboleth2.xml",
-    notify  => Service['httpd','shibd'],
-  }
+##  file{'my-shibboleth2.xml':
+##    ensure => file,
+##    path   => '/etc/shibboleth/shibboleth2.xml',
+##    replace => true,
+##    source => "puppet:///files/shibboleth2.xml",
+##    require => [Class['apache::mod::shib'],File['shibboleth_conf_dir']],
+##  }
+
 }
 
