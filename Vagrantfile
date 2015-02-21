@@ -63,7 +63,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "shibboleth-sp" do |sp|
     sp.vm.box = 'ubuntu/trusty64'
     sp.vm.hostname = 'shibboleth-sp.vagrant.dev'
-    sp.vm.network :private_network, ip: '192.168.66.11'
+    sp.vm.network :private_network, ip: '192.168.66.20'
   
     sp.vm.provider :virtualbox do |vb|
       vb.customize ['modifyvm', :id, '--memory', '512']
@@ -73,9 +73,9 @@ Vagrant.configure("2") do |config|
       puppet.manifests_path = "puppet"
       puppet.manifest_file = "nodes/shibboleth-sp.pp"
       puppet.module_path = "puppet/modules"
-      #puppet.options=""
+      puppet.options=""
       #puppet.options="--verbose"
-      puppet.options="--verbose --debug"
+      #puppet.options="--verbose --debug"
     end
   end
 
