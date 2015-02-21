@@ -10,9 +10,6 @@
 [submodule "puppet/modules/shibboleth"]
 	path = puppet/modules/shibboleth
 	url = git@github.com:Aethylred/puppet-shibboleth.git
-[submodule "puppet/modules/openldap"]
-	path = puppet/modules/openldap
-	url = https://github.com/camptocamp/puppet-openldap.git
 [submodule "puppet/modules/shellvar"]
 	path = puppet/modules/shellvar
 	url = https://github.com/hercules-team/augeasproviders_shellvar.git
