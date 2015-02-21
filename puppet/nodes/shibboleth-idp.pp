@@ -28,14 +28,13 @@ node 'shibboleth-idp.vagrant.dev' {
   File['/etc/timezone'] -> Exec['set_mytimezone']
 
   ### Add a test LDAP
-##  class { 'openldap::server': }
-##  openldap::server::database { 'dc=vagrant,dc=dev':
-##    ensure    => present,
-##    directory => '/var/lib/ldap',
-##    rootdn    => 'cn=admin,dc=vagrant,dc=dev',
-##    rootpw    => openldap_password('mySuperSecretPassword'),
-##    backend   => 'hdb',
-##  }
+  class { 'ldap::server':
+    suffix  => 'dc=vagrant,dc=dev',
+    rootdn  => 'cn=admin,dc=vagrant,dc=dev',
+    rootpw  => 'vagrant',
+  }
+
+# todo : import ldif with some test credentials
 
   ### Shibboleth IdP
   # Services to be configured in the IdP

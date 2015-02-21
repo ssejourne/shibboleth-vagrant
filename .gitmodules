@@ -16,3 +16,6 @@
 [submodule "puppet/modules/provider"]
 	path = puppet/modules/provider
 	url = https://github.com/hercules-team/augeasproviders_core.git
+[submodule "datacentred-ldap"]
+	path = puppet/modules/ldap
+	url = https://github.com/datacentred/datacentred-ldap.git
