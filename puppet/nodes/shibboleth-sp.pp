@@ -75,7 +75,8 @@ node 'shibboleth-sp.vagrant.dev' {
 
   # https://github.com/aethylred/puppet-shibboleth
   class{'shibboleth': 
-  }  
+#    conf_file          => 'shibboleth2.tmp.xml',
+  }
 
   # Set up the Shibboleth Single Sign On (sso) module
 #  shibboleth::sso{'federation_directory':
@@ -87,16 +88,20 @@ node 'shibboleth-sp.vagrant.dev' {
 #    cert_uri      => 'http://shibboleth-idp.vagrant.dev/',
 #  }
 
-#  include shibboleth::backend_cert
+  include shibboleth::backend_cert
 
 ## Copy shibboleth2.xml
-##  file{'my-shibboleth2.xml':
-##    ensure => file,
-##    path   => '/etc/shibboleth/shibboleth2.xml',
-##    replace => true,
-##    source => "puppet:///files/shibboleth2.xml",
-##    require => [Class['apache::mod::shib'],File['shibboleth_conf_dir']],
-##  }
+  file{'my-shibboleth2.xml':
+    ensure => file,
+    path   => "${::shibboleth::params::conf_dir}/shibboleth2.xml",
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+    source => "puppet:///files/sp/shibboleth2.xml",
+    replace => true,
+    require => [Class['apache::mod::shib'],File['shibboleth_conf_dir']],
+    notify  => Service['httpd','shibd'],
+  }
 
 }
 

@@ -75,9 +75,7 @@ Vagrant.configure("2") do |config|
       puppet.manifests_path = "puppet"
       puppet.manifest_file = "nodes/shibboleth-sp.pp"
       puppet.module_path = "puppet/modules"
-      puppet.options=""
-      #puppet.options="--verbose"
-      #puppet.options="--verbose --debug"
+      puppet.options="--fileserverconfig=/vagrant/fileserver.conf"
     end
   end
 
