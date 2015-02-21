@@ -41,7 +41,8 @@ node 'shibboleth-idp.vagrant.dev' {
   #   key   - short name for service (used for config file names etc)
   #   value - URL where IdP can fetch metadata for said service
   $service_providers = {
-    'shibboleth-sp.vagrant.dev' => 'http://shibboleth-sp.vagrant.dev/Shibboleth.sso/Metadata'
+#    'shibboleth-sp.vagrant.dev' => 'http://shibboleth-sp.vagrant.dev/Shibboleth.sso/Metadata'
+    'shibboleth-sp.vagrant.dev' => 'shibboleth-sp.vagrant.dev.xml'
   }
 
   # Users to be configured in the IdP (via tomcat container-based auth)

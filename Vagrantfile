@@ -39,6 +39,8 @@ Vagrant.configure("2") do |config|
     vb.customize ['modifyvm', :id, '--memory', 2048]
   end
 
+  config.vm.synced_folder "puppet/files", "/etc/puppet/files"
+
 # IDP
   config.vm.define "shibboleth-idp" do |idp|
     idp.vm.box = 'ubuntu/trusty64'
@@ -53,7 +55,7 @@ Vagrant.configure("2") do |config|
       puppet.manifests_path = "puppet"
       puppet.manifest_file = "nodes/shibboleth-idp.pp"
       puppet.module_path = "puppet/modules"
-      puppet.options=""
+      puppet.options="--fileserverconfig=/vagrant/fileserver.conf"
       #puppet.options="--verbose"
       #puppet.options="--verbose --debug"
     end

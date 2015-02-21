@@ -72,11 +72,20 @@
         <metadata:MetadataProvider id="IdPMD" xsi:type="metadata:FilesystemMetadataProvider"
                                    metadataFile="<%= @idp_home %>/metadata/idp-metadata.xml"
                                    maxRefreshDelay="P1D" />
-        
+
+<!--        
 <% @service_providers.each_pair do |sp_id, metadata_url| %>
         <metadata:MetadataProvider id="<%= sp_id %>" xsi:type="metadata:FileBackedHTTPMetadataProvider"
                           metadataURL="<%= metadata_url %>"
                           backingFile="<%= @idp_home %>/metadata/<%= sp_id %>.xml">
+        </metadata:MetadataProvider>
+<% end %>
+-->
+
+<!-- Hack to start idp even if sp is not available to provide metadata -->
+<% @service_providers.each_pair do |sp_id, metadata_backup_file| %>
+        <metadata:MetadataProvider id="<%= sp_id %>" xsi:type="metadata:ResourceBackedMetadataProvider">
+        	<metadata:MetadataResource xsi:type="resource:FilesystemResource" file="<%= @idp_home %>/metadata/<%= metadata_backup_file %>"/>
         </metadata:MetadataProvider>
 <% end %>
         
