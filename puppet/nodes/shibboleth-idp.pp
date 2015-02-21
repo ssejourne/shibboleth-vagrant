@@ -85,7 +85,7 @@ node 'shibboleth-idp.vagrant.dev' {
     ssl             => true,
     ssl_cert        => $ssl_apache_crt,
     ssl_key         => $ssl_apache_key,
-    proxy_dest      => 'ajp://localhost:8009/',
+    proxy_dest      => 'ajp://localhost:8009',
     no_proxy_uris   => ['/idp.crt'],
   }  
 

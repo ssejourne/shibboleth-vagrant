@@ -20,7 +20,7 @@
     -->
 
     <!-- The ApplicationDefaults element is where most of Shibboleth's SAML bits are defined. -->
-    <ApplicationDefaults entityID="https://shibboleth-sp.vagrant.dev/shibboleth"
+    <ApplicationDefaults entityID="http://shibboleth-sp.vagrant.dev/Shibboleth.sso/Login"
                          REMOTE_USER="eppn persistent-id targeted-id">
 
         <!--

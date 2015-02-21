@@ -68,14 +68,20 @@ node 'shibboleth-sp.vagrant.dev' {
     ssl             => true,
     ssl_cert        => $ssl_apache_crt,
     ssl_key         => $ssl_apache_key,
-    custom_fragment => 'UseCanonicalName On',
+    custom_fragment => 'UseCanonicalName On
+
+<Location /secure>
+  AuthType shibboleth
+  ShibRequestSetting requireSession 1
+  require valid-user
+</Location>
+',
   }  
 
   class{'apache::mod::shib': }
 
   # https://github.com/aethylred/puppet-shibboleth
   class{'shibboleth': 
-#    conf_file          => 'shibboleth2.tmp.xml',
   }
 
   # Set up the Shibboleth Single Sign On (sso) module
