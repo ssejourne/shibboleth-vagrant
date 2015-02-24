@@ -12,3 +12,20 @@ Before you start, ensure you have [VirtualBox](https://www.virtualbox.org/wiki/D
 That's it! The VM will be created and Puppet will download and configure shibboleth for you.
 
 You can check to make sure everything worked by visiting: https://shibboleth-idp.vagrant.dev/idp/status
+
+## Servers
+
+### IDP - shibboleth-idp.vagrant.dev
+
+### SP - shibboleth-sp.vagrant.dev
+
+### LDAP
+On shibboleth-idp.vagrant.dev
+
+* URL (LDAP Account Manager) : https://shibboleth-idp.vagrant.dev/lam
+  * LDAP Account Manager admin user : lam / lam
+* LDAP Manager : admin / vagrant
+
+### HAPROXY
+
+TODO

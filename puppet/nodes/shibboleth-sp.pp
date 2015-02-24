@@ -10,6 +10,21 @@ exec { 'apt-get-update':
   tries   => 3
 }
 
+class shibboleth_custom inherits shibboleth {
+## Copy shibboleth2.xml
+    File['shibboleth_config_file'] {
+      ensure => 'file',
+      path   => "${::shibboleth::params::conf_dir}/shibboleth2.xml",
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0644',
+      source => "puppet:///files/sp/shibboleth2.xml",
+#    replace => false,
+      replace => true,
+      require => [Class['apache::mod::shib'],File['shibboleth_conf_dir']],
+      notify  => Service['httpd','shibd'],
+    }
+}
 
 node 'shibboleth-sp.vagrant.dev' {
   # a few support packages
@@ -70,18 +85,20 @@ node 'shibboleth-sp.vagrant.dev' {
     ssl_key         => $ssl_apache_key,
     custom_fragment => 'UseCanonicalName On
 
-<Location /secure>
-  AuthType shibboleth
-  ShibRequestSetting requireSession 1
-  require valid-user
-</Location>
-',
+    <Location /secure>
+      AuthType shibboleth
+      ShibRequestSetting requireSession 1
+      require valid-user
+    </Location>
+    ',
   }  
 
   class{'apache::mod::shib': }
 
   # https://github.com/aethylred/puppet-shibboleth
-  class{'shibboleth': 
+#  class{'shibboleth': 
+#  }
+  class{'shibboleth_custom': 
   }
 
   # Set up the Shibboleth Single Sign On (sso) module
@@ -95,19 +112,6 @@ node 'shibboleth-sp.vagrant.dev' {
 #  }
 
   include shibboleth::backend_cert
-
-## Copy shibboleth2.xml
-  file{'my-shibboleth2.xml':
-    ensure => file,
-    path   => "${::shibboleth::params::conf_dir}/shibboleth2.xml",
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0644',
-    source => "puppet:///files/sp/shibboleth2.xml",
-    replace => true,
-    require => [Class['apache::mod::shib'],File['shibboleth_conf_dir']],
-    notify  => Service['httpd','shibd'],
-  }
 
 }
 

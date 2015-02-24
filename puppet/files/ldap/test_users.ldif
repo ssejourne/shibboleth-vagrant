@@ -1,0 +1,199 @@
+dn: dc=vagrant,dc=dev
+objectClass: top
+objectClass: dcObject
+objectClass: organization
+o: vagrant.dev
+dc: vagrant
+structuralObjectClass: organization
+entryUUID: 1d005342-4f83-1034-9867-110e3b2c2f2b
+creatorsName: cn=admin,dc=vagrant,dc=dev
+createTimestamp: 20150223083840Z
+entryCSN: 20150223083840.982466Z#000000#000#000000
+modifiersName: cn=admin,dc=vagrant,dc=dev
+modifyTimestamp: 20150223083840Z
+
+dn: cn=admin,dc=vagrant,dc=dev
+objectClass: simpleSecurityObject
+objectClass: organizationalRole
+cn: admin
+description: LDAP administrator
+userPassword:: e1NTSEF9NkExekdoUUhWUCtzQ1gzd2pLY0RuVllDQnp1ZmUyVzY=
+structuralObjectClass: organizationalRole
+entryUUID: 1d00f9d2-4f83-1034-9868-110e3b2c2f2b
+creatorsName: cn=admin,dc=vagrant,dc=dev
+createTimestamp: 20150223083840Z
+entryCSN: 20150223083840.986733Z#000000#000#000000
+modifiersName: cn=admin,dc=vagrant,dc=dev
+modifyTimestamp: 20150223083840Z
+
+dn: dc=vagrant,dc=dev
+objectClass: dcObject
+objectClass: organization
+objectClass: top
+o: MyOrganisation
+dc: vagrant
+structuralObjectClass: organization
+entryUUID: dbbc5d70-4f9d-1034-8197-971916fc686e
+creatorsName: cn=admin,dc=vagrant,dc=dev
+createTimestamp: 20150223115007Z
+entryCSN: 20150223115007.896877Z#000000#000#000000
+modifiersName: cn=admin,dc=vagrant,dc=dev
+modifyTimestamp: 20150223115007Z
+
+dn: ou=People,dc=vagrant,dc=dev
+objectClass: organizationalUnit
+ou: People
+structuralObjectClass: organizationalUnit
+entryUUID: 8024f246-4fa3-1034-8198-971916fc686e
+creatorsName: cn=admin,dc=vagrant,dc=dev
+createTimestamp: 20150223123031Z
+entryCSN: 20150223123031.212253Z#000000#000#000000
+modifiersName: cn=admin,dc=vagrant,dc=dev
+modifyTimestamp: 20150223123031Z
+
+dn: ou=group,dc=vagrant,dc=dev
+objectClass: organizationalUnit
+ou: group
+structuralObjectClass: organizationalUnit
+entryUUID: 8025d062-4fa3-1034-8199-971916fc686e
+creatorsName: cn=admin,dc=vagrant,dc=dev
+createTimestamp: 20150223123031Z
+entryCSN: 20150223123031.217933Z#000000#000#000000
+modifiersName: cn=admin,dc=vagrant,dc=dev
+modifyTimestamp: 20150223123031Z
+
+dn: ou=machines,dc=vagrant,dc=dev
+objectClass: organizationalUnit
+ou: machines
+structuralObjectClass: organizationalUnit
+entryUUID: 80260514-4fa3-1034-819a-971916fc686e
+creatorsName: cn=admin,dc=vagrant,dc=dev
+createTimestamp: 20150223123031Z
+entryCSN: 20150223123031.219292Z#000000#000#000000
+modifiersName: cn=admin,dc=vagrant,dc=dev
+modifyTimestamp: 20150223123031Z
+
+dn: cn=group1,ou=group,dc=vagrant,dc=dev
+objectClass: posixGroup
+gidNumber: 10000
+cn: group1
+structuralObjectClass: posixGroup
+entryUUID: 0aeb505a-4fa4-1034-819b-971916fc686e
+creatorsName: cn=admin,dc=vagrant,dc=dev
+createTimestamp: 20150223123424Z
+entryCSN: 20150223123424.037851Z#000000#000#000000
+modifiersName: cn=admin,dc=vagrant,dc=dev
+modifyTimestamp: 20150223123424Z
+
+dn: cn=group2,ou=group,dc=vagrant,dc=dev
+objectClass: posixGroup
+gidNumber: 10001
+cn: group2
+structuralObjectClass: posixGroup
+entryUUID: 0fa23b86-4fa4-1034-819c-971916fc686e
+creatorsName: cn=admin,dc=vagrant,dc=dev
+createTimestamp: 20150223123431Z
+entryCSN: 20150223123431.947516Z#000000#000#000000
+modifiersName: cn=admin,dc=vagrant,dc=dev
+modifyTimestamp: 20150223123431Z
+
+dn: cn=group3,ou=group,dc=vagrant,dc=dev
+objectClass: posixGroup
+gidNumber: 10002
+cn: group3
+structuralObjectClass: posixGroup
+entryUUID: 130aee76-4fa4-1034-819d-971916fc686e
+creatorsName: cn=admin,dc=vagrant,dc=dev
+createTimestamp: 20150223123437Z
+entryCSN: 20150223123437.666835Z#000000#000#000000
+modifiersName: cn=admin,dc=vagrant,dc=dev
+modifyTimestamp: 20150223123437Z
+
+dn: cn=Seb Test,ou=People,dc=vagrant,dc=dev
+objectClass: posixAccount
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+homeDirectory: /home/seb
+loginShell: /bin/bash
+uid: seb
+cn: Seb Test
+userPassword:: e1NTSEF9N2Y2YlBTTUdXUTlsRm1zZGd4azA2MTdxSU0xeVpUaEY=
+uidNumber: 10000
+gidNumber: 10000
+sn: Test
+givenName: Seb
+structuralObjectClass: inetOrgPerson
+entryUUID: 68cbf77e-4fa4-1034-819e-971916fc686e
+creatorsName: cn=admin,dc=vagrant,dc=dev
+createTimestamp: 20150223123701Z
+entryCSN: 20150223123701.538249Z#000000#000#000000
+modifiersName: cn=admin,dc=vagrant,dc=dev
+modifyTimestamp: 20150223123701Z
+
+dn: cn=Paul Test,ou=People,dc=vagrant,dc=dev
+objectClass: posixAccount
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+homeDirectory: /home/paul
+loginShell: /bin/bash
+uid: paul
+cn: Paul Test
+userPassword:: e1NTSEF9T1BrYWNhallldnYwVnNMOWthVTNlUzFQM2YxMGFEQm0=
+uidNumber: 10001
+gidNumber: 10000
+sn: Test
+givenName: Paul
+structuralObjectClass: inetOrgPerson
+entryUUID: 81ee8816-4fa4-1034-819f-971916fc686e
+creatorsName: cn=admin,dc=vagrant,dc=dev
+createTimestamp: 20150223123743Z
+entryCSN: 20150223123743.707813Z#000000#000#000000
+modifiersName: cn=admin,dc=vagrant,dc=dev
+modifyTimestamp: 20150223123743Z
+
+dn: cn=David Test,ou=People,dc=vagrant,dc=dev
+objectClass: posixAccount
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+homeDirectory: /home/david
+loginShell: /bin/bash
+uid: david
+cn: David Test
+userPassword:: e1NTSEF9eDV5RkJpL1JyblB0UFg1REtHbHhlMklzTC8xQ1pHTkc=
+uidNumber: 10002
+gidNumber: 10001
+sn: Test
+givenName: David
+structuralObjectClass: inetOrgPerson
+entryUUID: 96b581e6-4fa4-1034-81a0-971916fc686e
+creatorsName: cn=admin,dc=vagrant,dc=dev
+createTimestamp: 20150223123818Z
+entryCSN: 20150223123818.566254Z#000000#000#000000
+modifiersName: cn=admin,dc=vagrant,dc=dev
+modifyTimestamp: 20150223123818Z
+
+dn: cn=Raphael Test,ou=People,dc=vagrant,dc=dev
+objectClass: posixAccount
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+homeDirectory: /home/raphael
+loginShell: /bin/bash
+uid: raphael
+cn: Raphael Test
+userPassword:: e1NTSEF9dnVBSE1qRzd3K3VzYzVaUWdrSDlaT1dyMzJCcWRUYzQ=
+uidNumber: 10003
+gidNumber: 10002
+sn: Test
+givenName: Raphael
+structuralObjectClass: inetOrgPerson
+entryUUID: b231caa6-4fa4-1034-81a1-971916fc686e
+creatorsName: cn=admin,dc=vagrant,dc=dev
+createTimestamp: 20150223123904Z
+entryCSN: 20150223123904.679245Z#000000#000#000000
+modifiersName: cn=admin,dc=vagrant,dc=dev
+modifyTimestamp: 20150223123904Z
+

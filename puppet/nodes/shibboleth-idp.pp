@@ -34,7 +34,47 @@ node 'shibboleth-idp.vagrant.dev' {
     rootpw  => 'vagrant',
   }
 
-# todo : import ldif with some test credentials
+  class { 'ldap::client':
+    uri  => 'ldap://localhost',
+    base => 'dc=vagrant,dc=dev',
+  } 
+
+  Class['ldap::server'] -> Class['ldap::client']
+
+  package {'ldap-account-manager': 
+    ensure  => installed ,
+    require => [Apache::Vhost['shibboleth-idp-ssl'],Class['ldap::client']],
+    notify  => Service['httpd'],
+  }
+
+  file { '/var/lib/ldap-account-manager/config/lam.conf':
+    ensure => directory,
+    owner  => 'www-data',
+    group  => 'root',
+    mode   => '0600',
+    source => "puppet:///files/ldap/lam.conf",
+    require => Package['ldap-account-manager'],
+  }
+
+  # import sample ldap users 
+  package {'ldap-utils': 
+    ensure  => installed ,
+    require => Class['ldap::client'],
+  }
+
+  file { '/etc/ldap/test_users.ldif':
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+    source => "puppet:///files/ldap/test_users.ldif",
+  }
+
+  exec { 'import_test_ldap':
+    command   => 'slapadd -l /etc/ldap/test_users.ldif',
+    user      => 'root',
+    require   => [File['/etc/ldap/test_users.ldif'],Package['ldap-utils']]
+  }
 
   ### Shibboleth IdP
   # Services to be configured in the IdP
@@ -62,8 +102,12 @@ node 'shibboleth-idp.vagrant.dev' {
   # https://github.com/puppetlabs/puppetlabs-apache
   class{ 'apache': 
     default_vhost => false,
+    mpm_module => 'prefork', # for lam
   }
-  
+
+  # for lam
+  include apache::mod::php
+    
   apache::vhost { 'shibboleth-idp': 
     servername      => $::fqdn,
     vhost_name      => $::fqdn,
@@ -86,7 +130,12 @@ node 'shibboleth-idp.vagrant.dev' {
     ssl_cert        => $ssl_apache_crt,
     ssl_key         => $ssl_apache_key,
     proxy_dest      => 'ajp://localhost:8009',
-    no_proxy_uris   => ['/idp.crt'],
+    no_proxy_uris   => ['/lam'],
+    aliases => [
+      { alias       => '/lam',
+        path        => '/usr/share/ldap-account-manager',
+      }
+    ]
   }  
 
   # Create self signed certificate for apache
