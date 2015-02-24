@@ -1,3 +1,4 @@
+# 
 Exec['apt-get-update'] -> Package <| |>
 
 Exec {
@@ -10,26 +11,43 @@ exec { 'apt-get-update':
   tries   => 3
 }
 
+# Create a custom class to use a static shibboleth2.xml instead of the dyn one
+#  which has some constraints for a testing environment
 class shibboleth_custom inherits shibboleth {
-## Copy shibboleth2.xml
-    File['shibboleth_config_file'] {
-      ensure => 'file',
-      path   => "${::shibboleth::params::conf_dir}/shibboleth2.xml",
-      owner  => 'root',
-      group  => 'root',
-      mode   => '0644',
-      source => "puppet:///files/sp/shibboleth2.xml",
-#    replace => false,
-      replace => true,
-      require => [Class['apache::mod::shib'],File['shibboleth_conf_dir']],
-      notify  => Service['httpd','shibd'],
-    }
+  # Copy shibboleth2.xml
+  File['shibboleth_config_file'] {
+    ensure => 'file',
+    path   => "${::shibboleth::params::conf_dir}/shibboleth2.xml",
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+    source => "puppet:///files/sp/shibboleth2.xml",
+    replace => true,
+    require => [Class['apache::mod::shib'],File['shibboleth_conf_dir']],
+    notify  => Service['httpd','shibd'],
+  }
+
+  # do not need to do augeas changes (it may fail).
+  Augeas['sp_config_resources'] {
+    changes => '',
+  }
+  Augeas['sp_config_consistent_address'] {
+    changes => '',
+  }
+  Augeas['sp_config_hostname'] {
+    changes => '',
+  }
+  Augeas['sp_config_handlerSSL'] {
+    changes => '',
+  }
 }
 
+# Configure the node now
 node 'shibboleth-sp.vagrant.dev' {
-  # a few support packages
+### a few support packages
   package { [ 'vim-nox', 'curl' , 'ntp' ]: ensure => installed }
-### Set timezone
+
+### Set timezone (nice to have)
   file { '/etc/timezone':
     content  => 'Europe/Paris',
   }
@@ -64,6 +82,8 @@ node 'shibboleth-sp.vagrant.dev' {
   class{'apache': 
     default_vhost => false,
   }
+
+  class{'apache::mod::shib': }
   
   apache::vhost { 'shibboleth-sp': 
     servername      => $::fqdn,
@@ -93,24 +113,13 @@ node 'shibboleth-sp.vagrant.dev' {
     ',
   }  
 
-  class{'apache::mod::shib': }
 
   # https://github.com/aethylred/puppet-shibboleth
-#  class{'shibboleth': 
-#  }
+  # custom to use a static shibboleth2.xml for tests
   class{'shibboleth_custom': 
   }
 
-  # Set up the Shibboleth Single Sign On (sso) module
-#  shibboleth::sso{'federation_directory':
-#    idpURL  => 'https://shibboleth-idp.vagrant.dev/idp/shibboleth',
-#  }
-
-#  shibboleth::metadata{'federation_metadata':
-#    provider_uri  => 'https://shibboleth-idp.vagrant.dev/idp/profile/Metadata/SAML',
-#    cert_uri      => 'http://shibboleth-idp.vagrant.dev/',
-#  }
-
+  # Create backend certificate
   include shibboleth::backend_cert
 
 }

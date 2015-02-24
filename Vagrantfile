@@ -45,7 +45,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "shibboleth-idp" do |idp|
     idp.vm.box = 'ubuntu/trusty64'
     idp.vm.hostname = 'shibboleth-idp.vagrant.dev'
-    idp.vm.network :private_network, ip: '192.168.66.10'
+    idp.vm.network :private_network, ip: '192.168.66.20'
 
     idp.vm.provider :virtualbox do |vb|
       vb.customize ['modifyvm', :id, '--memory', '768']
@@ -57,7 +57,7 @@ Vagrant.configure("2") do |config|
       puppet.module_path = "puppet/modules"
       puppet.options="--fileserverconfig=/vagrant/fileserver.conf"
       #puppet.options="--verbose"
-      #puppet.options="--verbose --debug"
+      #puppet.options="--verbose --debug --trace --summarize"
     end
   end
 
@@ -65,7 +65,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "shibboleth-sp" do |sp|
     sp.vm.box = 'ubuntu/trusty64'
     sp.vm.hostname = 'shibboleth-sp.vagrant.dev'
-    sp.vm.network :private_network, ip: '192.168.66.20'
+    sp.vm.network :private_network, ip: '192.168.66.10'
   
     sp.vm.provider :virtualbox do |vb|
       vb.customize ['modifyvm', :id, '--memory', '512']
