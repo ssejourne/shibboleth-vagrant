@@ -71,8 +71,8 @@ node 'shibboleth-idp.vagrant.dev' {
   }
 
   exec { 'import_test_ldap':
-    command   => 'slapadd -l /etc/ldap/test_users.ldif',
-    user      => 'root',
+    command   => 'ldapadd -D "cn=admin,dc=vagrant,dc=dev" -w vagrant -f /etc/ldap/test_users.ldif',
+    user      => 'openldap',
     require   => [File['/etc/ldap/test_users.ldif'],Package['ldap-utils']]
   }
 
