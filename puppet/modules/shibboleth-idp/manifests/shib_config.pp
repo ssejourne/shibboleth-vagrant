@@ -19,6 +19,14 @@ class shibboleth-idp::shib_config(
     source => "puppet:///files/idp/login.config",
     notify  => Class['tomcat::service']
   }
+  file { "${idp_home}/conf/handler.xml":
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    source => "puppet:///files/idp/handler.xml",
+    notify  => Class['tomcat::service']
+  }
+
   file { "${idp_home}/conf/relying-party.xml":
     owner   => 'root',
     group   => 'tomcat6',
