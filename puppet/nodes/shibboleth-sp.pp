@@ -16,7 +16,7 @@ exec { 'apt-get-update':
 class shibboleth_custom inherits shibboleth {
   # Copy shibboleth2.xml
   File['shibboleth_config_file'] {
-    ensure => 'file',
+    ensure => present,
     path   => "${::shibboleth::params::conf_dir}/shibboleth2.xml",
     owner  => 'root',
     group  => 'root',
@@ -117,14 +117,31 @@ node 'shibboleth-sp.vagrant.dev' {
     ',
   }  
 
-
   # https://github.com/aethylred/puppet-shibboleth
   # custom to use a static shibboleth2.xml for tests
   class{'shibboleth_custom': 
   }
 
-  # Create backend certificate
-  include shibboleth::backend_cert
+  # Create backend certificate, that match the metadatafile for the idp (shibboleth-sp.vagrant.dev.xml)
+  file { 'sp-cert.pem':
+    ensure  => present,
+    path    => "${::shibboleth::conf_dir}/sp-cert.pem",
+    owner   => '_shibd',
+    group   => '_shibd',
+    mode    => '0644',
+    source  => 'puppet:///files/sp/sp-cert.pem',
+    notify  => Service['httpd','shibd'],
+  }
+  
+  file { 'sp-key.pem':
+    ensure  => present,
+    path    => "${::shibboleth::conf_dir}/sp-key.pem",
+    owner   => '_shibd',
+    group   => '_shibd',
+    mode    => '0600',
+    source  => 'puppet:///files/sp/sp-key.pem',
+    notify  => Service['httpd','shibd'],
+  }
 
 }
 
