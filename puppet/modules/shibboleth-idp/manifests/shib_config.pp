@@ -16,14 +16,14 @@ class shibboleth-idp::shib_config(
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    source => "puppet:///files/idp/login.config",
+    content => template('shibboleth-idp/login.config.erb'),
     notify  => Class['tomcat::service']
   }
   file { "${idp_home}/conf/handler.xml":
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    source => "puppet:///files/idp/handler.xml",
+    content => template('shibboleth-idp/handler.xml.erb'),
     notify  => Class['tomcat::service']
   }
 

@@ -2,7 +2,8 @@ class shibboleth-idp::install(
   $version,
   $idp_home,
   $keystore_password,
-  $status_page_allowed_ips
+  $status_page_allowed_ips,
+  $java_home
 ) {
 
   $shibboleth_src_dir = "/usr/local/src/shibboleth-identityprovider-${version}"
@@ -27,7 +28,7 @@ class shibboleth-idp::install(
     command     => 'chmod u+x install.sh && ./install.sh',
     cwd         => $shibboleth_src_dir,
     user        => 'root',
-    environment => 'JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64',
+    environment => "JAVA_HOME=$java_home",
     creates     => "${idp_home}/war",
     require     => [
       File['install.properties'],

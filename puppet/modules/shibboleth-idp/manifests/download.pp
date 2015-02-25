@@ -1,7 +1,7 @@
 class shibboleth-idp::download(
   $version
 ){
-  $filename = "shibboleth-identityprovider-${version}-bin.zip"
+  $filename = "shibboleth-identityprovider-${version}-bin.tar.gz"
   $remote_url = "http://shibboleth.net/downloads/identity-provider/${version}/${filename}"
 
   exec { 'download-shibboleth':
@@ -12,11 +12,10 @@ class shibboleth-idp::download(
   }
 
   exec { 'unzip-shibboleth':
-    command => "unzip /vagrant/${filename}",
+    command => "tar xvzf /vagrant/${filename}",
     cwd     => '/usr/local/src',
     creates => "/usr/local/src/shibboleth-identityprovider-${version}",
     require => [
-      Package['unzip'],
       Exec['download-shibboleth']
     ]
   }
