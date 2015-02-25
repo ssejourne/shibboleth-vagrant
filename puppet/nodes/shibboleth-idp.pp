@@ -17,15 +17,15 @@ node 'shibboleth-idp.vagrant.dev' {
 
   ### Set timezone
   file { '/etc/timezone':
+    ensure   => file,
     content  => 'Europe/Paris',
+    notify   => Exec['set_mytimezone'],
   }
 
   exec { 'set_mytimezone':
     command   => 'dpkg-reconfigure -f noninteractive tzdata',
     user      => 'root',
   }
-
-  File['/etc/timezone'] -> Exec['set_mytimezone']
 
   ### Add a test LDAP
   class { 'ldap::server':

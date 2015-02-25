@@ -3,7 +3,8 @@ class shibboleth-idp(
   $users,                  # { 'username' => 'password'        }
   $version                 = '2.4.3',
   $idp_home                = '/opt/shibboleth-idp',
-  $idp_hostname            = '${fqdn}',
+  $idp_hostname            = "${fqdn}",
+  $idp_entity_id_path      = "/idp/shibboleth",
   $keystore_password       = 'changeit',
   $port                    = '80',
   $status_page_allowed_ips = '192.168.66.1/32 127.0.0.1/32 ::1/128',
@@ -11,8 +12,9 @@ class shibboleth-idp(
   $tomcat_user             = 'tomcat6',
   $tomcat_group            = 'tomcat6',
   $java_home		   = '/usr/lib/jvm/java-7-openjdk-amd64',
-  $idp_entity_id           = "https://${idp_hostname}/idp/shibboleth",
 ){
+
+  $idp_entity_id = "https://${idp_hostname}${idp_entity_id_path}"
 
   class { 'shibboleth-idp::prereqs':
     port => $port
