@@ -26,22 +26,27 @@ ShibUserPassAuth {
 
 // Example LDAP authentication
 // See: https://wiki.shibboleth.net/confluence/display/SHIB2/IdPAuthUserPass
+/*
+   edu.vt.middleware.ldap.jaas.LdapLoginModule required
+      ldapUrl="ldap://ldap.example.org"
+      baseDn="ou=people,dc=example,dc=org"
+      ssl="true"
+      userFilter="uid={0}";
+*/
 
    edu.vt.middleware.ldap.jaas.LdapLoginModule required
       ldapUrl="ldap://localhost"
       baseDn="dc=vagrant,dc=dev"
-      bindDn="cn=Manager,dc=vagrant,dc=dev"
-      bindCredentials="vagrant"
+      bindDn="cn=admin,dc=vagrant,dc=dev"
+      bindCredential="vagrant"
       ssl="false"
       userFilter="uid={0}";
 
-
-// Example Kerberos authentication, requires Sun's JVM
+// Example Kerberos authentication, requires Oracle's JVM or OpenJDK.
+// Warning: The module does not support verifying the KDC using a keytab.
 // See: https://wiki.shibboleth.net/confluence/display/SHIB2/IdPAuthUserPass
 /*
-   com.sun.security.auth.module.Krb5LoginModule required
-      useKeyTab="true"
-      keyTab="/path/to/idp/keytab/file";
+   com.sun.security.auth.module.Krb5LoginModule required;
 */
 
 };

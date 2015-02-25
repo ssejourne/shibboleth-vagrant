@@ -49,7 +49,9 @@ node 'shibboleth-sp.vagrant.dev' {
 
 ### Set timezone (nice to have)
   file { '/etc/timezone':
+    ensure   => present,
     content  => 'Europe/Paris',
+    notify   => Exec['set_mytimezone']
   }
 
   exec { 'set_mytimezone':
@@ -90,9 +92,11 @@ node 'shibboleth-sp.vagrant.dev' {
     vhost_name      => $::fqdn,
     port => 80,
     docroot => '/var/www/html',
-    redirectmatch_status => 'permanent',
-    redirectmatch_regexp => ['^/(?!Shibboleth.sso)(.*)'],
-    redirectmatch_dest => 'https://shibboleth-sp.vagrant.dev/',
+    redirect_status => 'permanent',
+    redirect_dest => 'https://shibboleth-sp.vagrant.dev/',
+#    redirectmatch_status => 'permanent',
+#    redirectmatch_regexp => ['^/(?!Shibboleth.sso)(.*)'],
+#    redirectmatch_dest => 'https://shibboleth-sp.vagrant.dev/',
   }
 
   apache::vhost { 'shibboleth-sp-ssl':
