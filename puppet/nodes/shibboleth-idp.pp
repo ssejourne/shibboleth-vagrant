@@ -41,6 +41,7 @@ node 'shibboleth-idp.vagrant.dev' {
 
   Class['ldap::server'] -> Class['ldap::client']
 
+  # Install ldap-account-manager to play with LDAP
   package {'ldap-account-manager': 
     ensure  => installed ,
     require => [Apache::Vhost['shibboleth-idp-ssl'],Class['ldap::client']],
