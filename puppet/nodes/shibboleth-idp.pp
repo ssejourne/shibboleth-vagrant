@@ -1,8 +1,8 @@
-node /^shibboleth-idp\d*.vagrant.dev$/ {
-  Exec {
-    path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin'
-  }
+######################
+### Shibboleth IdP ###
+######################
 
+node /^shibboleth-idp\d*.vagrant.dev$/ {
   include baseconfig
 
   $shibboleth_sp_URL = 'shibboleth-sp.vagrant.dev'
@@ -124,7 +124,7 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     ensure => directory,
     owner  => 'root',
     group  => 'root',
-    mode   => '0755'
+    mode   => '0755',
   }
 
   exec { 'genapacheselfsigned':
@@ -135,5 +135,8 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     notify      => Service['httpd'],
   }
 
-File['/etc/apache2/ssl/'] -> Exec['genapacheselfsigned'] -> Apache::Vhost['shibboleth-idp-ssl']
+  Apache::Vhost['shibboleth-idp'] ->
+   File['/etc/apache2/ssl/'] -> 
+    Exec['genapacheselfsigned'] -> 
+     Apache::Vhost['shibboleth-idp-ssl']
 }

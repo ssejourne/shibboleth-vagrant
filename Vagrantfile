@@ -67,9 +67,16 @@ Vagrant.configure("2") do |config|
       puppet.manifests_path = "puppet"
       puppet.manifest_file = "site.pp"
       puppet.module_path = "puppet/modules"
+      puppet.hiera_config_path = "puppet/hiera.yaml"
       puppet.options="--fileserverconfig=/vagrant/fileserver.conf --summarize"
       #puppet.options="--verbose"
       #puppet.options="--verbose --debug --trace --summarize"
+
+      ## custom facts provided to Puppet
+      puppet.facter = {
+          ## tells default.pp that we're running in Vagrant
+         "is_vagrant" => true,
+      }
     end
 
 end
