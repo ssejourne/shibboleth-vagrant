@@ -121,10 +121,11 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
 
   # Create self signed certificate for apache
   file { '/etc/apache2/ssl/':
-    ensure => directory,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    require => Package['apache2']
   }
 
   exec { 'genapacheselfsigned':
@@ -135,7 +136,6 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     notify      => Service['httpd'],
   }
 
-  Apache::Vhost['shibboleth-idp'] ->
    File['/etc/apache2/ssl/'] -> 
     Exec['genapacheselfsigned'] -> 
      Apache::Vhost['shibboleth-idp-ssl']
