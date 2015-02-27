@@ -1,15 +1,6 @@
-# 
-Exec['apt-get-update'] -> Package <| |>
-
-Exec {
-  path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin'
-}
-
-exec { 'apt-get-update':
-  command => 'apt-get update',
-  timeout => 60,
-  tries   => 3
-}
+#####################
+### Shibboleth SP ###
+#####################
 
 # Create a custom class to use a static shibboleth2.xml instead of the dyn one
 #  which has some constraints for a testing environment
@@ -44,22 +35,11 @@ class shibboleth_custom inherits shibboleth {
 
 # Configure the node now
 node 'shibboleth-sp.vagrant.dev' {
-### a few support packages
-  package { [ 'vim-nox', 'curl' , 'ntp' ]: ensure => installed }
-
-### Set timezone (nice to have)
-  file { '/etc/timezone':
-    ensure   => present,
-    content  => 'Europe/Paris',
-    notify   => Exec['set_mytimezone']
+  Exec {
+    path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin'
   }
 
-  exec { 'set_mytimezone':
-    command   => 'dpkg-reconfigure -f noninteractive tzdata',
-    user      => 'root',
-  }
-
-  File['/etc/timezone'] -> Exec['set_mytimezone']
+  include baseconfig
 
 ### Shibboleth SP
   # Create self signed certificate for apache
@@ -73,7 +53,7 @@ node 'shibboleth-sp.vagrant.dev' {
   $ssl_apache_key="/etc/apache2/ssl/apache.key"
   $ssl_apache_crt="/etc/apache2/ssl/apache.crt"
   exec { 'genapacheselfsigned':
-    command     => "openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key} -out ${ssl_apache_crt} -subj \"/C=US/ST=Illinois/L=Chicago/O=vagrant/CN=shibboleth-sp.vagrant.dev\"",
+    command     => "/usr/bin/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key} -out ${ssl_apache_crt} -subj \"/C=US/ST=Illinois/L=Chicago/O=vagrant/CN=shibboleth-sp.vagrant.dev\"",
     user        => 'root',
     cwd         => '/etc/apache2/',
     creates     => '/etc/apache2/ssl/apache.key'
@@ -83,9 +63,11 @@ node 'shibboleth-sp.vagrant.dev' {
   # https://github.com/puppetlabs/puppetlabs-apache
   class{'apache': 
     default_vhost => false,
+    mpm_module => 'prefork'
   }
 
   class{'apache::mod::shib': }
+  class{'apache::mod::php': }
   
   apache::vhost { 'shibboleth-sp': 
     servername      => $::fqdn,
@@ -94,9 +76,6 @@ node 'shibboleth-sp.vagrant.dev' {
     docroot => '/var/www/html',
     redirect_status => 'permanent',
     redirect_dest => 'https://shibboleth-sp.vagrant.dev/',
-#    redirectmatch_status => 'permanent',
-#    redirectmatch_regexp => ['^/(?!Shibboleth.sso)(.*)'],
-#    redirectmatch_dest => 'https://shibboleth-sp.vagrant.dev/',
   }
 
   apache::vhost { 'shibboleth-sp-ssl':
@@ -117,6 +96,22 @@ node 'shibboleth-sp.vagrant.dev' {
     ',
   }  
 
+  file { '/var/www/html/secure':
+    ensure => directory,
+    owner  => root,
+    group  => root,
+    mode   => '0755'
+  }
+
+  file { 'shibenv.php':
+    ensure => present,
+    path   => '/var/www/html/secure/index.php',
+    owner  => root,
+    group  => root,
+    mode   => '0644',
+    source => 'puppet:///files/sp/shibenv.php'
+  }
+    
   # https://github.com/aethylred/puppet-shibboleth
   # custom to use a static shibboleth2.xml for tests
   class{'shibboleth_custom': 

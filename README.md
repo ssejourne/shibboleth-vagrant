@@ -13,7 +13,7 @@ That's it! The VM will be created and Puppet will download and configure shibbol
 
 You can check to make sure everything worked by visiting: https://shibboleth-idp.vagrant.dev/idp/status
 
-Test it by starting to log in https://shibboleth-sp.vagrant.dev/Shibboleth.sso/Login
+Test it by starting to log in https://shibboleth-sp.vagrant.dev/secure
 
 ## Diagram
 
@@ -42,7 +42,8 @@ Test it by starting to log in https://shibboleth-sp.vagrant.dev/Shibboleth.sso/L
 ### SP - shibboleth-sp.vagrant.dev
 
 * URLs
-  * https://shibboleth-sp.vagrant.dev/Shibboleth.sso/Login : Content we want to secure
+  * https://shibboleth-sp.vagrant.dev/secure : Content we want to secure (apache defined)
+  * https://shibboleth-sp.vagrant.dev/Shibboleth.sso/Login : Content we want to secure (shibd defined)
   * https://shibboleth-sp.vagrant.dev/Shibboleth.sso/Metadata : SP Metadata generator
   * https://shibboleth-sp.vagrant.dev/Shibboleth.sso/Status : Display SP status
   * https://shibboleth-sp.vagrant.dev/Shibboleth.sso/Session : Display SP sessions

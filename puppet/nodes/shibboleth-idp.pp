@@ -1,31 +1,11 @@
-Exec['apt-get-update'] -> Package <| |>
-
-Exec {
-  path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin'
-}
-
-exec { 'apt-get-update':
-  command => 'apt-get update'
-}
-
-
-node 'shibboleth-idp.vagrant.dev' {
-  # a few support packages
-  package { [ 'vim-nox', 'curl', 'ntp' ]: 
-    ensure => installed 
+node /^shibboleth-idp\d*.vagrant.dev$/ {
+  Exec {
+    path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin'
   }
 
-  ### Set timezone
-  file { '/etc/timezone':
-    ensure   => file,
-    content  => 'Europe/Paris',
-    notify   => Exec['set_mytimezone'],
-  }
+  include baseconfig
 
-  exec { 'set_mytimezone':
-    command   => 'dpkg-reconfigure -f noninteractive tzdata',
-    user      => 'root',
-  }
+  $shibboleth_sp_URL = 'shibboleth-sp.vagrant.dev'
 
   ### Add a test LDAP
   class { 'ldap::server':
@@ -72,7 +52,7 @@ node 'shibboleth-idp.vagrant.dev' {
   }
 
   exec { 'import_test_ldap':
-    command   => 'ldapadd -D "cn=admin,dc=vagrant,dc=dev" -w vagrant -f /etc/ldap/test_users.ldif',
+    command   => '/usr/bin/ldapadd -D "cn=admin,dc=vagrant,dc=dev" -w vagrant -f /etc/ldap/test_users.ldif',
     user      => 'openldap',
     require   => [File['/etc/ldap/test_users.ldif'],Package['ldap-utils']]
   }
@@ -83,7 +63,7 @@ node 'shibboleth-idp.vagrant.dev' {
   #   value - URL where IdP can fetch metadata for said service
   $service_providers = {
 #    'shibboleth-sp.vagrant.dev' => 'http://shibboleth-sp.vagrant.dev/Shibboleth.sso/Metadata'
-    'shibboleth-sp.vagrant.dev' => 'shibboleth-sp.vagrant.dev.xml'
+    "${shibboleth_sp_URL}" => "${shibboleth_sp_URL}.xml"
   }
 
   # Users to be configured in the IdP (via tomcat container-based auth)
@@ -148,7 +128,7 @@ node 'shibboleth-idp.vagrant.dev' {
   }
 
   exec { 'genapacheselfsigned':
-    command     => "openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key} -out ${ssl_apache_crt} -subj \"/C=US/ST=Illinois/L=Chicago/O=vagrant/CN=$::fqdn\"",
+    command     => "/usr/bin/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key} -out ${ssl_apache_crt} -subj \"/C=FR/ST=Bretagne/L=Rennes/O=vagrant/CN=$::fqdn\"",
     user        => 'root',
     cwd         => '/etc/apache2/',
     creates     => $ssl_apache_key,

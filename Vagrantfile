@@ -50,15 +50,6 @@ Vagrant.configure("2") do |config|
     idp.vm.provider :virtualbox do |vb|
       vb.customize ['modifyvm', :id, '--memory', '768']
     end
-
-    idp.vm.provision :puppet do |puppet|
-      puppet.manifests_path = "puppet"
-      puppet.manifest_file = "nodes/shibboleth-idp.pp"
-      puppet.module_path = "puppet/modules"
-      puppet.options="--fileserverconfig=/vagrant/fileserver.conf"
-      #puppet.options="--verbose"
-      #puppet.options="--verbose --debug --trace --summarize"
-    end
   end
 
 # SP
@@ -70,14 +61,16 @@ Vagrant.configure("2") do |config|
     sp.vm.provider :virtualbox do |vb|
       vb.customize ['modifyvm', :id, '--memory', '512']
     end
-
-    sp.vm.provision :puppet do |puppet|
-      puppet.manifests_path = "puppet"
-      puppet.manifest_file = "nodes/shibboleth-sp.pp"
-      puppet.module_path = "puppet/modules"
-      puppet.options="--fileserverconfig=/vagrant/fileserver.conf"
-    end
   end
+
+  config.vm.provision :puppet do |puppet|
+      puppet.manifests_path = "puppet"
+      puppet.manifest_file = "site.pp"
+      puppet.module_path = "puppet/modules"
+      puppet.options="--fileserverconfig=/vagrant/fileserver.conf --summarize"
+      #puppet.options="--verbose"
+      #puppet.options="--verbose --debug --trace --summarize"
+    end
 
 end
 

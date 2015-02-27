@@ -15,6 +15,8 @@ echo '<tr><td>(REMOTE_USER)</td><td>'.$_SERVER['REMOTE_USER'].'</td></tr>';
 echo '<tr><td>(HTTP_REMOTE_USER)</td><td>'.$_SERVER['HTTP_REMOTE_USER'].'</td></tr>';
 echo '<tr><td>HTTP_SHIB_LOGOUTURL</td><td>'.$_SERVER['HTTP_SHIB_LOGOUTURL']
 .'<a href="/Shibboleth.sso/Logout?return='.$_SERVER['HTTP_SHIB_LOGOUTURL'].
-'%3Freturn%3Dhttps%3A%2F%2Fshib.kuleuven.be%2Flogout.shtml">[logout]</a> </td></tr>';
+'%3Freturn">[logout]</a> </td></tr>';
 echo '</table>';
+echo '<P>';
+phpinfo();
 ?>
