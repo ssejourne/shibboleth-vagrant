@@ -68,7 +68,7 @@ Vagrant.configure("2") do |config|
       puppet.manifest_file = "site.pp"
       puppet.module_path = "puppet/modules"
       puppet.hiera_config_path = "puppet/hiera.yaml"
-      puppet.options="--fileserverconfig=/vagrant/fileserver.conf --summarize"
+      puppet.options="--fileserverconfig=/vagrant/puppet/fileserver.conf --summarize"
       #puppet.options="--verbose"
       #puppet.options="--verbose --debug --trace --summarize"
 

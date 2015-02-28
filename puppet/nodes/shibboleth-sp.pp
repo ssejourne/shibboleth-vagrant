@@ -47,16 +47,17 @@ node 'shibboleth-sp.vagrant.dev' {
     ensure => directory,
     owner  => 'root',
     group  => 'root',
-    mode   => '0755'
+    mode   => '0755',
+    require => Package['apache2']
   }
 
   $ssl_apache_key="/etc/apache2/ssl/apache.key"
   $ssl_apache_crt="/etc/apache2/ssl/apache.crt"
   exec { 'genapacheselfsigned':
-    command     => "/usr/bin/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key} -out ${ssl_apache_crt} -subj \"/C=US/ST=Illinois/L=Chicago/O=vagrant/CN=shibboleth-sp.vagrant.dev\"",
+    command     => "/usr/bin/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key} -out ${ssl_apache_crt} -subj \"/C=FR/ST=Bretagne/L=Rennes/O=vagrant/CN=$::fqdn\"",
     user        => 'root',
     cwd         => '/etc/apache2/',
-    creates     => '/etc/apache2/ssl/apache.key'
+    creates     => $ssl_apache_key, 
   }
 
   # Set up Apache
@@ -72,10 +73,10 @@ node 'shibboleth-sp.vagrant.dev' {
   apache::vhost { 'shibboleth-sp': 
     servername      => $::fqdn,
     vhost_name      => $::fqdn,
-    port => 80,
-    docroot => '/var/www/html',
+    port            => 80,
+    docroot         => '/var/www/html',
     redirect_status => 'permanent',
-    redirect_dest => 'https://shibboleth-sp.vagrant.dev/',
+    redirect_dest    => "https://${::fqdn}/",
   }
 
   apache::vhost { 'shibboleth-sp-ssl':
@@ -86,13 +87,13 @@ node 'shibboleth-sp.vagrant.dev' {
     ssl             => true,
     ssl_cert        => $ssl_apache_crt,
     ssl_key         => $ssl_apache_key,
-    custom_fragment => 'UseCanonicalName On
+    custom_fragment => '  UseCanonicalName On
 
-    <Location /secure>
-      AuthType shibboleth
-      ShibRequestSetting requireSession 1
-      require valid-user
-    </Location>
+  <Location /secure>
+    AuthType shibboleth
+    ShibRequestSetting requireSession 1
+    require valid-user
+  </Location>
     ',
   }  
 
