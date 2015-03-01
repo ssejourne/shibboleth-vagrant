@@ -7,9 +7,9 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
 
   ### Add a test LDAP
   class { 'ldap::server':
-    suffix  => ${ldap_suffix},
-    rootdn  => "cn=${ldap_admin},${ldap_suffix}",
-    rootpw  => "${ldap_admin_pw}"
+    suffix  => $::ldap_suffix,
+    rootdn  => "cn=$::ldap_admin,$::ldap_suffix",
+    rootpw  => "$::ldap_admin_pw"
   }
 
   class { 'ldap::client':
@@ -88,11 +88,11 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
   include apache::mod::php
     
   apache::vhost { 'shibboleth-idp': 
-    servername      => ${shibboleth_idp_URL},
-    vhost_name      => ${shibboleth_idp_URL},
+    servername      => $::shibboleth_idp_URL,
+    vhost_name      => $::shibboleth_idp_URL,
     port            => 80,
     docroot         => '/var/www/html',
-    redirect_dest   => "https://${shibboleth_idp_URL}/",
+    redirect_dest   => "https://$::shibboleth_idp_URL/",
     redirect_status => 'permanent',
   }
 
@@ -101,8 +101,8 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
   $ssl_apache_key="/etc/apache2/ssl/apache.key"
   $ssl_apache_crt="/etc/apache2/ssl/apache.crt"
   apache::vhost { 'shibboleth-idp-ssl':
-    servername      => ${shibboleth_idp_URL},
-    vhost_name      => ${shibboleth_idp_URL},
+    servername      => $::shibboleth_idp_URL,
+    vhost_name      => $::shibboleth_idp_URL,
     port            => 443,
     docroot         => '/var/www/html',
     ssl             => true,
@@ -127,7 +127,7 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
   }
 
   exec { 'genapacheselfsigned':
-    command     => "/usr/bin/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key} -out ${ssl_apache_crt} -subj \"/C=FR/ST=Bretagne/L=Rennes/O=vagrant/CN=${shibboleth_idp_URL}\"",
+    command     => "/usr/bin/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key} -out ${ssl_apache_crt} -subj \"/C=FR/ST=Bretagne/L=Rennes/O=vagrant/CN=$::shibboleth_idp_URL\"",
     user        => 'root',
     cwd         => '/etc/apache2/',
     creates     => $ssl_apache_key,
