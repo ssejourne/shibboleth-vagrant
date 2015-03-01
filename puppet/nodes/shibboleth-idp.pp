@@ -5,18 +5,16 @@
 node /^shibboleth-idp\d*.vagrant.dev$/ {
   include baseconfig
 
-  $shibboleth_sp_URL = 'shibboleth-sp.vagrant.dev'
-
   ### Add a test LDAP
   class { 'ldap::server':
-    suffix  => 'dc=vagrant,dc=dev',
-    rootdn  => 'cn=admin,dc=vagrant,dc=dev',
-    rootpw  => 'vagrant',
+    suffix  => ${ldap_suffix},
+    rootdn  => "cn=${ldap_admin},${ldap_suffix}",
+    rootpw  => "${ldap_admin_pw}"
   }
 
   class { 'ldap::client':
-    uri  => 'ldap://localhost',
-    base => 'dc=vagrant,dc=dev',
+    uri  => "${ldap_uri}",
+    base => "${ldap_suffix}",
   } 
 
   Class['ldap::server'] -> Class['ldap::client']
@@ -52,7 +50,7 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
   }
 
   exec { 'import_test_ldap':
-    command   => '/usr/bin/ldapadd -D "cn=admin,dc=vagrant,dc=dev" -w vagrant -f /etc/ldap/test_users.ldif',
+    command   => "/usr/bin/ldapadd -D \"cn=${ldap_admin},${ldap_suffix}\" -w ${ldap_admin_pw} -f /etc/ldap/test_users.ldif",
     user      => 'openldap',
     require   => [File['/etc/ldap/test_users.ldif'],Package['ldap-utils']]
   }
@@ -62,7 +60,7 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
   #   key   - short name for service (used for config file names etc)
   #   value - URL where IdP can fetch metadata for said service
   $service_providers = {
-#    'shibboleth-sp.vagrant.dev' => 'http://shibboleth-sp.vagrant.dev/Shibboleth.sso/Metadata'
+#    'shibboleth-sp.vagrant.dev' => "${shibboleth_sp_URL}/Shibboleth.sso/Metadata"
     "${shibboleth_sp_URL}" => "${shibboleth_sp_URL}.xml"
   }
 
@@ -90,11 +88,11 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
   include apache::mod::php
     
   apache::vhost { 'shibboleth-idp': 
-    servername      => $::fqdn,
-    vhost_name      => $::fqdn,
+    servername      => ${shibboleth_idp_URL},
+    vhost_name      => ${shibboleth_idp_URL},
     port            => 80,
     docroot         => '/var/www/html',
-    redirect_dest   => "https://$::fqdn/",
+    redirect_dest   => "https://${shibboleth_idp_URL}/",
     redirect_status => 'permanent',
   }
 
@@ -103,8 +101,8 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
   $ssl_apache_key="/etc/apache2/ssl/apache.key"
   $ssl_apache_crt="/etc/apache2/ssl/apache.crt"
   apache::vhost { 'shibboleth-idp-ssl':
-    servername      => $::fqdn,
-    vhost_name      => $::fqdn,
+    servername      => ${shibboleth_idp_URL},
+    vhost_name      => ${shibboleth_idp_URL},
     port            => 443,
     docroot         => '/var/www/html',
     ssl             => true,
@@ -129,7 +127,7 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
   }
 
   exec { 'genapacheselfsigned':
-    command     => "/usr/bin/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key} -out ${ssl_apache_crt} -subj \"/C=FR/ST=Bretagne/L=Rennes/O=vagrant/CN=$::fqdn\"",
+    command     => "/usr/bin/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key} -out ${ssl_apache_crt} -subj \"/C=FR/ST=Bretagne/L=Rennes/O=vagrant/CN=${shibboleth_idp_URL}\"",
     user        => 'root',
     cwd         => '/etc/apache2/',
     creates     => $ssl_apache_key,

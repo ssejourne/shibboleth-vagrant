@@ -10,7 +10,21 @@ File {
   mode => '0644',
 }
 
-include baseconfig
+# Global vars
+
+# SP 
+$shibboleth_sp_URL = 'shibboleth-sp.vagrant.dev'
+
+# IdP
+$shibboleth_idp_URL = 'shibboleth-idp.vagrant.dev'
+
+# LDAP
+$ldap_suffix = 'dc=vagrant,dc=dev'
+$ldap_admin = 'admin'
+$ldap_admin_pw = 'vagrant'
+$ldap_uri = 'ldap://localhost'
+
+#include baseconfig
 
 import 'nodes/**/*.pp'
 
