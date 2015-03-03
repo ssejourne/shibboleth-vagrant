@@ -21,15 +21,24 @@ Test it by starting to log in https://shibboleth-sp.vagrant.dev/secure
              |     |                 
              | Host|                 
              |     |                 
-             +--+--+ 192.168.66.0/24 
-                |.1                  
-    +---+-------+---+-----------+---+
-        |.5         |.20        |.10 
-     +--+--+     +--+--+     +--+--+ 
-     |     |     |     |     |     | 
-     |LDAP |     | IdP |     | SP  | 
-     |     |     |     |     |     | 
-     +-----+     +-----+     +-----+ 
+             +--+--+  
+                |.1        192.168.66.0/24          
+    +---+-------+---------------+---+
+        |.5                     |.10 
+     +--+--+ .20 for VIP IdP +--+--+ 
+     |     |                 |     | 
+     HAPROXY                 | SP  | 
+     |     |                 |LDAP | 
+     +--+--+                 +-----+ 
+        |.5                192.168.65.0/24
+    +---+-----------+-----------+---+
+                    |.21        |.22 
+                 +--+--+     +--+--+ 
+                 |     |     |     | 
+                 | IdP1|     | IdP2| 
+                 |     |     |     | 
+                 +-----+     +-----+ 
+        
 
 ## Servers
 
@@ -50,7 +59,7 @@ Test it by starting to log in https://shibboleth-sp.vagrant.dev/secure
   * https://shibboleth-sp.vagrant.dev/Shibboleth.sso/DiscoveryFeed : ...
 
 ### LDAP
-On shibboleth-idp.vagrant.dev
+On shibboleth-sp.vagrant.dev
 
 * URL (LDAP Account Manager) : https://shibboleth-idp.vagrant.dev/lam
   * LDAP Account Manager admin user : lam / lam
@@ -59,4 +68,6 @@ On shibboleth-idp.vagrant.dev
 
 ### HAPROXY
 
-TODO
+* URLs
+  * http://ha-proxy.vagrant.dev/haproxy?stats
+

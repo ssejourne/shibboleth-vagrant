@@ -12,13 +12,14 @@ Vagrant.configure("2") do |config|
       system "vagrant plugin install #{plugin}" unless Vagrant.has_plugin? plugin
     end
 
+    # Use landrush to manage DNS entries
     if Vagrant.has_plugin?("landrush")
       config.landrush.enabled = true
     end
    # $ vagrant plugin install vagrant-hostmanager
-    if Vagrant.has_plugin?("vagrant-hostmanager")
-      config.hostmanager.enabled = true
-    end
+   # if Vagrant.has_plugin?("vagrant-hostmanager")
+   #   config.hostmanager.enabled = true
+   # end
     # $ vagrant plugin install vagrant-cachier
     # Need nfs-kernel-server system package on debian/ubuntu host
     if Vagrant.has_plugin?("vagrant-cachier")

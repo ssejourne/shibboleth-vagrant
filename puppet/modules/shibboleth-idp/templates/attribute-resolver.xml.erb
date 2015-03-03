@@ -322,10 +322,10 @@
     </resolver:DataConnector>
     -->
     <resolver:DataConnector id="myLDAP" xsi:type="dc:LDAPDirectory"
-        ldapURL="ldap://localhost" 
-        baseDN="ou=People,dc=vagrant,dc=dev" 
-        principal="cn=admin,dc=vagrant,dc=dev"
-        principalCredential="vagrant">
+        ldapURL="<%= @ldap_uri %>" 
+        baseDN="ou=People,<%= @ldap_suffix %>" 
+        principal="cn=<%= @ldap_admin %>,<%= @ldap_suffix %>"
+        principalCredential="<%= @ldap_admin_pw %>">
         <dc:FilterTemplate>
             <![CDATA[
                 (uid=$requestContext.principalName)

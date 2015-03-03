@@ -35,10 +35,10 @@ ShibUserPassAuth {
 */
 
    edu.vt.middleware.ldap.jaas.LdapLoginModule required
-      ldapUrl="ldap://localhost"
-      baseDn="ou=People,dc=vagrant,dc=dev"
-      bindDn="cn=admin,dc=vagrant,dc=dev"
-      bindCredential="vagrant"
+      ldapUrl="<%= @ldap_uri %>"
+      baseDn="ou=People,<%= @ldap_suffix %>"
+      bindDn="cn=<%= @ldap_admin %>,<%= @ldap_suffix %>"
+      bindCredential="<%= @ldap_admin_pw %>"
       ssl="false"
       userFilter="uid={0}";
 
