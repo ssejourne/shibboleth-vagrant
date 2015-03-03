@@ -87,8 +87,9 @@ node 'shibboleth-sp.vagrant.dev' {
   }
 
   exec { 'import_test_ldap':
-    command   => "/usr/bin/ldapadd -D \"cn=${ldap_admin},${ldap_suffix}\" -w ${ldap_admin_pw} -f /etc/ldap/test_users.ldif",
+    command   => "/usr/bin/ldapadd -D \"cn=${ldap_admin},${ldap_suffix}\" -w ${ldap_admin_pw} -f /etc/ldap/test_users.ldif && touch /tmp/ldap_import_done",
     user      => 'openldap',
+    creates   => '/tmp/ldap_import_done',
     require   => [File['/etc/ldap/test_users.ldif'],Package['ldap-utils']]
   }
 
@@ -115,9 +116,12 @@ node 'shibboleth-sp.vagrant.dev' {
   # https://github.com/puppetlabs/puppetlabs-apache
   class{'apache': 
     default_vhost => false,
-    mpm_module => 'prefork'
+    mpm_module => 'prefork',
+    keepalive         => 'On', 
+    default_mods      => false,    # Disable large set of modules
   }
 
+  apache::mod{'authn_core':}
   class{'apache::mod::shib': }
   class{'apache::mod::php': }
   

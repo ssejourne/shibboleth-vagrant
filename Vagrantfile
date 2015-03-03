@@ -36,17 +36,20 @@ Vagrant.configure("2") do |config|
 
   config.vm.synced_folder "puppet/files", "/etc/puppet/files"
 
+  config.vm.box = 'ubuntu/trusty64'
+
 # IDP
-  idp_servers = { :'shibboleth-idp1' => '192.168.66.20',
-                  :'shibboleth-idp2' => '192.168.66.21'
+  idp_servers = { :'shibboleth-idp1' => '192.168.66.21',
+                  :'shibboleth-idp2' => '192.168.66.22'
                 }
- 
+  # VIP for the shibboleth-idp
+  config.landrush.host 'shibboleth-idp.vagrant.dev', '192.168.66.20'
+
 #  idp_servers = { :'shibboleth-idp' => '192.168.66.20'
 #                }
  
   idp_servers.each do |idp_server_name, idp_server_ip| 
     config.vm.define idp_server_name do |idp|
-      idp.vm.box = 'ubuntu/trusty64'
       idp.vm.hostname = idp_server_name.to_s + ".vagrant.dev"
       idp.vm.network :private_network, ip: idp_server_ip 
   
@@ -58,11 +61,23 @@ Vagrant.configure("2") do |config|
 
 # SP
   config.vm.define "shibboleth-sp" do |sp|
-    sp.vm.box = 'ubuntu/trusty64'
     sp.vm.hostname = 'shibboleth-sp.vagrant.dev'
     sp.vm.network :private_network, ip: '192.168.66.10'
   
     sp.vm.provider :virtualbox do |vb|
+      vb.customize ['modifyvm', :id, '--memory', '512']
+    end
+  end
+
+# HA-PROXY 
+  config.vm.define "ha-proxy" do |lb|
+    lb.vm.hostname = 'shibboleth-sp.vagrant.dev'
+    # frontend network
+    lb.vm.network :private_network, ip: '192.168.66.5'
+    # backend network (farms)
+    lb.vm.network :private_network, ip: '192.168.65.5'
+  
+    lb.vm.provider :virtualbox do |vb|
       vb.customize ['modifyvm', :id, '--memory', '512']
     end
   end

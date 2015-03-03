@@ -37,7 +37,9 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
   # https://github.com/puppetlabs/puppetlabs-apache
   class{ 'apache': 
     default_vhost => false,
-    mpm_module => 'prefork', # for lam
+    mpm_module    => 'prefork', # for lam
+    keepalive     => 'On',
+    default_mods  => false,    # Disable large set of modules
   }
 
   # for lam
