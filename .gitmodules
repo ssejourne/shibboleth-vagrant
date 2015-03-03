@@ -19,3 +19,6 @@
 [submodule "datacentred-ldap"]
 	path = puppet/modules/ldap
 	url = https://github.com/datacentred/datacentred-ldap.git
+[submodule "puppet/modules/haproxy"]
+	path = puppet/modules/haproxy
+	url = https://github.com/daugustus/puppetlabs-haproxy.git

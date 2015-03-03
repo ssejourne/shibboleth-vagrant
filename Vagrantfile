@@ -39,8 +39,8 @@ Vagrant.configure("2") do |config|
   config.vm.box = 'ubuntu/trusty64'
 
 # IDP
-  idp_servers = { :'shibboleth-idp1' => '192.168.66.21',
-                  :'shibboleth-idp2' => '192.168.66.22'
+  idp_servers = { :'shibboleth-idp1' => '192.168.65.21',
+                  :'shibboleth-idp2' => '192.168.65.22'
                 }
   # VIP for the shibboleth-idp
   config.landrush.host 'shibboleth-idp.vagrant.dev', '192.168.66.20'
