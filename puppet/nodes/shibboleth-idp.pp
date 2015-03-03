@@ -28,6 +28,7 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
   }
 
   class { 'shibboleth-idp':
+    idp_hostname      => $::shibboleth_idp_URL,
     service_providers => $service_providers,
     users             => $users,
   }
@@ -63,6 +64,7 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
   apache::vhost { 'shibboleth-idp-ssl':
     servername      => $::shibboleth_idp_URL,
     vhost_name      => $::shibboleth_idp_URL,
+    ip              => $::ipaddress_eth1,
     port            => 443,
     docroot         => '/var/www/html',
     ssl             => true,
@@ -99,4 +101,5 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     notify      => Service['httpd'],
   }
 
+  ### HA-PROXY conf
 }

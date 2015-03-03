@@ -71,7 +71,7 @@ Vagrant.configure("2") do |config|
 
 # HA-PROXY 
   config.vm.define "ha-proxy" do |lb|
-    lb.vm.hostname = 'shibboleth-sp.vagrant.dev'
+    lb.vm.hostname = 'ha-proxy.vagrant.dev'
     # frontend network
     lb.vm.network :private_network, ip: '192.168.66.5'
     # backend network (farms)

@@ -26,5 +26,5 @@ $ldap_uri = "ldap://${shibboleth_sp_URL}"
 
 #include baseconfig
 
-import 'nodes/**/*.pp'
+import 'nodes/*.pp'
 

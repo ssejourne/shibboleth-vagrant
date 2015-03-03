@@ -22,6 +22,9 @@ class baseconfig {
   file { '/etc/timezone':
     ensure   => present,
     content  => 'Europe/Paris',
+    owner    => 'root',
+    group    => 'root',
+    mode     => '0644',
     notify   => Exec['set_mytimezone']
   }
 

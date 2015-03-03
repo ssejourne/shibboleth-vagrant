@@ -3,7 +3,7 @@ class shibboleth-idp(
   $users,                  # { 'username' => 'password'        }
   $version                 = '2.4.3',
   $idp_home                = '/opt/shibboleth-idp',
-  $idp_hostname            = "${fqdn}",
+  $idp_hostname            = "$::fqdn",
   $idp_entity_id_path      = "/idp/shibboleth",
   $keystore_password       = 'changeit',
   $port                    = '80',
