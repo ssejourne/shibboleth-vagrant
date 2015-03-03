@@ -1,6 +1,6 @@
-#####################
-### Shibboleth SP ###
-#####################
+###################################
+### Shibboleth SP + LDAP server ###
+###################################
 
 # Create a custom class to use a static shibboleth2.xml instead of the dyn one
 #  which has some constraints for a testing environment
@@ -40,6 +40,57 @@ node 'shibboleth-sp.vagrant.dev' {
   }
 
   include baseconfig
+
+### 
+  ### Add a test LDAP
+  class { 'ldap::server':
+    suffix  => $::ldap_suffix,
+    rootdn  => "cn=$::ldap_admin,$::ldap_suffix",
+    rootpw  => "$::ldap_admin_pw"
+  }
+
+  class { 'ldap::client':
+    uri  => "${ldap_uri}",
+    base => "${ldap_suffix}",
+  }
+
+  Class['ldap::server'] -> Class['ldap::client']
+
+  # Install ldap-account-manager to play with LDAP
+  package {'ldap-account-manager':
+    ensure  => installed ,
+    require => [Apache::Vhost['shibboleth-sp-ssl'],Class['ldap::client']],
+    notify  => Service['httpd'],
+  }
+
+  file { '/var/lib/ldap-account-manager/config/lam.conf':
+    ensure => directory,
+    owner  => 'www-data',
+    group  => 'root',
+    mode   => '0600',
+    source => "puppet:///files/ldap/lam.conf",
+    require => Package['ldap-account-manager'],
+  }
+
+  # import sample ldap users 
+  package {'ldap-utils':
+    ensure  => installed ,
+    require => Class['ldap::client'],
+  }
+
+  file { '/etc/ldap/test_users.ldif':
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+    source => "puppet:///files/ldap/test_users.ldif",
+  }
+
+  exec { 'import_test_ldap':
+    command   => "/usr/bin/ldapadd -D \"cn=${ldap_admin},${ldap_suffix}\" -w ${ldap_admin_pw} -f /etc/ldap/test_users.ldif",
+    user      => 'openldap',
+    require   => [File['/etc/ldap/test_users.ldif'],Package['ldap-utils']]
+  }
 
 ### Shibboleth SP
   # Create self signed certificate for apache
@@ -87,6 +138,11 @@ node 'shibboleth-sp.vagrant.dev' {
     ssl             => true,
     ssl_cert        => $ssl_apache_crt,
     ssl_key         => $ssl_apache_key,
+    aliases => [
+      { alias       => '/lam',
+        path        => '/usr/share/ldap-account-manager',
+      }
+    ],
     custom_fragment => '  UseCanonicalName On
 
   <Location /secure>

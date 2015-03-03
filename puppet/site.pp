@@ -22,7 +22,7 @@ $shibboleth_idp_URL = 'shibboleth-idp.vagrant.dev'
 $ldap_suffix = 'dc=vagrant,dc=dev'
 $ldap_admin = 'admin'
 $ldap_admin_pw = 'vagrant'
-$ldap_uri = 'ldap://localhost'
+$ldap_uri = "ldap://${shibboleth_sp_URL}"
 
 #include baseconfig
 

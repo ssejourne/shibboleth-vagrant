@@ -1,5 +1,5 @@
 .vagrant/
 .vagrant_dns.json
-
+tmp/*
 shibboleth-identityprovider-*-bin.zip
 shibboleth-identityprovider-*-bin.tar.gz

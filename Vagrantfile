@@ -34,21 +34,25 @@ Vagrant.configure("2") do |config|
     end
   end
 
-
-  config.vm.provider :virtualbox do |vb|
-    vb.customize ['modifyvm', :id, '--memory', 2048]
-  end
-
   config.vm.synced_folder "puppet/files", "/etc/puppet/files"
 
 # IDP
-  config.vm.define "shibboleth-idp" do |idp|
-    idp.vm.box = 'ubuntu/trusty64'
-    idp.vm.hostname = 'shibboleth-idp.vagrant.dev'
-    idp.vm.network :private_network, ip: '192.168.66.20'
-
-    idp.vm.provider :virtualbox do |vb|
-      vb.customize ['modifyvm', :id, '--memory', '768']
+  idp_servers = { :'shibboleth-idp1' => '192.168.66.20',
+                  :'shibboleth-idp2' => '192.168.66.21'
+                }
+ 
+#  idp_servers = { :'shibboleth-idp' => '192.168.66.20'
+#                }
+ 
+  idp_servers.each do |idp_server_name, idp_server_ip| 
+    config.vm.define idp_server_name do |idp|
+      idp.vm.box = 'ubuntu/trusty64'
+      idp.vm.hostname = idp_server_name.to_s + ".vagrant.dev"
+      idp.vm.network :private_network, ip: idp_server_ip 
+  
+      idp.vm.provider :virtualbox do |vb|
+        vb.customize ['modifyvm', :id, '--memory', '768']
+      end
     end
   end
 

@@ -5,55 +5,11 @@
 node /^shibboleth-idp\d*.vagrant.dev$/ {
   include baseconfig
 
-  ### Add a test LDAP
-  class { 'ldap::server':
-    suffix  => $::ldap_suffix,
-    rootdn  => "cn=$::ldap_admin,$::ldap_suffix",
-    rootpw  => "$::ldap_admin_pw"
-  }
-
+  ### The IdP is a LDAP client
   class { 'ldap::client':
     uri  => "${ldap_uri}",
     base => "${ldap_suffix}",
   } 
-
-  Class['ldap::server'] -> Class['ldap::client']
-
-  # Install ldap-account-manager to play with LDAP
-  package {'ldap-account-manager': 
-    ensure  => installed ,
-    require => [Apache::Vhost['shibboleth-idp-ssl'],Class['ldap::client']],
-    notify  => Service['httpd'],
-  }
-
-  file { '/var/lib/ldap-account-manager/config/lam.conf':
-    ensure => directory,
-    owner  => 'www-data',
-    group  => 'root',
-    mode   => '0600',
-    source => "puppet:///files/ldap/lam.conf",
-    require => Package['ldap-account-manager'],
-  }
-
-  # import sample ldap users 
-  package {'ldap-utils': 
-    ensure  => installed ,
-    require => Class['ldap::client'],
-  }
-
-  file { '/etc/ldap/test_users.ldif':
-    ensure => present,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0644',
-    source => "puppet:///files/ldap/test_users.ldif",
-  }
-
-  exec { 'import_test_ldap':
-    command   => "/usr/bin/ldapadd -D \"cn=${ldap_admin},${ldap_suffix}\" -w ${ldap_admin_pw} -f /etc/ldap/test_users.ldif",
-    user      => 'openldap',
-    require   => [File['/etc/ldap/test_users.ldif'],Package['ldap-utils']]
-  }
 
   ### Shibboleth IdP
   # Services to be configured in the IdP
@@ -100,6 +56,8 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
 
   $ssl_apache_key="/etc/apache2/ssl/apache.key"
   $ssl_apache_crt="/etc/apache2/ssl/apache.crt"
+  $ssl_apache_key_tmp="/vagrant/tmp/apache_idp.key"
+  $ssl_apache_crt_tmp="/vagrant/tmp/apache_idp.crt"
   apache::vhost { 'shibboleth-idp-ssl':
     servername      => $::shibboleth_idp_URL,
     vhost_name      => $::shibboleth_idp_URL,
@@ -109,32 +67,34 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     ssl_cert        => $ssl_apache_crt,
     ssl_key         => $ssl_apache_key,
     proxy_dest      => 'ajp://localhost:8009',
-    no_proxy_uris   => ['/lam'],
-    aliases => [
-      { alias       => '/lam',
-        path        => '/usr/share/ldap-account-manager',
-      }
-    ]
   }  
 
-  # Create self signed certificate for apache
+  # Create a centralized self signed certificate for apache
+  file { 'apache_key':
+    path => $ssl_apache_key,
+    ensure => link,
+    target => $ssl_apache_key_tmp,
+  }
+  file { 'apache_crt':
+    path => $ssl_apache_crt,
+    ensure => link,
+    target => $ssl_apache_crt_tmp,
+  }
   file { '/etc/apache2/ssl/':
     ensure  => directory,
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
-    require => Package['apache2']
+    require => Package['apache2'],
+    before  => Exec['genapacheselfsigned']
   }
 
   exec { 'genapacheselfsigned':
-    command     => "/usr/bin/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key} -out ${ssl_apache_crt} -subj \"/C=FR/ST=Bretagne/L=Rennes/O=vagrant/CN=$::shibboleth_idp_URL\"",
+    command     => "/usr/bin/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key_tmp} -out ${ssl_apache_crt_tmp} -subj \"/C=FR/ST=Bretagne/L=Rennes/O=vagrant/CN=$::shibboleth_idp_URL\"",
     user        => 'root',
     cwd         => '/etc/apache2/',
-    creates     => $ssl_apache_key,
+    creates     => $ssl_apache_key_tmp,
     notify      => Service['httpd'],
   }
 
-   File['/etc/apache2/ssl/'] -> 
-    Exec['genapacheselfsigned'] -> 
-     Apache::Vhost['shibboleth-idp-ssl']
 }
