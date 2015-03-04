@@ -33,6 +33,37 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     users             => $users,
   }
 
+  # use static credentials for all idp
+  file {'idp.crt':
+    ensure		=> present,
+    path                => '/opt/shibboleth-idp/credentials/idp.crt',
+    source		=> 'puppet:///files/idp/credentials/idp.crt',
+    owner		=> 'root',
+    group		=> 'root',
+    mode		=> '0644',
+    notify		=> Service['tomcat6'],
+  }
+
+  file {'idp.jks':
+    ensure		=> present,
+    path                => '/opt/shibboleth-idp/credentials/idp.jks',
+    source		=> 'puppet:///files/idp/credentials/idp.jks',
+    owner		=> 'root',
+    group		=> 'root',
+    mode		=> '0644',
+    notify		=> Service['tomcat6'],
+  }
+
+  file {'idp.key':
+    ensure		=> present,
+    path                => '/opt/shibboleth-idp/credentials/idp.key',
+    source		=> 'puppet:///files/idp/credentials/idp.key',
+    owner		=> 'root',
+    group		=> 'root',
+    mode		=> '0644',
+    notify		=> Service['tomcat6'],
+  }
+
   ### Configure Apache frontend
   # Set up Apache
   # https://github.com/puppetlabs/puppetlabs-apache
@@ -100,6 +131,4 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     creates     => $ssl_apache_key_tmp,
     notify      => Service['httpd'],
   }
-
-  ### HA-PROXY conf
 }
