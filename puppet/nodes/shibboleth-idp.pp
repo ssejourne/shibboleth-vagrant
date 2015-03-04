@@ -41,6 +41,7 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     owner		=> 'root',
     group		=> 'root',
     mode		=> '0644',
+    require             => Exec['shibboleth-installer'],
     notify		=> Service['tomcat6'],
   }
 
@@ -51,6 +52,7 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     owner		=> 'root',
     group		=> 'root',
     mode		=> '0644',
+    require             => Exec['shibboleth-installer'],
     notify		=> Service['tomcat6'],
   }
 
@@ -61,6 +63,7 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     owner		=> 'root',
     group		=> 'root',
     mode		=> '0644',
+    require             => Exec['shibboleth-installer'],
     notify		=> Service['tomcat6'],
   }
 
@@ -121,7 +124,7 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     group   => 'root',
     mode    => '0755',
     require => Package['apache2'],
-    before  => Exec['genapacheselfsigned']
+    notify  => Exec['genapacheselfsigned']
   }
 
   exec { 'genapacheselfsigned':
