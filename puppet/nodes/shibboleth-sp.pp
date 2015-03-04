@@ -137,6 +137,7 @@ node 'shibboleth-sp.vagrant.dev' {
   apache::vhost { 'shibboleth-sp-ssl':
     servername      => $::fqdn,
     vhost_name      => $::fqdn,
+    ip              => $::ipaddress_eth1,
     port            => 443,
     docroot         => '/var/www/html',
     ssl             => true,

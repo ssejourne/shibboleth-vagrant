@@ -22,16 +22,31 @@ node 'ha-proxy.vagrant.dev' {
      ensure => installed,
   }
 
+  service { 'haproxy':
+      ensure     => 'running',
+      enable     => true,
+      name       => 'haproxy',
+      hasrestart => true,
+      hasstatus  => true,
+    }
+
   file {'/etc/haproxy/haproxy.cfg':
      ensure  => present,
-     source => "puppet:///files/haproxy.cfg",
-     owner  => 'root',
-     group  => 'root',
-     mode   => '0644',
+     source  => "puppet:///files/haproxy.cfg",
+     owner   => 'root',
+     group   => 'root',
+     mode    => '0644',
      require => Package['haproxy'],
-#     notify => Service['haproxy']
+     notify  => Service['haproxy']
   }
 
+  # Set VIP
+  exec {'conf_idp_vip':
+     command => "/sbin/ifconfig eth1:1 192.168.66.20",
+     user    => 'root',
+     unless  => "/sbin/ifconfig -a | grep 192.168.66.20 > /dev/null",
+     notify  => Service['haproxy']
+  }
 #  class {'haproxy':}
 
 #  haproxy::listen { 'idp-farm':
