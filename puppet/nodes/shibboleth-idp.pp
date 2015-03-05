@@ -5,6 +5,26 @@
 node /^shibboleth-idp\d*.vagrant.dev$/ {
   include baseconfig
 
+  ### Collectd
+  #include collectd
+
+  class { '::collectd':
+    purge        => true,
+    recurse      => true,
+    purge_config => true,
+  }
+
+  collectd::plugin { 'cpu': }
+  collectd::plugin { 'load': }
+  collectd::plugin { 'memory': }
+  collectd::plugin { 'swap': }
+  collectd::plugin { 'disk': }
+  collectd::plugin { 'interface': }
+  collectd::plugin { 'apache': }
+  class { 'collectd::plugin::write_graphite':
+    graphitehost => 'monitor.vagrant.dev',
+  }
+
   ### The IdP is a LDAP client
   class { 'ldap::client':
     uri  => "${ldap_uri}",

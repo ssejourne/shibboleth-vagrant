@@ -6,7 +6,7 @@ Get an instance of [Shibboleth](https://shibboleth.net/products/identity-provide
 
 Before you start, ensure you have [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](http://www.vagrantup.com/) installed and working.
 
-1. `git clone https://github.com/ssejourne/shibboleth-vagrant.git && cd shibboleth-vagrant`
+1. `git clone --recursive https://github.com/ssejourne/shibboleth-vagrant.git && cd shibboleth-vagrant`
 2. `vagrant up`
 
 That's it! The VM will be created and Puppet will download and configure shibboleth for you.
@@ -17,27 +17,27 @@ Test it by starting to log in https://shibboleth-sp.vagrant.dev/secure
 
 ## Diagram
 
-             +-----+                 
-             |     |                 
-             | Host|                 
-             |     |                 
-             +--+--+  
-                |.1        192.168.66.0/24          
-    +---+-------+---------------+---+
-        |.5                     |.10 
-     +--+--+ .20 for VIP IdP +--+--+ 
-     |     |                 |     | 
-     HAPROXY                 | SP  | 
-     |     |                 |LDAP | 
-     +--+--+                 +-----+ 
-        |.5                192.168.65.0/24
-    +---+-----------+-----------+---+
-                    |.21        |.22 
-                 +--+--+     +--+--+ 
-                 |     |     |     | 
-                 | IdP1|     | IdP2| 
-                 |     |     |     | 
-                 +-----+     +-----+ 
+                  +-----+                 
+                  |     |                 
+                  | Host|                 
+                  |     |                 
+                  +--+--+  .20 for VIP
+                     |.1        192.168.66.0/24          
+    +-+------+-------+---+-----------+---+
+      |      |.2         |.5         |.10 
+      |   +--+--+     +--+--+     +--+--+ 
+      |   |     |     |     |     |     | 
+      |   MONITOR     HAPROXY     | SP  | 
+      |   |     |     |     |     |LDAP | 
+      |   +--+--+     +--+--+     +-----+ 
+      |      |.2         |.5    192.168.65.0/24
+    +-+------+----------++-----------+---+
+                        |.21         |.22 
+                     +--+--+      +--+--+ 
+                     |     |      |     | 
+                     | IdP1|      | IdP2| 
+                     |     |      |     | 
+                     +-----+      +-----+ 
         
 
 ## Servers
@@ -71,3 +71,8 @@ On shibboleth-sp.vagrant.dev
 * URLs
   * http://ha-proxy.vagrant.dev/haproxy?stats
 
+### MONITOR
+
+* Graphite
+* URLs
+  * http://monitor.vagrant.dev/

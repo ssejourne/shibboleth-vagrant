@@ -19,3 +19,9 @@
 [submodule "datacentred-ldap"]
 	path = puppet/modules/ldap
 	url = https://github.com/datacentred/datacentred-ldap.git
+[submodule "puppet/modules/collectd"]
+	path = puppet/modules/collectd
+	url = https://github.com/pdxcat/puppet-module-collectd.git
+[submodule "puppet/modules/graphite"]
+	path = puppet/modules/graphite
+	url = https://github.com/echocat/puppet-graphite.git

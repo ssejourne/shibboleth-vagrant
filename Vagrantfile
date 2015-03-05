@@ -39,6 +39,19 @@ Vagrant.configure("2") do |config|
 
   config.vm.box = 'ubuntu/trusty64'
 
+# Monitor (Graphite)
+  config.vm.define "monitor" do |monitor|
+    monitor.vm.hostname = 'monitor.vagrant.dev'
+    # frontend network
+    monitor.vm.network :private_network, ip: '192.168.66.2'
+    # backend network (farms)
+    monitor.vm.network :private_network, ip: '192.168.65.2'
+  
+    monitor.vm.provider :virtualbox do |vb|
+      vb.customize ['modifyvm', :id, '--memory', '768']
+    end
+  end
+
 # SP
   config.vm.define "shibboleth-sp" do |sp|
     sp.vm.hostname = 'shibboleth-sp.vagrant.dev'
@@ -81,6 +94,7 @@ Vagrant.configure("2") do |config|
     end
   end
 
+# Puppet provisionning
   config.vm.provision :puppet do |puppet|
       puppet.manifests_path = "puppet"
       puppet.manifest_file = "site.pp"
