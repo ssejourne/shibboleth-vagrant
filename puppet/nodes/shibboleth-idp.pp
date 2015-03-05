@@ -58,6 +58,7 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     idp_hostname      => $::shibboleth_idp_URL,
     service_providers => $service_providers,
     users             => $users,
+    status_page_allowed_ips => '192.168.65.1/32 192.168.65.5/32 127.0.0.1/32 ::1/128'
   }
 
   # use static credentials for all idp
