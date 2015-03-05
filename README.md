@@ -75,4 +75,6 @@ On shibboleth-sp.vagrant.dev
 
 * Graphite
 * URLs
-  * http://monitor.vagrant.dev/
+  * http://monitor.vagrant.dev/dashboard/ : Dashboards
+  * http://monitor.vagrant.dev/render?target=collectd.ha-proxy_vagrant_dev.interface-eth1.*.*&format=csv : Export some data in CSV (or &format=json for JSON)
+

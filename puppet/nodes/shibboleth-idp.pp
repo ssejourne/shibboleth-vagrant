@@ -20,7 +20,14 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
   collectd::plugin { 'swap': }
   collectd::plugin { 'disk': }
   collectd::plugin { 'interface': }
-  collectd::plugin { 'apache': }
+
+  class { 'collectd::plugin::apache':
+    instances => {
+      'apache80' => {
+        'url' => 'http://localhost/mod_status?auto', 
+      },
+    },
+  }
   class { 'collectd::plugin::write_graphite':
     graphitehost => 'monitor.vagrant.dev',
   }
@@ -105,8 +112,9 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     vhost_name      => $::shibboleth_idp_URL,
     port            => 80,
     docroot         => '/var/www/html',
-    redirect_dest   => "https://$::shibboleth_idp_URL/",
-    redirect_status => 'permanent',
+    redirectmatch_regexp => '^(/(?!mod_status).*)$',
+    redirectmatch_dest   => "https://$::shibboleth_idp_URL\$1",
+    redirectmatch_status => 'permanent',
   }
 
   include apache::mod::proxy_ajp
@@ -126,6 +134,12 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     ssl_key         => $ssl_apache_key,
     proxy_dest      => 'ajp://localhost:8009',
   }  
+
+  class { 'apache::mod::status':
+    allow_from      => ['127.0.0.1','192.168.65.1','192.168.66.1','::1'],
+    extended_status => 'On',
+    status_path     => '/mod_status',
+  }
 
   # Create a centralized self signed certificate for apache
   file { 'apache_key':

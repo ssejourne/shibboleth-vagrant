@@ -54,7 +54,15 @@ node 'shibboleth-sp.vagrant.dev' {
   collectd::plugin { 'swap': }
   collectd::plugin { 'disk': }
   collectd::plugin { 'interface': }
-  collectd::plugin { 'apache': }
+
+  class { 'collectd::plugin::apache':
+    instances => {
+      'apache80' => {
+        'url' => 'http://localhost/mod_status?auto',
+      },
+    },
+  }
+
   class { 'collectd::plugin::write_graphite':
     graphitehost => 'monitor.vagrant.dev',
   }
@@ -142,14 +150,22 @@ node 'shibboleth-sp.vagrant.dev' {
   apache::mod{'authn_core':}
   class{'apache::mod::shib': }
   class{'apache::mod::php': }
+
+  class { 'apache::mod::status':
+    allow_from      => ['127.0.0.1','192.168.65.1','192.168.66.1','::1'],
+    extended_status => 'On',
+    status_path     => '/mod_status',
+  }
+
   
   apache::vhost { 'shibboleth-sp': 
     servername      => $::fqdn,
     vhost_name      => $::fqdn,
     port            => 80,
     docroot         => '/var/www/html',
-    redirect_status => 'permanent',
-    redirect_dest    => "https://${::fqdn}/",
+    redirectmatch_regexp => '^(/(?!mod_status).*)$',
+    redirectmatch_dest   => "https://${::fqdn}\$1",
+    redirectmatch_status => 'permanent',
   }
 
   apache::vhost { 'shibboleth-sp-ssl':

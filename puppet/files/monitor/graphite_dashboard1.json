@@ -1,0 +1,125 @@
+[
+  {
+    "target": [
+      "collectd.ha-proxy_vagrant_dev.interface-eth1.if_octets.tx",
+      "collectd.ha-proxy_vagrant_dev.interface-eth1.if_octets.rx",
+      "collectd.ha-proxy_vagrant_dev.interface-eth2.if_octets.tx",
+      "collectd.ha-proxy_vagrant_dev.interface-eth2.if_octets.rx"
+    ],
+    "title": "ha-proxy network"
+  },
+  {
+    "target": [
+      "*.shibboleth-sp_vagrant_dev.interface-eth0.if_octets.*"
+    ]
+  },
+  {
+    "target": [
+      "*.shibboleth-sp_vagrant_dev.interface-eth1.if_octets.*"
+    ]
+  },
+  {
+    "target": [
+      "*.shibboleth-idp*_vagrant_dev.interface-eth0.if_octets.*"
+    ]
+  },
+  {
+    "target": [
+      "*.shibboleth-idp*_vagrant_dev.interface-eth1.if_octets.*"
+    ]
+  },
+  {
+    "target": [
+      "*.shibboleth-sp_vagrant_dev.load.load.*"
+    ]
+  },
+  {
+    "target": [
+      "*.shibboleth-idp1_vagrant_dev.load.load.*"
+    ]
+  },
+  {
+    "target": [
+      "*.shibboleth-idp2_vagrant_dev.load.load.*"
+    ]
+  },
+  {
+    "target": [
+      "collectd.shibboleth-sp_vagrant_dev.cpu*.cpu-{system,user,wait}"
+    ],
+    "title": "Shibboleth-sp CPU"
+  },
+  {
+    "target": [
+      "collectd.shibboleth-idp*_vagrant_dev.cpu*.cpu-{system,user,wait}"
+    ],
+    "title": "Shibboleth-idp CPU"
+  },
+  {
+    "target": [
+      "collectd.shibboleth-sp_vagrant_dev.disk-*.disk_ops.read",
+      "collectd.shibboleth-sp_vagrant_dev.disk-*.disk_ops.write"
+    ],
+    "title": "Shibboleth-sp IOPS"
+  },
+  {
+    "target": [
+      "collectd.shibboleth-sp_vagrant_dev.disk-*.disk_time.read",
+      "collectd.shibboleth-sp_vagrant_dev.disk-*.disk_time.write"
+    ],
+    "title": "Shibboleth-sp Disk time"
+  },
+  {
+    "target": [
+      "collectd.shibboleth-idp*_vagrant_dev.disk-*.disk_ops.read",
+      "collectd.shibboleth-idp*_vagrant_dev.disk-*.disk_ops.write"
+    ],
+    "title": "Shibboleth-idp IOPS"
+  },
+  {
+    "target": [
+      "collectd.shibboleth-idp*_vagrant_dev.disk-*.disk_time.read",
+      "collectd.shibboleth-idp*_vagrant_dev.disk-*.disk_time.write"
+    ],
+    "title": "Shibboleth-idp Disk time",
+    "uniqueLegend": "false"
+  },
+  {
+    "target": [
+      "*.shibboleth-sp_vagrant_dev.memory.memory-free",
+      "*.shibboleth-sp_vagrant_dev.memory.memory-used"
+    ],
+    "areaMode": "stacked",
+    "title": "Shibboleth-sp memory usage"
+  },
+  {
+    "target": [
+      "*.shibboleth-idp1_vagrant_dev.memory.memory-free",
+      "*.shibboleth-idp1_vagrant_dev.memory.memory-used"
+    ],
+    "areaMode": "stacked",
+    "title": "Shibboleth-idp1 memory usage"
+  },
+  {
+    "target": [
+      "*.shibboleth-idp2_vagrant_dev.memory.memory-free",
+      "*.shibboleth-idp2_vagrant_dev.memory.memory-used"
+    ],
+    "areaMode": "stacked",
+    "title": "Shibboleth-idp2 memory usage"
+  },
+  {
+    "target": [
+      "collectd.shibboleth-sp_vagrant_dev.swap.swap_io-out",
+      "collectd.shibboleth-sp_vagrant_dev.swap.swap_io-in"
+    ],
+    "title": "Shibboleth-sp Swap"
+  },
+  {
+    "target": [
+      "collectd.shibboleth-idp*_vagrant_dev.swap.swap_io-out",
+      "collectd.shibboleth-idp*_vagrant_dev.swap.swap_io-in"
+    ],
+    "title": "Shibboleth-idp Swap"
+  }
+]
