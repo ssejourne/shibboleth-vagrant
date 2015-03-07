@@ -1,0 +1,52 @@
+{
+    "servers" : [ {
+        "port" : "1105",
+        "host" : "shibboleth-idp2.vagrant.dev",
+        "queries" : [ {
+            "obj" : "java.lang:type=Memory",
+            "resultAlias": "Memory",
+            "attr" : [ "HeapMemoryUsage", "NonHeapMemoryUsage", "ObjectPendingFinalizationCount" ],
+            "outputWriters" : [ {
+                "@class" : "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                "settings" : {
+                    "port" : "2003",
+                    "host" : "127.0.0.1"
+                }
+            } ]
+        } , {
+            "obj" : "java.lang:type=Threading",
+            "resultAlias": "Threads",
+            "attr" : [ "DaemonThreadCount", "PeakThreadCount", "CurrentThreadCpuTime", "CurrentTheeadUserTime", "ThreadCount", "TotalStartedThreadCount" ],
+            "outputWriters" : [ {
+                "@class" : "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                "settings" : {
+                    "port" : "2003",
+                    "host" : "127.0.0.1"
+                }
+            } ]
+        } , {
+            "obj" : "java.lang:type=GarbageCollector,name=Copy",
+            "resultAlias": "GCCopy",
+            "attr" : [ "CollectionCount", "CollectionTime" ],
+            "outputWriters" : [ {
+                "@class" : "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                "settings" : {
+                    "port" : "2003",
+                    "host" : "127.0.0.1"
+                }
+            } ]
+        } , {
+            "obj" : "java.lang:type=GarbageCollector,name=MarkSweepCompact",
+            "resultAlias": "GCCMS",
+            "attr" : [ "CollectionCount", "CollectionTime" ],
+            "outputWriters" : [ {
+                "@class" : "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                "settings" : {
+                    "port" : "2003",
+                    "host" : "127.0.0.1"
+                }
+            } ]
+        } ]
+    } ]
+}
+

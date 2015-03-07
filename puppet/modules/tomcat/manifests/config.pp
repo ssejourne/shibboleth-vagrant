@@ -1,6 +1,7 @@
 class tomcat::config(
   $port,
-  $authbind
+  $authbind,
+  $tomcat_monitor_ip
 ){
   file { '/etc/tomcat6/server.xml':
     owner   => 'root',
@@ -22,7 +23,7 @@ class tomcat::config(
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => template('tomcat/tomcat6')
+    content => template('tomcat/tomcat6.erb')
   }
 
   # fix tomcat user homedir permissions

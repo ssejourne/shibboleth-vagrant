@@ -18,6 +18,11 @@ class baseconfig {
 ### a few support packages
   package { [ 'vim-nox', 'curl' , 'ntp' ]: ensure => installed }
 
+### We don't need the chef-client.
+  service {'chef-client':
+    ensure   => stopped,
+  }
+
 ### Set timezone (nice to have)
   file { '/etc/timezone':
     ensure   => present,

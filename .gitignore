@@ -1,5 +1,6 @@
 .vagrant/
 .vagrant_dns.json
 tmp/*
+jmxtrans*.deb
 shibboleth-identityprovider-*-bin.zip
 shibboleth-identityprovider-*-bin.tar.gz

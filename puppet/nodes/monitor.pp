@@ -43,5 +43,47 @@ node 'monitor.vagrant.dev' {
     }
   }
 
+  ### we need a java jdk for jmxtrans
+  package {'default-jdk':
+    ensure => installed,
+  }
+
+  ### JMXTRANS
+  $jmxtrans_filename = "jmxtrans_20121016-175251-ab6cfd36e3-1_all.deb"
+  $jmxtrans_remote_url = "https://github.com/downloads/jmxtrans/jmxtrans/${jmxtrans_filename}"
+
+  exec { 'download-jmxtrans':
+    timeout => 0,
+    command => "wget ${jmxtrans_remote_url}",
+    cwd     => '/vagrant',
+    creates => "/vagrant/${jmxtrans_filename}"
+  }
+
+  package {'jmxtrans':
+    ensure   => installed,
+    provider => dpkg,
+    source   => "/vagrant/${jmxtrans_filename}",
+    require  => [
+	Package['default-jdk'],
+	Exec['download-jmxtrans'],
+    ],
+  }
+
+  service {'jmxtrans':
+    ensure     => running,
+    hasrestart => true,
+    hasstatus  => true,
+    require    => Package['jmxtrans'],
+  }
+
+  # TODO : manage a dynamic list of hosts/files
+  exec { 'jmxtrans-json-files':
+    command => 'cp /vagrant/puppet/files/monitor/jmxtrans/* /var/lib/jmxtrans/',
+    user    => 'root',
+    creates => '/var/lib/jmxtrans/shibboleth-idp1.vagrant.dev.json',
+    require => Package['jmxtrans'],
+    notify  => Service['jmxtrans'],
+  }
+ 
 }
 

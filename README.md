@@ -73,7 +73,7 @@ On shibboleth-sp.vagrant.dev
 
 ### MONITOR
 
-* Graphite
+* Graphite + collectd + jmxtrans
 * URLs
   * http://monitor.vagrant.dev/dashboard/ : Dashboards
   * http://monitor.vagrant.dev/render?target=collectd.ha-proxy_vagrant_dev.interface-eth1.*.*&format=csv : Export some data in CSV (or &format=json for JSON)

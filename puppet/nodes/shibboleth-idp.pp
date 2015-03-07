@@ -38,6 +38,11 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     base => "${ldap_suffix}",
   } 
 
+  ### we need a java jdk for jmxtrans
+  package {'default-jdk':
+    ensure => installed,
+  }
+
   ### Shibboleth IdP
   # Services to be configured in the IdP
   #   key   - short name for service (used for config file names etc)
