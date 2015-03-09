@@ -25,3 +25,9 @@
 [submodule "puppet/modules/graphite"]
 	path = puppet/modules/graphite
 	url = https://github.com/echocat/puppet-graphite.git
+[submodule "puppet/modules/statsd"]
+	path = puppet/modules/statsd
+	url = https://github.com/justindowning/puppet-statsd.git
+[submodule "puppet/modules/nodejs"]
+	path = puppet/modules/nodejs
+	url = https://github.com/puppetlabs/puppetlabs-nodejs.git

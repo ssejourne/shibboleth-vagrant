@@ -27,9 +27,14 @@ node 'monitor.vagrant.dev' {
         retentions => '10s:1d,1m:7d,10m:2y'
       },
       {
+        name       => 'servers',
+        pattern    => '^servers\.',
+        retentions => '10s:1d,1m:7d,10m:2y'
+      },
+      {
         name       => 'default',
         pattern    => '.*',
-        retentions => '1s:30m,1m:1d,5m:7y'
+        retentions => '10s:1d,1m:7d,5m:2y'
       }
     ],
   }
