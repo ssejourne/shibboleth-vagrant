@@ -5,7 +5,7 @@
 # Configure the node now
 node 'monitor.vagrant.dev' {
   Exec {
-    path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin'
+    path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin'
   }
 
   include baseconfig
@@ -24,19 +24,34 @@ node 'monitor.vagrant.dev' {
       {
         name       => 'collectd',
         pattern    => '^collectd\.',
-        retentions => '10s:1d,1m:7d,10m:2y'
+        retentions => '10s:1d,1m:7d,5m:1y'
       },
       {
         name       => 'servers',
         pattern    => '^servers\.',
-        retentions => '10s:1d,1m:7d,10m:2y'
+        retentions => '10s:1d,1m:7d,5m:1y'
+      },
+      {
+        name       => 'statsd',
+        pattern    => '^stats\.',
+        retentions => '10s:1d,1m:7d,5m:1y'
       },
       {
         name       => 'default',
         pattern    => '.*',
-        retentions => '10s:1d,1m:7d,5m:2y'
+        retentions => '10s:1d,1m:7d,5m:1y'
       }
     ],
+    gr_storage_aggregation_rules => {
+      '00_min'         => { pattern => '\.min$',   factor => '0.1', method => 'min' },
+      '01_max'         => { pattern => '\.max$',   factor => '0.1', method => 'max' },
+      '02_count'       => { pattern => '\.count$', factor => '0.1', method => 'sum' },
+      '03_lower'       => { pattern => '\.lower(_\d+)?$', factor => '0.1', method => 'min' },
+      '04_upper'       => { pattern => '\.upper(_\d+)?$', factor => '0.1', method => 'max' },
+      '05_sum'         => { pattern => '\.sum$', factor => '0', method => 'sum' },
+      '06_gauges'      => { pattern => '^.*\.gauges\..*', factor => '0', method => 'last' },
+      '99_default_avg' => { pattern => '.*',       factor => '0.5', method => 'average'}
+    },
   }
 
 # Fix graphite for Django 1.6
@@ -46,6 +61,25 @@ node 'monitor.vagrant.dev' {
       onlyif => "/bin/grep -r 'from django.conf.urls.defaults import' /opt/graphite/webapp/graphite",
       require => Class['graphite'],
     }
+  }
+
+  ### Statsd
+  include apt
+
+  class { 'nodejs': 
+    manage_package_repo       => false,
+    nodejs_dev_package_ensure => 'present',
+    npm_package_ensure        => 'present',
+    legacy_debian_symlinks    => true,
+    require                   => Class['apt'],
+  }
+
+  class { 'statsd':
+      backends                 => [ './backends/graphite'],
+      graphiteHost             => 'localhost',
+      node_module_dir          => '/usr/local/lib/node_modules',
+      graphite_legacyNamespace => false,
+      require                  => Class['nodejs'],
   }
 
   ### we need a java jdk for jmxtrans
