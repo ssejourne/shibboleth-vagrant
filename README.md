@@ -78,3 +78,17 @@ On shibboleth-sp.vagrant.dev
   * http://monitor.vagrant.dev/dashboard/ : Dashboards
   * http://monitor.vagrant.dev/render?target=collectd.ha-proxy_vagrant_dev.interface-eth1.*.*&format=csv : Export some data in CSV (or &format=json for JSON)
 
+### REFERENCES
+* https://github.com/puppetlabs/puppetlabs-apache
+* https://github.com/puppetlabs/puppetlabs-apt
+* https://github.com/pdxcat/puppet-module-collectd
+* https://github.com/puppetlabs/puppetlabs-concat
+* https://github.com/echocat/puppet-graphite
+* https://github.com/datacentred/datacentred-ldap
+* https://github.com/puppetlabs/puppetlabs-nodejs
+* https://github.com/hercules-team/augeasproviders_core
+* https://github.com/hercules-team/augeasproviders_shellvar
+* https://github.com/Aethylred/puppet-shibboleth
+* https://github.com/justindowning/puppet-statsd
+* https://github.com/puppetlabs/puppetlabs-stdlib
+

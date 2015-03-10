@@ -26,6 +26,7 @@ node 'ha-proxy.vagrant.dev' {
   collectd::plugin { 'disk': }
   collectd::plugin { 'interface': }
   #collectd::plugin { 'apache': }
+  collectd::plugin { 'python': }
   class { 'collectd::plugin::write_graphite':
     graphitehost => 'monitor.vagrant.dev',
   }
@@ -52,7 +53,7 @@ node 'ha-proxy.vagrant.dev' {
 
   file {'/etc/haproxy/haproxy.cfg':
      ensure  => present,
-     source  => "puppet:///files/haproxy.cfg",
+     source  => "puppet:///files/haproxy/haproxy.cfg",
      owner   => 'root',
      group   => 'root',
      mode    => '0644',
