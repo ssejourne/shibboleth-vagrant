@@ -34,3 +34,6 @@
 [submodule "puppet/modules/apt"]
 	path = puppet/modules/apt
 	url = https://github.com/puppetlabs/puppetlabs-apt.git
+[submodule "puppet/files/haproxy/collectd-haproxy"]
+	path = puppet/files/haproxy/collectd-haproxy
+	url = https://github.com/mleinart/collectd-haproxy.git

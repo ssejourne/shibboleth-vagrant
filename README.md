@@ -2,6 +2,8 @@
 
 Get an instance of [Shibboleth](https://shibboleth.net/products/identity-provider.html) SP and Idp up and running using Vagrant and Puppet.
 
+![Diagram](doc/SchemaMaquetteEN.jpg)
+
 ## Getting started
 
 Before you start, ensure you have [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](http://www.vagrantup.com/) installed and working.

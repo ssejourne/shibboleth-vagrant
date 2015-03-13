@@ -26,11 +26,20 @@ node 'ha-proxy.vagrant.dev' {
   collectd::plugin { 'disk': }
   collectd::plugin { 'interface': }
   #collectd::plugin { 'apache': }
-  collectd::plugin { 'python': }
+  collectd::plugin::python { 'haproxy': 
+    modulepath    => '/usr/lib/collectd',
+    module        => 'haproxy',
+    script_source => 'puppet:///files/haproxy/collectd-haproxy/haproxy.py',
+    config        => {
+      'Socket'        => '/var/run/haproxy.sock',
+    },
+    require       => Package['haproxy'],
+  }
   class { 'collectd::plugin::write_graphite':
     graphitehost => 'monitor.vagrant.dev',
   }
 
+  
   # Need version 1.5
   exec {'add-apt-haproxy':
     command => '/usr/bin/add-apt-repository -y ppa:vbernat/haproxy-1.5',
