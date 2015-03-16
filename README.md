@@ -17,7 +17,7 @@ You can check to make sure everything worked by visiting: https://shibboleth-idp
 
 Test it by starting to log in https://shibboleth-sp.vagrant.dev/secure
 
-## Diagram
+## Network Diagram
 
                   +-----+                 
                   |     |                 
