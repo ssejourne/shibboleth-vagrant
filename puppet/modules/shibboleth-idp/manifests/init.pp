@@ -1,7 +1,8 @@
 class shibboleth-idp(
   $service_providers,      # { 'sp-title'  => 'sp-metadata-url' }
   $users,                  # { 'username' => 'password'        }
-  $version                 = '2.4.3',
+#  $version                 = '3.1.1',
+  $version                 = '2.4.4',
   $idp_home                = '/opt/shibboleth-idp',
   $idp_hostname            = "$::fqdn",
   $idp_entity_id_path      = "/idp/shibboleth",

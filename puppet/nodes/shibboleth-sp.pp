@@ -34,7 +34,7 @@ class shibboleth_custom inherits shibboleth {
 }
 
 # Configure the node now
-node 'shibboleth-sp.vagrant.dev' {
+node /^shibboleth-sp\d*.vagrant.dev$/ {
   Exec {
     path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin'
   }
@@ -67,58 +67,6 @@ node 'shibboleth-sp.vagrant.dev' {
     graphitehost => 'monitor.vagrant.dev',
   }
 
-### 
-  ### Add a test LDAP
-  class { 'ldap::server':
-    suffix  => $::ldap_suffix,
-    rootdn  => "cn=$::ldap_admin,$::ldap_suffix",
-    rootpw  => "$::ldap_admin_pw"
-  }
-
-  class { 'ldap::client':
-    uri  => "${ldap_uri}",
-    base => "${ldap_suffix}",
-  }
-
-  Class['ldap::server'] -> Class['ldap::client']
-
-  # Install ldap-account-manager to play with LDAP
-  package {'ldap-account-manager':
-    ensure  => installed ,
-    require => [Apache::Vhost['shibboleth-sp-ssl'],Class['ldap::client']],
-    notify  => Service['httpd'],
-  }
-
-  file { '/var/lib/ldap-account-manager/config/lam.conf':
-    ensure => directory,
-    owner  => 'www-data',
-    group  => 'root',
-    mode   => '0600',
-    source => "puppet:///files/ldap/lam.conf",
-    require => Package['ldap-account-manager'],
-  }
-
-  # import sample ldap users 
-  package {'ldap-utils':
-    ensure  => installed ,
-    require => Class['ldap::client'],
-  }
-
-  file { '/etc/ldap/test_users.ldif':
-    ensure => present,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0644',
-    source => "puppet:///files/ldap/test_users.ldif",
-  }
-
-  exec { 'import_test_ldap':
-    command   => "/usr/bin/ldapadd -D \"cn=${ldap_admin},${ldap_suffix}\" -w ${ldap_admin_pw} -f /etc/ldap/test_users.ldif && touch /tmp/ldap_import_done",
-    user      => 'openldap',
-    creates   => '/tmp/ldap_import_done',
-    require   => [File['/etc/ldap/test_users.ldif'],Package['ldap-utils']]
-  }
-
 ### Shibboleth SP
   # Create self signed certificate for apache
   file { '/etc/apache2/ssl/':
@@ -132,7 +80,7 @@ node 'shibboleth-sp.vagrant.dev' {
   $ssl_apache_key="/etc/apache2/ssl/apache.key"
   $ssl_apache_crt="/etc/apache2/ssl/apache.crt"
   exec { 'genapacheselfsigned':
-    command     => "/usr/bin/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key} -out ${ssl_apache_crt} -subj \"/C=FR/ST=Bretagne/L=Rennes/O=vagrant/CN=$::fqdn\"",
+    command     => "/usr/bin/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key} -out ${ssl_apache_crt} -subj \"/C=FR/ST=Bretagne/L=Rennes/O=vagrant/CN=$shibboleth_sp_URL\"",
     user        => 'root',
     cwd         => '/etc/apache2/',
     creates     => $ssl_apache_key, 
@@ -159,18 +107,18 @@ node 'shibboleth-sp.vagrant.dev' {
 
   
   apache::vhost { 'shibboleth-sp': 
-    servername      => $::fqdn,
-    vhost_name      => $::fqdn,
+    servername      => $shibboleth_sp_URL,
+    vhost_name      => $shibboleth_sp_URL,
     port            => 80,
     docroot         => '/var/www/html',
     redirectmatch_regexp => '^(/(?!mod_status).*)$',
-    redirectmatch_dest   => "https://${::fqdn}\$1",
+    redirectmatch_dest   => "https://${shibboleth_sp_URL}\$1",
     redirectmatch_status => 'permanent',
   }
 
   apache::vhost { 'shibboleth-sp-ssl':
-    servername      => $::fqdn,
-    vhost_name      => $::fqdn,
+    servername      => $shibboleth_sp_URL,
+    vhost_name      => $shibboleth_sp_URL,
     ip              => $::ipaddress_eth1,
     port            => 443,
     docroot         => '/var/www/html',

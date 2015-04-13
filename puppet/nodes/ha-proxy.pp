@@ -72,17 +72,78 @@ node 'ha-proxy.vagrant.dev' {
 
   # Set VIP
   exec {'conf_idp_vip':
-     command => "/sbin/ifconfig eth1:1 192.168.66.20",
+     command => "/sbin/ifconfig eth1:2 192.168.66.20",
      user    => 'root',
      unless  => "/sbin/ifconfig -a | grep 192.168.66.20 > /dev/null",
-     notify  => Service['haproxy']
   }
+  exec {'conf_sp_vip':
+     command => "/sbin/ifconfig eth1:1 192.168.66.10",
+     user    => 'root',
+     unless  => "/sbin/ifconfig -a | grep 192.168.66.10 > /dev/null",
+  }
+
+  Exec['conf_idp_vip'] -> Service['haproxy']
+  Exec['conf_sp_vip'] -> Service['haproxy']
+
 #  class {'haproxy':}
 
 #  haproxy::listen { 'idp-farm':
 #    ipaddress => $::shibboleth_idp_URL,
 #    ports     => '443',
 #  }
+
+### 
+  ### Add a test LDAP
+  class { 'ldap::server':
+    suffix  => $::ldap_suffix,
+    rootdn  => "cn=$::ldap_admin,$::ldap_suffix",
+    rootpw  => "$::ldap_admin_pw"
+  } 
+  
+  class { 'ldap::client':
+    uri  => "${ldap_uri}",
+    base => "${ldap_suffix}",
+  }
+
+  Class['ldap::server'] -> Class['ldap::client']
+
+##  # Install ldap-account-manager to play with LDAP
+##  package {'ldap-account-manager':
+##    ensure  => installed ,
+##    require => [Apache::Vhost['shibboleth-sp-ssl'],Class['ldap::client']],
+##    notify  => Service['httpd'],
+##  }
+##
+##  file { '/var/lib/ldap-account-manager/config/lam.conf':
+##    ensure => directory,
+##    owner  => 'www-data',
+##    group  => 'root',
+##    mode   => '0600',
+##    source => "puppet:///files/ldap/lam.conf",
+##    require => Package['ldap-account-manager'],
+##  }
+##
+
+  # import sample ldap users 
+  package {'ldap-utils':
+    ensure  => installed ,
+    require => Class['ldap::client'],
+  }
+
+  file { '/etc/ldap/test_users.ldif':
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+    source => "puppet:///files/ldap/test_users.ldif",
+  }
+
+  exec { 'import_test_ldap':
+    command   => "/usr/bin/ldapadd -D \"cn=${ldap_admin},${ldap_suffix}\" -w ${ldap_admin_pw} -f /etc/ldap/test_users.ldif && touch /tmp/ldap_import_done",
+    user      => 'openldap',
+    creates   => '/tmp/ldap_import_done',
+    require   => [File['/etc/ldap/test_users.ldif'],Package['ldap-utils']]
+  }
 
 }
 

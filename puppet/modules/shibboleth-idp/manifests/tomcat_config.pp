@@ -26,15 +26,16 @@ class shibboleth-idp::tomcat_config(
     notify  => Class['tomcat::service']
   }
 
-  if !member(['2.4.3','3.0'],$idp_version) {
-    exec { 'endorse-xerces-and-xalan':
-      command => "[ -d ${idp_home}/lib/endorsed ]&&(cp -r ${idp_home}/lib/endorsed ${tomcat_home}/ && chown -R ${tomcat_user}:${tomcat_group} ${tomcat_home}/endorsed)||true",
+# Do not manage legacy versions
+#  if !member(['2.4.3','3.0'],$idp_version) {
+#    exec { 'endorse-xerces-and-xalan':
+#      command => "[ -d ${idp_home}/lib/endorsed ]&&(cp -r ${idp_home}/lib/endorsed ${tomcat_home}/ && chown -R ${tomcat_user}:${tomcat_group} ${tomcat_home}/endorsed)||true",
 #      creates => "${tomcat_home}/endorsed",
-      notify  => Class['tomcat::service']
-    }
-    warning("IdP version ${idp_version} : need to endorse xerces and xalan")
-  }
-  else {
-    notice("IdP version ${idp_version} : no need to endorse xerces and xalan")
-  }
+#      notify  => Class['tomcat::service']
+#    }
+#    warning("IdP version ${idp_version} : need to endorse xerces and xalan")
+#  }
+#  else {
+#    notice("IdP version ${idp_version} : no need to endorse xerces and xalan")
+#  }
 }

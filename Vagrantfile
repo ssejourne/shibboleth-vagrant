@@ -13,6 +13,7 @@ Vagrant.configure("2") do |config|
     end
 
     # Use landrush to manage DNS entries
+    # Check status with : vagrant landrush status
     if Vagrant.has_plugin?("landrush")
       config.landrush.enabled = true
     end
@@ -52,20 +53,7 @@ Vagrant.configure("2") do |config|
     end
   end
 
-# SP
-  config.vm.define "shibboleth-sp" do |sp|
-    sp.vm.hostname = 'shibboleth-sp.vagrant.dev'
-    sp.vm.network :private_network, ip: '192.168.66.10'
-  
-    sp.vm.provider :virtualbox do |vb|
-      vb.customize ['modifyvm', :id, '--memory', '512']
-    end
-  end
-
 # HA-PROXY 
-  # VIP for the shibboleth-idp
-  config.landrush.host 'shibboleth-idp.vagrant.dev', '192.168.66.20'
-
   config.vm.define "ha-proxy" do |lb|
     lb.vm.hostname = 'ha-proxy.vagrant.dev'
     # frontend network
@@ -78,7 +66,28 @@ Vagrant.configure("2") do |config|
     end
   end
 
+# SP
+  # VIP for the shibboleth-sp
+  config.landrush.host 'shibboleth-sp.vagrant.dev', '192.168.66.10'
+
+  sp_servers = { :'shibboleth-sp1' => '192.168.65.11',
+                  :'shibboleth-sp2' => '192.168.65.12'
+                }
+
+  sp_servers.each do |sp_server_name, sp_server_ip| 
+     config.vm.define sp_server_name do |sp|
+       sp.vm.hostname = sp_server_name.to_s + ".vagrant.dev"
+       sp.vm.network :private_network, ip: sp_server_ip
+       sp.vm.provider :virtualbox do |vb|
+         vb.customize ['modifyvm', :id, '--memory', '512']
+       end
+     end
+  end
+
 # IDP
+  # VIP for the shibboleth-idp
+  config.landrush.host 'shibboleth-idp.vagrant.dev', '192.168.66.20'
+
   idp_servers = { :'shibboleth-idp1' => '192.168.65.21',
                   :'shibboleth-idp2' => '192.168.65.22'
                 }

@@ -19,28 +19,7 @@ Test it by starting to log in https://shibboleth-sp.vagrant.dev/secure
 
 ## Network Diagram
 
-                  +-----+                 
-                  |     |                 
-                  | Host|                 
-                  |     |                 
-                  +--+--+  .20 for VIP
-                     |.1        192.168.66.0/24          
-    +-+------+-------+---+-----------+---+
-      |      |.2         |.5         |.10 
-      |   +--+--+     +--+--+     +--+--+ 
-      |   |     |     |     |     |     | 
-      |   MONITOR     HAPROXY     | SP  | 
-      |   |     |     |     |     |LDAP | 
-      |   +--+--+     +--+--+     +-----+ 
-      |      |.2         |.5    192.168.65.0/24
-    +-+------+----------++-----------+---+
-                        |.21         |.22 
-                     +--+--+      +--+--+ 
-                     |     |      |     | 
-                     | IdP1|      | IdP2| 
-                     |     |      |     | 
-                     +-----+      +-----+ 
-        
+![Network Diagram](doc/MaquetteVagrant.png)
 
 ## Servers
 
