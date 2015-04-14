@@ -54,7 +54,7 @@ Vagrant.configure("2") do |config|
   end
 
 # HA-PROXY 
-  config.vm.define "ha-proxy" do |lb|
+  config.vm.define "ha-proxy", primary: true do |lb|
     lb.vm.hostname = 'ha-proxy.vagrant.dev'
     # frontend network
     lb.vm.network :private_network, ip: '192.168.66.5'
@@ -103,6 +103,16 @@ Vagrant.configure("2") do |config|
     end
   end
 
+# Gatling
+
+  config.vm.define "gatling", autostart: false do |gatling|
+    gatling.vm.hostname = 'gatling.vagrant.dev'
+    gatling.vm.network :private_network, ip: '192.168.66.7'
+    gatling.vm.provider :virtualbox do |vb|
+      vb.customize ['modifyvm', :id, '--memory', '768']
+    end
+  end
+
 # Puppet provisionning
   config.vm.provision :puppet do |puppet|
       puppet.manifests_path = "puppet"
@@ -119,6 +129,5 @@ Vagrant.configure("2") do |config|
          "is_vagrant" => true,
       }
     end
-
 end
 
