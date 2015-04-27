@@ -40,6 +40,8 @@ Vagrant.configure("2") do |config|
 
   config.vm.box = 'ubuntu/trusty64'
 
+  config.librarian_puppet.puppetfile_dir = "puppet"
+
 # Monitor (Graphite)
   config.vm.define "monitor" do |monitor|
     monitor.vm.hostname = 'monitor.vagrant.dev'
