@@ -1,5 +1,5 @@
 # Puppet Forge
-forge "https://forgeapi.puppetlabs.com"
+forge "http://forge.puppetlabs.com"
 
 # mod, <module name>, <version or tag>, <source>
 mod 'puppetlabs/apache'
@@ -13,7 +13,7 @@ mod 'graphite',
 mod 'ldap',
   :git => 'git://github.com/datacentred/datacentred-ldap.git'
 mod 'puppetlabs/nodejs'
-mod 'puppetlabs/ntp'  
+#mod 'puppetlabs/ntp'  
 mod 'herculesteam/augeasproviders_core'
 mod 'herculesteam/augeasproviders_shellvar'
 mod 'shibboleth',

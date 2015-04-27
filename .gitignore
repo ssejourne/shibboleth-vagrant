@@ -5,4 +5,5 @@ tmp/*
 *.zip
 *.tar.gz
 puppet/.librarian/*
+puppet/.tmp/*
 .project
