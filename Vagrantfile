@@ -120,7 +120,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision :puppet do |puppet|
       puppet.manifests_path = "puppet"
       puppet.manifest_file = "site.pp"
-      puppet.module_path = "puppet/modules"
+      puppet.module_path = [ "puppet/modules", "puppet-contrib/modules"]
       puppet.hiera_config_path = "puppet/hiera.yaml"
       puppet.options="--fileserverconfig=/vagrant/puppet/fileserver.conf --summarize"
       #puppet.options="--verbose"

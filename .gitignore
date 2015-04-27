@@ -1,9 +1,6 @@
 .vagrant/*
-.vagrant_dns.json
 tmp/*
 *.deb
 *.zip
 *.tar.gz
-puppet/.librarian/*
-puppet/.tmp/*
 .project
