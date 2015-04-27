@@ -1,0 +1,60 @@
+FORGE
+  remote: https://forgeapi.puppetlabs.com
+  specs:
+    datacentred-ldap (0.3.0)
+      puppetlabs-stdlib (~> 4.0)
+    herculesteam-augeasproviders_core (2.1.1)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    herculesteam-augeasproviders_shellvar (2.1.1)
+      herculesteam-augeasproviders_core (< 3.0.0, >= 2.1.0)
+    puppetlabs-apache (1.4.0)
+      puppetlabs-concat (< 2.0.0, >= 1.1.1)
+      puppetlabs-stdlib (< 5.0.0, >= 2.4.0)
+    puppetlabs-apt (2.0.0)
+      puppetlabs-stdlib (>= 4.5.0)
+    puppetlabs-concat (1.2.1)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    puppetlabs-firewall (1.5.0)
+    puppetlabs-nodejs (0.7.1)
+      puppetlabs-apt (>= 0.0.3)
+      puppetlabs-stdlib (>= 2.0.0)
+    puppetlabs-stdlib (4.6.0)
+
+GIT
+  remote: git://github.com/Aethylred/puppet-shibboleth.git
+  ref: master
+  sha: d5bdfdc7f681ca1aa8bcd16a3478bba250497b52
+  specs:
+    Aethylred-shibboleth (0.1.3)
+
+GIT
+  remote: git://github.com/echocat/puppet-graphite.git
+  ref: master
+  sha: 7c4ebbc3e093635c756ca199f78825fac1e3f1de
+  specs:
+    echocat-graphite (5.11.2)
+      puppetlabs-stdlib (>= 3.2.0)
+
+GIT
+  remote: git://github.com/pdxcat/puppet-module-collectd.git
+  ref: master
+  sha: e01c6f21241e282d5f2008c794109af9af01c45f
+  specs:
+    pdxcat-collectd (3.3.0)
+      puppetlabs-concat (>= 1.0.4)
+      puppetlabs-stdlib (>= 3.0.0)
+
+DEPENDENCIES
+  Aethylred-shibboleth (>= 0)
+  datacentred-ldap (>= 0)
+  echocat-graphite (>= 0)
+  herculesteam-augeasproviders_core (>= 0)
+  herculesteam-augeasproviders_shellvar (>= 0)
+  pdxcat-collectd (>= 0)
+  puppetlabs-apache (>= 0)
+  puppetlabs-apt (>= 0)
+  puppetlabs-concat (>= 0)
+  puppetlabs-firewall (>= 0)
+  puppetlabs-nodejs (>= 0)
+  puppetlabs-stdlib (>= 0)
+

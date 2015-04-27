@@ -7,7 +7,7 @@ Vagrant.configure("2") do |config|
   # Configure plugins
   unless ENV["VAGRANT_NO_PLUGINS"]
 
-    required_plugins = %w( vagrant-hostmanager vagrant-cachier landrush vagrant-librarian-puppet )
+    required_plugins = %w( vagrant-hostmanager vagrant-cachier landrush vagrant-librarian-puppet)
     required_plugins.each do |plugin|
       system "vagrant plugin install #{plugin}" unless Vagrant.has_plugin? plugin
     end
@@ -40,8 +40,10 @@ Vagrant.configure("2") do |config|
 
   config.vm.box = 'ubuntu/trusty64'
 
-  config.librarian_puppet.puppetfile_dir = "puppet-contrib"
-  config.librarian_puppet.resolve_options = { :force => true }
+  if Vagrant.has_plugin?("vagrant-librarian-puppet")
+    config.librarian_puppet.puppetfile_dir = "puppet-contrib"
+    config.librarian_puppet.resolve_options = { :force => true }
+  end
 
 # Monitor (Graphite)
   config.vm.define "monitor" do |monitor|
