@@ -1,3 +1,4 @@
+#
 class shibboleth-idp::shib_config(
   $idp_home,
   $idp_entity_id,
@@ -5,11 +6,11 @@ class shibboleth-idp::shib_config(
 ) {
 # Dirty hack for metadata file. Need to improve for multiple sp
   file { "${idp_home}/metadata/shibboleth-sp.vagrant.dev.xml":
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    source => "puppet:///files/idp/shibboleth-sp.vagrant.dev.xml",
-    notify  => Class['tomcat::service']
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+    source => 'puppet:///files/idp/shibboleth-sp.vagrant.dev.xml',
+    notify => Class['tomcat::service']
   }
   # use the ldap
   file { "${idp_home}/conf/login.config":

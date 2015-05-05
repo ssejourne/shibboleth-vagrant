@@ -22,4 +22,5 @@ mod 'Aethylred-shibboleth',
 #mod 'justindowning-statsd',
 #  :git => 'git://github.com/justindowning/puppet-statsd.git'
 mod 'puppetlabs-stdlib'  
+mod 'puppetlabs-haproxy'
 

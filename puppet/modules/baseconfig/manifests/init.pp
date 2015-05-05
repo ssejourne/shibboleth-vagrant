@@ -25,17 +25,17 @@ class baseconfig {
 
 ### Set timezone (nice to have)
   file { '/etc/timezone':
-    ensure   => present,
-    content  => 'Europe/Paris\n',
-    owner    => 'root',
-    group    => 'root',
-    mode     => '0644',
-    notify   => Exec['set_mytimezone']
+    ensure  => present,
+    content => 'Europe/Paris\n',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    notify  => Exec['set_mytimezone']
   }
 
   exec { 'set_mytimezone':
-    command   => 'dpkg-reconfigure -f noninteractive tzdata',
-    user      => 'root',
+    command => 'dpkg-reconfigure -f noninteractive tzdata',
+    user    => 'root',
   }
 
   File['/etc/timezone'] -> Exec['set_mytimezone']

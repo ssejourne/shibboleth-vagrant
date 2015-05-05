@@ -29,7 +29,9 @@ class shibboleth-idp::tomcat_config(
 # Do not manage legacy versions
 #  if !member(['2.4.3','3.0'],$idp_version) {
 #    exec { 'endorse-xerces-and-xalan':
-#      command => "[ -d ${idp_home}/lib/endorsed ]&&(cp -r ${idp_home}/lib/endorsed ${tomcat_home}/ && chown -R ${tomcat_user}:${tomcat_group} ${tomcat_home}/endorsed)||true",
+#      command => "[ -d ${idp_home}/lib/endorsed ]&&\
+#(cp -r ${idp_home}/lib/endorsed ${tomcat_home}/ && \
+#chown -R ${tomcat_user}:${tomcat_group} ${tomcat_home}/endorsed)||true",
 #      creates => "${tomcat_home}/endorsed",
 #      notify  => Class['tomcat::service']
 #    }

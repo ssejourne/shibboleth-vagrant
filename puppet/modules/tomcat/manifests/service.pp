@@ -1,7 +1,8 @@
+#
 class tomcat::service {
   service { 'tomcat6':
+    ensure     => running,
     hasrestart => true,
-    ensure => running,
-    subscribe => Class['tomcat::config']
+    subscribe  => Class['tomcat::config']
   }
 }

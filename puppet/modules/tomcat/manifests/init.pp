@@ -1,3 +1,4 @@
+#
 class tomcat(
   $port              = 8080,
   $tomcat_monitor_ip = $::fqdn

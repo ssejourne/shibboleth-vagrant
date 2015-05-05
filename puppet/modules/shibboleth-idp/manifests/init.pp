@@ -1,18 +1,19 @@
+#
 class shibboleth-idp(
   $service_providers,      # { 'sp-title'  => 'sp-metadata-url' }
   $users,                  # { 'username' => 'password'        }
 #  $version                 = '3.1.1',
   $version                 = '2.4.4',
   $idp_home                = '/opt/shibboleth-idp',
-  $idp_hostname            = "$::fqdn",
-  $idp_entity_id_path      = "/idp/shibboleth",
+  $idp_hostname            = $::fqdn,
+  $idp_entity_id_path      = '/idp/shibboleth',
   $keystore_password       = 'changeit',
   $port                    = '80',
   $status_page_allowed_ips = '192.168.66.1/32 127.0.0.1/32 ::1/128',
   $tomcat_home             = '/usr/share/tomcat6',
   $tomcat_user             = 'tomcat6',
   $tomcat_group            = 'tomcat6',
-  $java_home		   = '/usr/lib/jvm/java-7-openjdk-amd64',
+  $java_home       = '/usr/lib/jvm/java-7-openjdk-amd64',
 ){
 
   $idp_entity_id = "https://${idp_hostname}${idp_entity_id_path}"

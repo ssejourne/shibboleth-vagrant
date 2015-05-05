@@ -1,3 +1,4 @@
+#
 class shibboleth-idp::install(
   $version,
   $idp_home,
@@ -9,7 +10,8 @@ class shibboleth-idp::install(
   $shibboleth_src_dir = "/usr/local/src/shibboleth-identityprovider-${version}"
 
   file { 'install.properties':
-    path    => "${shibboleth_src_dir}/src/installer/resources/install.properties",
+    path    =>
+"${shibboleth_src_dir}/src/installer/resources/install.properties",
     owner   => 'root',
     group   => 'root',
     mode    => '0600',
@@ -28,7 +30,7 @@ class shibboleth-idp::install(
     command     => 'chmod u+x install.sh && ./install.sh',
     cwd         => $shibboleth_src_dir,
     user        => 'root',
-    environment => "JAVA_HOME=$java_home",
+    environment => "JAVA_HOME=${java_home}",
     creates     => "${idp_home}/war",
     require     => [
       File['install.properties'],
@@ -36,7 +38,8 @@ class shibboleth-idp::install(
     ]
   }
 
-  # Allow tomcat to write where it needs to do stuff for us, like log and fetch metadata.
+  # Allow tomcat to write where it needs to do stuff for us, 
+  # like log and fetch metadata.
   file { [
     "${idp_home}/logs",
     "${idp_home}/metadata"
