@@ -7,6 +7,7 @@ FORGE
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
     herculesteam-augeasproviders_shellvar (2.1.1)
       herculesteam-augeasproviders_core (< 3.0.0, >= 2.1.0)
+    nanliu-staging (1.0.3)
     puppetlabs-apache (1.4.1)
       puppetlabs-concat (< 2.0.0, >= 1.1.1)
       puppetlabs-stdlib (< 5.0.0, >= 2.4.0)
@@ -21,6 +22,10 @@ FORGE
     puppetlabs-nodejs (0.8.0)
       puppetlabs-stdlib (< 5.0.0, >= 2.2.1)
     puppetlabs-stdlib (4.6.0)
+    puppetlabs-tomcat (1.2.0)
+      nanliu-staging (>= 0.4.1)
+      puppetlabs-concat (>= 1.0.4)
+      puppetlabs-stdlib (>= 4.2.0)
     stahnma-epel (1.0.2)
 
 GIT
@@ -33,9 +38,9 @@ GIT
 GIT
   remote: git://github.com/echocat/puppet-graphite.git
   ref: master
-  sha: 001b36118874d4404cc4c71801424e07bf135fdc
+  sha: d1a4016acab55eec69ee9ad69d2512746e931853
   specs:
-    echocat-graphite (5.11.2)
+    echocat-graphite (5.12.0)
       puppetlabs-stdlib (>= 3.2.0)
 
 GIT
@@ -72,4 +77,5 @@ DEPENDENCIES
   puppetlabs-haproxy (>= 0)
   puppetlabs-nodejs (>= 0)
   puppetlabs-stdlib (>= 0)
+  puppetlabs-tomcat (>= 0)
 

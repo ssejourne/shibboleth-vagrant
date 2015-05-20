@@ -1,5 +1,5 @@
 #
-class shibboleth-idp::shib_config(
+class shibboleth_idp::shib_config(
   $idp_home,
   $idp_entity_id,
   $service_providers

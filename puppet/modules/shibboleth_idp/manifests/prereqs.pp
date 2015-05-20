@@ -1,5 +1,5 @@
 #
-class shibboleth-idp::prereqs(
+class shibboleth_idp::prereqs(
   $port
 ){
   # our web container

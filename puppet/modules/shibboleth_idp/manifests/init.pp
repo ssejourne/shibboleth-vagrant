@@ -1,5 +1,5 @@
 #
-class shibboleth-idp(
+class shibboleth_idp(
   $service_providers,      # { 'sp-title'  => 'sp-metadata-url' }
   $users,                  # { 'username' => 'password'        }
 #  $version                 = '3.1.1',
@@ -13,20 +13,20 @@ class shibboleth-idp(
   $tomcat_home             = '/usr/share/tomcat6',
   $tomcat_user             = 'tomcat6',
   $tomcat_group            = 'tomcat6',
-  $java_home       = '/usr/lib/jvm/java-7-openjdk-amd64',
+  $java_home               = '/usr/lib/jvm/java-7-openjdk-amd64',
 ){
 
   $idp_entity_id = "https://${idp_hostname}${idp_entity_id_path}"
 
-  class { 'shibboleth-idp::prereqs':
+  class { 'shibboleth_idp::prereqs':
     port => $port
   }
 
-  class { 'shibboleth-idp::download':
+  class { 'shibboleth_idp::download':
     version => $version
   }
 
-  class { 'shibboleth-idp::install':
+  class { 'shibboleth_idp::install':
     version                 => $version,
     idp_home                => $idp_home,
     status_page_allowed_ips => $status_page_allowed_ips,
@@ -34,7 +34,7 @@ class shibboleth-idp(
     java_home               => $java_home
   }
 
-  class { 'shibboleth-idp::tomcat_config':
+  class { 'shibboleth_idp::tomcat_config':
     idp_home     => $idp_home,
     idp_version  => $version,
     users        => $users,
@@ -43,15 +43,15 @@ class shibboleth-idp(
     tomcat_group => $tomcat_group
   }
 
-  class { 'shibboleth-idp::shib_config':
+  class { 'shibboleth_idp::shib_config':
     idp_home          => $idp_home,
     idp_entity_id     => $idp_entity_id,
     service_providers => $service_providers
   }
 
-  Class['shibboleth-idp::prereqs'] ->
-    Class['shibboleth-idp::download'] ->
-    Class['shibboleth-idp::install'] ->
-    Class['shibboleth-idp::tomcat_config'] ->
-    Class['shibboleth-idp::shib_config']
+  Class['shibboleth_idp::prereqs'] ->
+    Class['shibboleth_idp::download'] ->
+    Class['shibboleth_idp::install'] ->
+    Class['shibboleth_idp::tomcat_config'] ->
+    Class['shibboleth_idp::shib_config']
 }

@@ -1,5 +1,5 @@
 #
-class shibboleth-idp::download(
+class shibboleth_idp::download(
   $version
 ){
   $filename = "shibboleth-identityprovider-${version}-bin.tar.gz"

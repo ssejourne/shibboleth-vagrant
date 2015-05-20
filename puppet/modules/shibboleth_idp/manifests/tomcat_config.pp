@@ -2,7 +2,7 @@
 # Based on instructions at:
 # https://wiki.shibboleth.net/confluence/display/SHIB2/IdPApacheTomcatPrepare
 #
-class shibboleth-idp::tomcat_config(
+class shibboleth_idp::tomcat_config(
   $idp_home,
   $idp_version,
   $users,

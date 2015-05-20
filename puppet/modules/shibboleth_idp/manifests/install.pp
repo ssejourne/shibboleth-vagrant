@@ -1,5 +1,5 @@
 #
-class shibboleth-idp::install(
+class shibboleth_idp::install(
   $version,
   $idp_home,
   $keystore_password,

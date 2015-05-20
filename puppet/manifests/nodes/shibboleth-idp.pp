@@ -59,47 +59,47 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     'shibadmin' => 'shibshib'
   }
 
-  class { 'shibboleth-idp':
-    idp_hostname            => $::shibboleth_idp_URL,
-    service_providers       => $service_providers,
-    users                   => $users,
-    status_page_allowed_ips => '192.168.65.1/32 192.168.65.5/32 127.0.0.1/32 ::1/128'
-  }
-
-  # use static credentials for all idp
-  file {'idp.crt':
-    ensure  => present,
-    path    => '/opt/shibboleth-idp/credentials/idp.crt',
-    source  => 'puppet:///files/idp/credentials/idp.crt',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    require => Exec['shibboleth-installer'],
-    notify  => Service['tomcat6'],
-  }
-
-  file {'idp.jks':
-    ensure  => present,
-    path    => '/opt/shibboleth-idp/credentials/idp.jks',
-    source  => 'puppet:///files/idp/credentials/idp.jks',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    require => Exec['shibboleth-installer'],
-    notify  => Service['tomcat6'],
-  }
-
-  file {'idp.key':
-    ensure  => present,
-    path    => '/opt/shibboleth-idp/credentials/idp.key',
-    source  => 'puppet:///files/idp/credentials/idp.key',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    require => Exec['shibboleth-installer'],
-    notify  => Service['tomcat6'],
-  }
-
+##WOIP##  class { 'shibboleth-idp':
+##WOIP##    idp_hostname            => $::shibboleth_idp_URL,
+##WOIP##    service_providers       => $service_providers,
+##WOIP##    users                   => $users,
+##WOIP##    status_page_allowed_ips => '192.168.65.1/32 192.168.65.5/32 127.0.0.1/32 ::1/128'
+##WOIP##  }
+##WOIP##
+##WOIP##  # use static credentials for all idp
+##WOIP##  file {'idp.crt':
+##WOIP##    ensure  => present,
+##WOIP##    path    => '/opt/shibboleth-idp/credentials/idp.crt',
+##WOIP##    source  => 'puppet:///files/idp/credentials/idp.crt',
+##WOIP##    owner   => 'root',
+##WOIP##    group   => 'root',
+##WOIP##    mode    => '0644',
+##WOIP##    require => Exec['shibboleth-installer'],
+##WOIP##    notify  => Service['tomcat6'],
+##WOIP##  }
+##WOIP##
+##WOIP##  file {'idp.jks':
+##WOIP##    ensure  => present,
+##WOIP##    path    => '/opt/shibboleth-idp/credentials/idp.jks',
+##WOIP##    source  => 'puppet:///files/idp/credentials/idp.jks',
+##WOIP##    owner   => 'root',
+##WOIP##    group   => 'root',
+##WOIP##    mode    => '0644',
+##WOIP##    require => Exec['shibboleth-installer'],
+##WOIP##    notify  => Service['tomcat6'],
+##WOIP##  }
+##WOIP##
+##WOIP##  file {'idp.key':
+##WOIP##    ensure  => present,
+##WOIP##    path    => '/opt/shibboleth-idp/credentials/idp.key',
+##WOIP##    source  => 'puppet:///files/idp/credentials/idp.key',
+##WOIP##    owner   => 'root',
+##WOIP##    group   => 'root',
+##WOIP##    mode    => '0644',
+##WOIP##    require => Exec['shibboleth-installer'],
+##WOIP##    notify  => Service['tomcat6'],
+##WOIP##  }
+##WOIP##
   ### Configure Apache frontend
   # Set up Apache
   # https://github.com/puppetlabs/puppetlabs-apache
