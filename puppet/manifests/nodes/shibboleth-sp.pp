@@ -12,7 +12,7 @@ class shibboleth_custom inherits shibboleth {
     owner  => 'root',
     group  => 'root',
     mode   => '0644',
-    source => "puppet:///files/sp/shibboleth2.xml",
+    source => 'puppet:///files/sp/shibboleth2.xml',
     replace => true,
     require => [Class['apache::mod::shib'],File['shibboleth_conf_dir']],
     notify  => Service['httpd','shibd'],
@@ -70,29 +70,29 @@ node /^shibboleth-sp\d*.vagrant.dev$/ {
 ### Shibboleth SP
   # Create self signed certificate for apache
   file { '/etc/apache2/ssl/':
-    ensure => directory,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
     require => Package['apache2']
   }
 
-  $ssl_apache_key="/etc/apache2/ssl/apache.key"
-  $ssl_apache_crt="/etc/apache2/ssl/apache.crt"
+  $ssl_apache_key='/etc/apache2/ssl/apache.key'
+  $ssl_apache_crt='/etc/apache2/ssl/apache.crt'
   exec { 'genapacheselfsigned':
-    command     => "/usr/bin/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key} -out ${ssl_apache_crt} -subj \"/C=FR/ST=Bretagne/L=Rennes/O=vagrant/CN=$shibboleth_sp_URL\"",
-    user        => 'root',
-    cwd         => '/etc/apache2/',
-    creates     => $ssl_apache_key, 
+    command => "/usr/bin/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key} -out ${ssl_apache_crt} -subj \"/C=FR/ST=Bretagne/L=Rennes/O=vagrant/CN=${shibboleth_sp_URL}\"",
+    user    => 'root',
+    cwd     => '/etc/apache2/',
+    creates => $ssl_apache_key,
   }
 
   # Set up Apache
   # https://github.com/puppetlabs/puppetlabs-apache
-  class{'apache': 
+  class{'apache':
     default_vhost => false,
-    mpm_module => 'prefork',
-    keepalive         => 'On', 
-    default_mods      => false,    # Disable large set of modules
+    mpm_module    => 'prefork',
+    keepalive     => 'On',
+    default_mods  => false,    # Disable large set of modules
   }
 
   apache::mod{'authn_core':}
@@ -106,11 +106,11 @@ node /^shibboleth-sp\d*.vagrant.dev$/ {
   }
 
   
-  apache::vhost { 'shibboleth-sp': 
-    servername      => $shibboleth_sp_URL,
-    vhost_name      => $shibboleth_sp_URL,
-    port            => 80,
-    docroot         => '/var/www/html',
+  apache::vhost { 'shibboleth-sp':
+    servername           => $shibboleth_sp_URL,
+    vhost_name           => $shibboleth_sp_URL,
+    port                 => 80,
+    docroot              => '/var/www/html',
     redirectmatch_regexp => '^(/(?!mod_status).*)$',
     redirectmatch_dest   => "https://${shibboleth_sp_URL}\$1",
     redirectmatch_status => 'permanent',
@@ -125,9 +125,9 @@ node /^shibboleth-sp\d*.vagrant.dev$/ {
     ssl             => true,
     ssl_cert        => $ssl_apache_crt,
     ssl_key         => $ssl_apache_key,
-    aliases => [
+    aliases         => [
       { alias       => '/lam',
-        path        => '/usr/share/ldap-account-manager',
+        path => '/usr/share/ldap-account-manager',
       }
     ],
     custom_fragment => '  UseCanonicalName On
@@ -138,7 +138,7 @@ node /^shibboleth-sp\d*.vagrant.dev$/ {
     require valid-user
   </Location>
     ',
-  }  
+  }
 
   file { '/var/www/html/secure':
     ensure => directory,
@@ -158,28 +158,28 @@ node /^shibboleth-sp\d*.vagrant.dev$/ {
     
   # https://github.com/aethylred/puppet-shibboleth
   # custom to use a static shibboleth2.xml for tests
-  class{'shibboleth_custom': 
+  class{'shibboleth_custom':
   }
 
   # Create backend certificate, that match the metadatafile for the idp (shibboleth-sp.vagrant.dev.xml)
   file { 'sp-cert.pem':
-    ensure  => present,
-    path    => "${::shibboleth::conf_dir}/sp-cert.pem",
-    owner   => '_shibd',
-    group   => '_shibd',
-    mode    => '0644',
-    source  => 'puppet:///files/sp/sp-cert.pem',
-    notify  => Service['httpd','shibd'],
+    ensure => present,
+    path   => "${::shibboleth::conf_dir}/sp-cert.pem",
+    owner  => '_shibd',
+    group  => '_shibd',
+    mode   => '0644',
+    source => 'puppet:///files/sp/sp-cert.pem',
+    notify => Service['httpd','shibd'],
   }
   
   file { 'sp-key.pem':
-    ensure  => present,
-    path    => "${::shibboleth::conf_dir}/sp-key.pem",
-    owner   => '_shibd',
-    group   => '_shibd',
-    mode    => '0600',
-    source  => 'puppet:///files/sp/sp-key.pem',
-    notify  => Service['httpd','shibd'],
+    ensure => present,
+    path   => "${::shibboleth::conf_dir}/sp-key.pem",
+    owner  => '_shibd',
+    group  => '_shibd',
+    mode   => '0600',
+    source => 'puppet:///files/sp/sp-key.pem',
+    notify => Service['httpd','shibd'],
   }
 
 }

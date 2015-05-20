@@ -10,12 +10,12 @@ node 'monitor.vagrant.dev' {
 
   include baseconfig
 
-  class { 'graphite': 
-    gr_max_updates_per_second => 100,
-    gr_timezone               => 'Europe/Paris',
-    secret_key                => 'vagrant',
-    gr_enable_udp_listener    => true,
-    gr_storage_schemas        => [
+  class { 'graphite':
+    gr_max_updates_per_second    => 100,
+    gr_timezone                  => 'Europe/Paris',
+    secret_key                   => 'vagrant',
+    gr_enable_udp_listener       => true,
+    gr_storage_schemas           => [
       {
         name       => 'carbon',
         pattern    => '^carbon\.',
@@ -43,22 +43,58 @@ node 'monitor.vagrant.dev' {
       }
     ],
     gr_storage_aggregation_rules => {
-      '00_min'         => { pattern => '\.min$',   factor => '0.1', method => 'min' },
-      '01_max'         => { pattern => '\.max$',   factor => '0.1', method => 'max' },
-      '02_count'       => { pattern => '\.count$', factor => '0.1', method => 'sum' },
-      '03_lower'       => { pattern => '\.lower(_\d+)?$', factor => '0.1', method => 'min' },
-      '04_upper'       => { pattern => '\.upper(_\d+)?$', factor => '0.1', method => 'max' },
-      '05_sum'         => { pattern => '\.sum$', factor => '0', method => 'sum' },
-      '06_gauges'      => { pattern => '^.*\.gauges\..*', factor => '0', method => 'last' },
-      '99_default_avg' => { pattern => '.*',       factor => '0.5', method => 'average'}
+      '00_min'         => {
+        pattern => '\.min$',
+        factor  => '0.1',
+        method  => 'min'
+      },
+      '01_max'         => {
+        pattern => '\.max$',
+        factor  => '0.1',
+        method  => 'max'
+      },
+      '02_count'       => {
+        pattern => '\.count$',
+        factor  => '0.1',
+        method  => 'sum'
+      },
+      '03_lower'       => {
+        pattern => '\.lower(_\d+)?$',
+        factor  => '0.1',
+        method  => 'min'
+      },
+      '04_upper'       => {
+        pattern => '\.upper(_\d+)?$',
+        factor  => '0.1',
+        method  => 'max'
+      },
+      '05_sum'         => {
+        pattern => '\.sum$',
+        factor  => '0',
+        method  => 'sum'
+      },
+      '06_gauges'      => {
+        pattern => '^.*\.gauges\..*',
+        factor  => '0',
+        method  => 'last'
+      },
+      '99_default_avg' => {
+        pattern => '.*',
+        factor  => '0.5',
+        method  => 'average'
+      }
     },
   }
 
 # Fix graphite for Django 1.6
-  if $::osfamily == "Debian" {
-    exec { "fix_graphite_django1.6":
-      command => '/usr/bin/find /opt/graphite/webapp/graphite -iname "urls.py" -exec /bin/sed -i s/"from django.conf.urls.defaults import \*"/"from django.conf.urls import \*"/ {} \;',
-      onlyif => "/bin/grep -r 'from django.conf.urls.defaults import' /opt/graphite/webapp/graphite",
+  if $::osfamily == 'Debian' {
+    exec { 'fix_graphite_django1.6':
+      command => '/usr/bin/find /opt/graphite/webapp/graphite \
+-iname "urls.py" -exec /bin/sed -i \
+s/"from django.conf.urls.defaults import \*"/"from django.conf.urls import \*"\
+/ {} \;',
+      onlyif  => "/bin/grep -r 'from django.conf.urls.defaults \
+import' /opt/graphite/webapp/graphite",
       require => Class['graphite'],
     }
   }
@@ -66,7 +102,7 @@ node 'monitor.vagrant.dev' {
   ### Statsd
   include apt
 
-  class { 'nodejs': 
+  class { 'nodejs':
     manage_package_repo       => false,
     nodejs_dev_package_ensure => 'present',
     npm_package_ensure        => 'present',
@@ -88,7 +124,7 @@ node 'monitor.vagrant.dev' {
   }
 
   ### JMXTRANS
-  $jmxtrans_filename = "jmxtrans_20121016-175251-ab6cfd36e3-1_all.deb"
+  $jmxtrans_filename = 'jmxtrans_20121016-175251-ab6cfd36e3-1_all.deb'
   $jmxtrans_remote_url = "https://github.com/downloads/jmxtrans/jmxtrans/${jmxtrans_filename}"
 
   exec { 'download-jmxtrans':
@@ -103,8 +139,8 @@ node 'monitor.vagrant.dev' {
     provider => dpkg,
     source   => "/vagrant/${jmxtrans_filename}",
     require  => [
-	Package['default-jdk'],
-	Exec['download-jmxtrans'],
+  Package['default-jdk'],
+  Exec['download-jmxtrans'],
     ],
   }
 
@@ -123,6 +159,5 @@ node 'monitor.vagrant.dev' {
     require => Package['jmxtrans'],
     notify  => Service['jmxtrans'],
   }
- 
 }
 

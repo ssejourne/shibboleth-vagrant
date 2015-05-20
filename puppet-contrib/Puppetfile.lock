@@ -7,18 +7,21 @@ FORGE
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
     herculesteam-augeasproviders_shellvar (2.1.1)
       herculesteam-augeasproviders_core (< 3.0.0, >= 2.1.0)
-    puppetlabs-apache (1.4.0)
+    puppetlabs-apache (1.4.1)
       puppetlabs-concat (< 2.0.0, >= 1.1.1)
       puppetlabs-stdlib (< 5.0.0, >= 2.4.0)
-    puppetlabs-apt (2.0.0)
+    puppetlabs-apt (2.0.1)
       puppetlabs-stdlib (>= 4.5.0)
-    puppetlabs-concat (1.2.1)
+    puppetlabs-concat (1.2.2)
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
     puppetlabs-firewall (1.5.0)
-    puppetlabs-nodejs (0.7.1)
-      puppetlabs-apt (>= 0.0.3)
-      puppetlabs-stdlib (>= 2.0.0)
+    puppetlabs-haproxy (1.2.0)
+      puppetlabs-concat (< 2.0.0, >= 1.1.0)
+      puppetlabs-stdlib (< 5.0.0, >= 2.4.0)
+    puppetlabs-nodejs (0.8.0)
+      puppetlabs-stdlib (< 5.0.0, >= 2.2.1)
     puppetlabs-stdlib (4.6.0)
+    stahnma-epel (1.0.2)
 
 GIT
   remote: git://github.com/Aethylred/puppet-shibboleth.git
@@ -30,15 +33,25 @@ GIT
 GIT
   remote: git://github.com/echocat/puppet-graphite.git
   ref: master
-  sha: 7c4ebbc3e093635c756ca199f78825fac1e3f1de
+  sha: 001b36118874d4404cc4c71801424e07bf135fdc
   specs:
     echocat-graphite (5.11.2)
       puppetlabs-stdlib (>= 3.2.0)
 
 GIT
+  remote: git://github.com/justindowning/puppet-statsd.git
+  ref: master
+  sha: 304c84e2e7a7c2dd61fb190703eb6cd34d3a5e82
+  specs:
+    justindowning-statsd (2.4.0)
+      puppetlabs-nodejs (>= 0)
+      puppetlabs-stdlib (< 5.0.0, >= 0, >= 4.1.0)
+      stahnma-epel (< 2.0.0, > 1.0.0, >= 0)
+
+GIT
   remote: git://github.com/pdxcat/puppet-module-collectd.git
   ref: master
-  sha: e01c6f21241e282d5f2008c794109af9af01c45f
+  sha: 6a9f9492af6a3a59b74f043ce6bb8227909224b2
   specs:
     pdxcat-collectd (3.3.0)
       puppetlabs-concat (>= 1.0.4)
@@ -50,11 +63,13 @@ DEPENDENCIES
   echocat-graphite (>= 0)
   herculesteam-augeasproviders_core (>= 0)
   herculesteam-augeasproviders_shellvar (>= 0)
+  justindowning-statsd (>= 0)
   pdxcat-collectd (>= 0)
   puppetlabs-apache (>= 0)
   puppetlabs-apt (>= 0)
   puppetlabs-concat (>= 0)
   puppetlabs-firewall (>= 0)
+  puppetlabs-haproxy (>= 0)
   puppetlabs-nodejs (>= 0)
   puppetlabs-stdlib (>= 0)
 

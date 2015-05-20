@@ -19,8 +19,8 @@ mod 'herculesteam-augeasproviders_core'
 mod 'herculesteam-augeasproviders_shellvar'
 mod 'Aethylred-shibboleth',
   :git => 'git://github.com/Aethylred/puppet-shibboleth.git'
-#mod 'justindowning-statsd',
-#  :git => 'git://github.com/justindowning/puppet-statsd.git'
+mod 'justindowning-statsd',
+  :git => 'git://github.com/justindowning/puppet-statsd.git'
 mod 'puppetlabs-stdlib'  
 mod 'puppetlabs-haproxy'
 
