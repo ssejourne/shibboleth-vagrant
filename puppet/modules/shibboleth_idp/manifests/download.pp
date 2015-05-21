@@ -1,7 +1,7 @@
 #
 class shibboleth_idp::download(
-  $version
 ){
+  $version = $::shibboleth_idp::version
   $filename = "shibboleth-identityprovider-${version}-bin.tar.gz"
   $remote_url = "http://shibboleth.net/downloads/identity-provider/${version}/${filename}"
 

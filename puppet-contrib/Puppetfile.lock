@@ -15,17 +15,15 @@ FORGE
       puppetlabs-stdlib (>= 4.5.0)
     puppetlabs-concat (1.2.2)
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
-    puppetlabs-firewall (1.5.0)
+    puppetlabs-firewall (1.6.0)
     puppetlabs-haproxy (1.2.0)
       puppetlabs-concat (< 2.0.0, >= 1.1.0)
       puppetlabs-stdlib (< 5.0.0, >= 2.4.0)
+    puppetlabs-java (1.3.0)
+      puppetlabs-stdlib (>= 2.4.0)
     puppetlabs-nodejs (0.8.0)
       puppetlabs-stdlib (< 5.0.0, >= 2.2.1)
     puppetlabs-stdlib (4.6.0)
-    puppetlabs-tomcat (1.2.0)
-      nanliu-staging (>= 0.4.1)
-      puppetlabs-concat (>= 1.0.4)
-      puppetlabs-stdlib (>= 4.2.0)
     stahnma-epel (1.0.2)
 
 GIT
@@ -38,7 +36,7 @@ GIT
 GIT
   remote: git://github.com/echocat/puppet-graphite.git
   ref: master
-  sha: d1a4016acab55eec69ee9ad69d2512746e931853
+  sha: 238c8050612f6af299c0fd9ce6f8aa88f3b1c864
   specs:
     echocat-graphite (5.12.0)
       puppetlabs-stdlib (>= 3.2.0)
@@ -46,7 +44,7 @@ GIT
 GIT
   remote: git://github.com/justindowning/puppet-statsd.git
   ref: master
-  sha: 304c84e2e7a7c2dd61fb190703eb6cd34d3a5e82
+  sha: 74be2a0d05b6dfe24f9954cc712986b54aec6588
   specs:
     justindowning-statsd (2.4.0)
       puppetlabs-nodejs (>= 0)
@@ -62,6 +60,16 @@ GIT
       puppetlabs-concat (>= 1.0.4)
       puppetlabs-stdlib (>= 3.0.0)
 
+GIT
+  remote: git://github.com/puppetlabs/puppetlabs-tomcat.git
+  ref: master
+  sha: 30411286a01b92157f57c777148b714adfc6dd94
+  specs:
+    puppetlabs-tomcat (1.2.0)
+      nanliu-staging (< 2.0.0, >= 0.4.1)
+      puppetlabs-concat (< 2.0.0, >= 1.0.4)
+      puppetlabs-stdlib (< 5.0.0, >= 4.2.0)
+
 DEPENDENCIES
   Aethylred-shibboleth (>= 0)
   datacentred-ldap (>= 0)
@@ -75,6 +83,7 @@ DEPENDENCIES
   puppetlabs-concat (>= 0)
   puppetlabs-firewall (>= 0)
   puppetlabs-haproxy (>= 0)
+  puppetlabs-java (>= 0)
   puppetlabs-nodejs (>= 0)
   puppetlabs-stdlib (>= 0)
   puppetlabs-tomcat (>= 0)

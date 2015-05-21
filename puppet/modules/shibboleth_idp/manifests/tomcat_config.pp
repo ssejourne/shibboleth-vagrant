@@ -8,22 +8,24 @@ class shibboleth_idp::tomcat_config(
   $users,
   $tomcat_home,
   $tomcat_user,
-  $tomcat_group
+  $tomcat_group,
+  $tomcat_service_name
 ) {
 
   file { "${idp_home}/conf/users.xml":
     owner   => 'root',
     group   => $tomcat_group,
-    mode    => '0640',
-    content => template('shibboleth-idp/users.xml.erb')
+    mode    => '0644',
+    content => template('shibboleth_idp/users.xml.erb')
   }
 
+# to adapt for tomcat class
   file { '/etc/tomcat6/Catalina/localhost/idp.xml':
     owner   => $tomcat_user,
     group   => $tomcat_group,
     mode    => '0644',
-    content => template('shibboleth-idp/idp.xml.erb'),
-    notify  => Class['tomcat::service']
+    content => template('shibboleth_idp/idp.xml.erb'),
+    notify  => Tomcat::Service[$tomcat_service_name]
   }
 
 # Do not manage legacy versions

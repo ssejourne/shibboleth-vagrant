@@ -23,4 +23,6 @@ mod 'justindowning-statsd',
   :git => 'git://github.com/justindowning/puppet-statsd.git'
 mod 'puppetlabs-stdlib'  
 mod 'puppetlabs-haproxy'
-mod 'puppetlabs-tomcat'
+mod 'puppetlabs-java'
+mod 'puppetlabs-tomcat',
+  :git => 'git://github.com/puppetlabs/puppetlabs-tomcat.git'

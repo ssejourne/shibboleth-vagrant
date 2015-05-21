@@ -4,6 +4,7 @@ class shibboleth_idp::install(
   $idp_home,
   $keystore_password,
   $status_page_allowed_ips,
+  $tomcat_group,
   $java_home
 ) {
 
@@ -15,7 +16,7 @@ class shibboleth_idp::install(
     owner   => 'root',
     group   => 'root',
     mode    => '0600',
-    content => template('shibboleth-idp/install.properties.erb')
+    content => template('shibboleth_idp/install.properties.erb')
   }
 
   file { 'web.xml':
@@ -23,7 +24,7 @@ class shibboleth_idp::install(
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => template('shibboleth-idp/web.xml.erb')
+    content => template('shibboleth_idp/web.xml.erb')
   }
 
   exec { 'shibboleth-installer':
@@ -46,7 +47,7 @@ class shibboleth_idp::install(
   ]:
     ensure  => directory,
     owner   => 'root',
-    group   => 'tomcat6',
+    group   => $tomcat_group,
     mode    => '0775',
     require => Exec['shibboleth-installer']
   }
