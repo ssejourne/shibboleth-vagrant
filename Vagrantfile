@@ -18,9 +18,9 @@ Vagrant.configure("2") do |config|
       config.landrush.enabled = true
     end
    # $ vagrant plugin install vagrant-hostmanager
-   # if Vagrant.has_plugin?("vagrant-hostmanager")
-   #   config.hostmanager.enabled = true
-   # end
+   if Vagrant.has_plugin?("vagrant-hostmanager")
+     config.hostmanager.enabled = true
+   end
     # $ vagrant plugin install vagrant-cachier
     # Need nfs-kernel-server system package on debian/ubuntu host
     if Vagrant.has_plugin?("vagrant-cachier")
@@ -40,12 +40,13 @@ Vagrant.configure("2") do |config|
 
   config.vm.box = 'ubuntu/trusty64'
 
+# Buggy?
 #  if Vagrant.has_plugin?("vagrant-librarian-puppet")
 #    config.librarian_puppet.puppetfile_dir = "puppet-contrib"
 #    config.librarian_puppet.resolve_options = { :force => true }
 #  end
 
-# Monitor (Graphite)
+# Monitor 
   config.vm.define "monitor" do |monitor|
     monitor.vm.hostname = 'monitor.vagrant.dev'
     # frontend network
@@ -121,18 +122,10 @@ Vagrant.configure("2") do |config|
 # Puppet provisionning
   config.vm.provision :puppet do |puppet|
       puppet.manifests_path = "puppet/manifests"
-      puppet.manifest_file = "site.pp"
+      puppet.manifest_file = "01_site.pp"
       puppet.module_path = [ "puppet/modules", "puppet-contrib/modules"]
       puppet.hiera_config_path = "puppet/hiera.yaml"
-      puppet.options="--fileserverconfig=/vagrant/puppet/fileserver.conf --summarize"
-      #puppet.options="--verbose"
-      #puppet.options="--verbose --debug --trace --summarize"
-
-      ## custom facts provided to Puppet
-      puppet.facter = {
-          ## tells default.pp that we're running in Vagrant
-         "is_vagrant" => true,
-      }
+      puppet.options="--fileserverconfig=/vagrant/puppet/fileserver.conf"
     end
 end
 

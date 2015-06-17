@@ -2,8 +2,8 @@
 ### Shibboleth SP + LDAP server ###
 ###################################
 
-# Create a custom class to use a static shibboleth2.xml instead of the dyn one
-#  which has some constraints for a testing environment
+# Create a custom class to use a static shibboleth2.xml instead of the dyn
+# one which has some constraints for a testing environment
 class shibboleth_custom inherits shibboleth {
   # Copy shibboleth2.xml
   File['shibboleth_config_file'] {
@@ -126,8 +126,9 @@ node /^shibboleth-sp\d*.vagrant.dev$/ {
     ssl_cert        => $ssl_apache_crt,
     ssl_key         => $ssl_apache_key,
     aliases         => [
-      { alias       => '/lam',
-        path => '/usr/share/ldap-account-manager',
+      {
+        alias => '/lam',
+        path  => '/usr/share/ldap-account-manager',
       }
     ],
     custom_fragment => '  UseCanonicalName On

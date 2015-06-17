@@ -8,12 +8,12 @@ FORGE
     herculesteam-augeasproviders_shellvar (2.1.1)
       herculesteam-augeasproviders_core (< 3.0.0, >= 2.1.0)
     nanliu-staging (1.0.3)
-    puppetlabs-apache (1.4.1)
+    puppetlabs-apache (1.5.0)
       puppetlabs-concat (< 2.0.0, >= 1.1.1)
       puppetlabs-stdlib (< 5.0.0, >= 2.4.0)
-    puppetlabs-apt (2.0.1)
-      puppetlabs-stdlib (>= 4.5.0)
-    puppetlabs-concat (1.2.2)
+    puppetlabs-apt (2.1.0)
+      puppetlabs-stdlib (< 5.0.0, >= 4.5.0)
+    puppetlabs-concat (1.2.3)
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
     puppetlabs-firewall (1.6.0)
     puppetlabs-haproxy (1.2.0)
@@ -21,6 +21,7 @@ FORGE
       puppetlabs-stdlib (< 5.0.0, >= 2.4.0)
     puppetlabs-java (1.3.0)
       puppetlabs-stdlib (>= 2.4.0)
+    puppetlabs-java_ks (1.3.0)
     puppetlabs-nodejs (0.8.0)
       puppetlabs-stdlib (< 5.0.0, >= 2.2.1)
     puppetlabs-stdlib (4.6.0)
@@ -36,17 +37,17 @@ GIT
 GIT
   remote: git://github.com/echocat/puppet-graphite.git
   ref: master
-  sha: 238c8050612f6af299c0fd9ce6f8aa88f3b1c864
+  sha: d4570a9e67e17640738490387638440beadd9819
   specs:
-    echocat-graphite (5.12.0)
+    echocat-graphite (5.13.0)
       puppetlabs-stdlib (>= 3.2.0)
 
 GIT
   remote: git://github.com/justindowning/puppet-statsd.git
   ref: master
-  sha: 74be2a0d05b6dfe24f9954cc712986b54aec6588
+  sha: db0ba90ea2ca766bbce3d3f035b67b597b8497c8
   specs:
-    justindowning-statsd (2.4.0)
+    justindowning-statsd (2.5.0)
       puppetlabs-nodejs (>= 0)
       puppetlabs-stdlib (< 5.0.0, >= 0, >= 4.1.0)
       stahnma-epel (< 2.0.0, > 1.0.0, >= 0)
@@ -54,18 +55,18 @@ GIT
 GIT
   remote: git://github.com/pdxcat/puppet-module-collectd.git
   ref: master
-  sha: 6a9f9492af6a3a59b74f043ce6bb8227909224b2
+  sha: 07326b3ab2f806e76c5274d2f9b8ba6e65d25078
   specs:
-    pdxcat-collectd (3.3.0)
+    pdxcat-collectd (3.4.0)
       puppetlabs-concat (>= 1.0.4)
       puppetlabs-stdlib (>= 3.0.0)
 
 GIT
   remote: git://github.com/puppetlabs/puppetlabs-tomcat.git
   ref: master
-  sha: 30411286a01b92157f57c777148b714adfc6dd94
+  sha: 448096f8d1e6fef28b3c026eb89b65d6a6f518e5
   specs:
-    puppetlabs-tomcat (1.2.0)
+    puppetlabs-tomcat (1.3.0)
       nanliu-staging (< 2.0.0, >= 0.4.1)
       puppetlabs-concat (< 2.0.0, >= 1.0.4)
       puppetlabs-stdlib (< 5.0.0, >= 4.2.0)
@@ -84,6 +85,7 @@ DEPENDENCIES
   puppetlabs-firewall (>= 0)
   puppetlabs-haproxy (>= 0)
   puppetlabs-java (>= 0)
+  puppetlabs-java_ks (>= 0)
   puppetlabs-nodejs (>= 0)
   puppetlabs-stdlib (>= 0)
   puppetlabs-tomcat (>= 0)

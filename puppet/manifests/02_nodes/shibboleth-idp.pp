@@ -52,120 +52,46 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     'shibadmin' => 'shibshib'
   }
 
-  $_package_name = 'tomcat6'
-  $_tomcat_instance_name = 'idp'
-  $_tomcat_user = 'tomcat6'
-  $_tomcat_group = 'tomcat6'
-  $_catalina_base = '/var/lib/tomcat6'
-  $_catalina_home = '/usr/share/tomcat6'
-  $_cert_dname = "CN=${::shibboleth_idp_URL}, OU=vagrant.dev, O=vagrant, L=Rennes, S=Bretagne, C=FR"
-
-  # Install Java
-  class { 'java':
-    distribution => 'jdk',
-    version      => 'latest',
-  } 
- 
-  # Create a system user for the idp
-  class { 'tomcat':
-    install_from_source => false,
-    user                => $_tomcat_user,
-    group               => $_tomcat_group,
-  }
   class { 'shibboleth_idp':
+    download_dir            => '/vagrant',
     idp_hostname            => $::shibboleth_idp_URL,
+    idp_version             => '2.4.4',
     service_providers       => $service_providers,
-    users                   => $users,
     status_page_allowed_ips => '192.168.65.1/32 192.168.65.5/32 127.0.0.1/32 ::1/128',
-    tomcat_service_name     => $_tomcat_instance_name,
-    tomcat_user             => $_tomcat_user,
-    tomcat_group            => $_tomcat_group,
-    catalina_base           => $_catalina_base,
-    java_home               => '/usr/lib/jvm/default-java/',
-  }
-
-###  # let's create a certificate for tomcat's TLS
-###  file { "$_catalina_home" :
-###    ensure  => directory,
-###    owner   => 'shib',
-###  }->
-###  exec { 'tomcat_genkeypair':
-###    command => "keytool -genkeypair -alias tomcat -keyalg RSA -keysize 2048 -dname '${_cert_dname}' -storepass changeit -keypass changeit",
-###    user    => 'shib',
-###    cwd     => $_catalina_home,
-###    creates => "${_catalina_home}/.keystore"
-###  }
-
-  tomcat::instance { 'idp':
-    package_name  => $_package_name,
+    tomcat_user             => 'tomcat',
+    tomcat_group            => 'tomcat',
+    users                   => $users,
   }->
-#  Exec['tomcat_genkeypair']->
-  tomcat::config::server { 'idp':
-    catalina_base => $_catalina_base,
-    port          => '8005',
-    shutdown      => 'SHUTDOWN'
-  }->
-###  tomcat::config::server::connector { 'default-https':
-###    catalina_base         => $_catalina_base,
-###    port                  => '8443',
-###    protocol              => 'HTTP/1.1',
-###    additional_attributes => {
-###      'SSLEnabled'  => 'true',
-###      'maxThreads'  => '150',
-###      'scheme'      => 'https',
-###      'secure'      => 'true',
-###      'clientAuth'  => 'false',
-###      'sslProtocol' => 'TLS'
-###    },
-###  }->
-  tomcat::config::server::connector { 'idp-ajp':
-    catalina_base         => $_catalina_base,
-    port                  => '8009',
-    protocol              => 'AJP/1.3',
-    additional_attributes => {
-#      'redirectPort'  => '8443',
-      'enableLookups' => 'false'
-    },
-  }->
-  tomcat::service { 'idp':
-    use_jsvc      => false,
-    use_init      => true,
-    service_name  => $_package_name,
-  }->
-  Class['shibboleth_idp']
 
   # use static credentials for all idp
   file {'idp.crt':
-    ensure  => present,
-    path    => '/opt/shibboleth-idp/credentials/idp.crt',
-    source  => 'puppet:///files/idp/credentials/idp.crt',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    require => Exec['shibboleth-installer'],
-    notify  => Tomcat::Service[$_tomcat_instance_name]
-  }
+    ensure => present,
+    path   => '/opt/shibboleth-idp/credentials/idp.crt',
+    source => 'puppet:///files/idp/credentials/idp.crt',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+#    notify  => Tomcat::Service[$_tomcat_instance_name]
+  }->
 
   file {'idp.jks':
-    ensure  => present,
-    path    => '/opt/shibboleth-idp/credentials/idp.jks',
-    source  => 'puppet:///files/idp/credentials/idp.jks',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    require => Exec['shibboleth-installer'],
-    notify  => Tomcat::Service[$_tomcat_instance_name]
-  }
+    ensure => present,
+    path   => '/opt/shibboleth-idp/credentials/idp.jks',
+    source => 'puppet:///files/idp/credentials/idp.jks',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+#    notify  => Tomcat::Service[$_tomcat_instance_name]
+  }->
 
   file {'idp.key':
-    ensure  => present,
-    path    => '/opt/shibboleth-idp/credentials/idp.key',
-    source  => 'puppet:///files/idp/credentials/idp.key',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    require => Exec['shibboleth-installer'],
-    notify  => Tomcat::Service[$_tomcat_instance_name]
+    ensure => present,
+    path   => '/opt/shibboleth-idp/credentials/idp.key',
+    source => 'puppet:///files/idp/credentials/idp.key',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+#    notify  => Tomcat::Service[$_tomcat_instance_name]
   }
 
   ### Configure Apache frontend
@@ -181,6 +107,7 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
   # for lam
   include apache::mod::php
     
+  include apache::mod::alias
   apache::vhost { 'shibboleth-idp':
     servername           => $::shibboleth_idp_URL,
     vhost_name           => $::shibboleth_idp_URL,

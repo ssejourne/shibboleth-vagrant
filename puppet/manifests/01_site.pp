@@ -1,13 +1,16 @@
-
+#
 Exec {
   path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin'
 }
 
+filebucket { 'main': }
+
 # set defaults for file ownership/permissions
 File {
-  owner => 'root',
-  group => 'root',
-  mode => '0644',
+  backup => main,
+  owner  => 'root',
+  group  => 'root',
+  mode   => '0644',
 }
 
 # Global vars
@@ -22,9 +25,9 @@ $shibboleth_idp_URL = 'shibboleth-idp.vagrant.dev'
 $ldap_suffix = 'dc=vagrant,dc=dev'
 $ldap_admin = 'admin'
 $ldap_admin_pw = 'vagrant'
-$ldap_uri = "ldap://192.168.65.5"
+$ldap_uri = 'ldap://192.168.65.5'
 
 #include baseconfig
 
-import 'nodes/*.pp'
+import '02_nodes/*.pp'
 
