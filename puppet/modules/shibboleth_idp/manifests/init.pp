@@ -41,8 +41,8 @@ class shibboleth_idp(
     catalina_home    => $tomcat_catalina_base,
     user             => $tomcat_user,
     group            => $tomcat_group,
-    purge_connectors => true,
-    purge_realms     => true,
+    #purge_connectors => true,
+    #purge_realms     => true,
   }
 
   ###  # let's create a certificate for tomcat's TLS
@@ -111,12 +111,12 @@ class shibboleth_idp(
     element_name  => 'shibadmin',
     password      => 'shibshib',
   }->
-  tomcat::config::server::realm { "${_tomcat_server_name}-realm":
-    catalina_base => $tomcat_catalina_base,
-    server_config => $_tomcat_server_config,
-    class_name    => 'org.apache.catalina.realm.MemoryRealm',
-    purge_realms  => true,
-  }->
+  #tomcat::config::server::realm { "${_tomcat_server_name}-realm":
+  #  catalina_base => $tomcat_catalina_base,
+  #  server_config => $_tomcat_server_config,
+  #  class_name    => 'org.apache.catalina.realm.MemoryRealm',
+  #  purge_realms  => true,
+  #}->
   tomcat::config::server::valve { "${_tomcat_server_name}-valve":
     valve_ensure   => absent,
     catalina_base  => $tomcat_catalina_base,
@@ -136,7 +136,7 @@ class shibboleth_idp(
     use_init      => false,
     #use_init          => true,
     #service_enable    => true,
-    service_name  => "${_tomcat_service_name}",
+    #service_name  => "${_tomcat_service_name}",
   }
 
 }
