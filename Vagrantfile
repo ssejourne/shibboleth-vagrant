@@ -1,6 +1,11 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+require 'yaml'
+
+CONF = YAML.load_file('vagrant.yaml')
+DOMAIN = CONF['domain']
+
 Vagrant.configure("2") do |config|
   config.ssh.forward_agent = true
 
@@ -15,16 +20,17 @@ Vagrant.configure("2") do |config|
     # Use landrush to manage DNS entries
     # Check status with : vagrant landrush status
     if Vagrant.has_plugin?("landrush")
-      config.landrush.enabled = true
+      config.landrush.enabled = CONF['landrush_enabled']
+      config.landrush.tld = DOMAIN
     end
    # $ vagrant plugin install vagrant-hostmanager
    if Vagrant.has_plugin?("vagrant-hostmanager")
-     config.hostmanager.enabled = true
+     config.hostmanager.enabled = CONF['hostmanager_enabled']
    end
     # $ vagrant plugin install vagrant-cachier
     # Need nfs-kernel-server system package on debian/ubuntu host
     if Vagrant.has_plugin?("vagrant-cachier")
-      config.cache.scope = :box
+      config.cache.scope = CONF['cachier_scope']
       config.cache.synced_folder_opts = {
         type: :nfs,
         # The nolock option can be useful for an NFSv3 client that wants to avoid the
@@ -38,7 +44,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.synced_folder "puppet/files", "/etc/puppet/files"
 
-  config.vm.box = 'ubuntu/trusty64'
+  config.vm.box = CONF['box']
 
 # Buggy?
 #  if Vagrant.has_plugin?("vagrant-librarian-puppet")
@@ -48,7 +54,7 @@ Vagrant.configure("2") do |config|
 
 # Monitor 
   config.vm.define "monitor" do |monitor|
-    monitor.vm.hostname = 'monitor.vagrant.dev'
+    monitor.vm.hostname = 'monitor' + '.' + DOMAIN
     # frontend network
     monitor.vm.network :private_network, ip: '192.168.66.2'
     # backend network (farms)
@@ -61,7 +67,7 @@ Vagrant.configure("2") do |config|
 
 # HA-PROXY 
   config.vm.define "ha-proxy", primary: true do |lb|
-    lb.vm.hostname = 'ha-proxy.vagrant.dev'
+    lb.vm.hostname = 'ha-proxy' + '.' + DOMAIN
     # frontend network
     lb.vm.network :private_network, ip: '192.168.66.5'
     # backend network (farms)
@@ -82,7 +88,7 @@ Vagrant.configure("2") do |config|
 
   sp_servers.each do |sp_server_name, sp_server_ip| 
      config.vm.define sp_server_name do |sp|
-       sp.vm.hostname = sp_server_name.to_s + ".vagrant.dev"
+       sp.vm.hostname = sp_server_name.to_s + '.' + DOMAIN
        sp.vm.network :private_network, ip: sp_server_ip
        sp.vm.provider :virtualbox do |vb|
          vb.customize ['modifyvm', :id, '--memory', '512']
@@ -92,7 +98,7 @@ Vagrant.configure("2") do |config|
 
 # IDP
   # VIP for the shibboleth-idp
-  config.landrush.host 'shibboleth-idp.vagrant.dev', '192.168.66.20'
+  config.landrush.host 'shibboleth-idp' + '.' + DOMAIN , '192.168.66.20'
 
   idp_servers = { :'shibboleth-idp1' => '192.168.65.21',
                   :'shibboleth-idp2' => '192.168.65.22'
@@ -100,7 +106,7 @@ Vagrant.configure("2") do |config|
 
   idp_servers.each do |idp_server_name, idp_server_ip| 
     config.vm.define idp_server_name do |idp|
-      idp.vm.hostname = idp_server_name.to_s + ".vagrant.dev"
+      idp.vm.hostname = idp_server_name.to_s + '.' + DOMAIN
       idp.vm.network :private_network, ip: idp_server_ip 
   
       idp.vm.provider :virtualbox do |vb|
@@ -112,7 +118,7 @@ Vagrant.configure("2") do |config|
 # Gatling
 
   config.vm.define "gatling", autostart: false do |gatling|
-    gatling.vm.hostname = 'gatling.vagrant.dev'
+    gatling.vm.hostname = 'gatling' + '.' + DOMAIN
     gatling.vm.network :private_network, ip: '192.168.66.7'
     gatling.vm.provider :virtualbox do |vb|
       vb.customize ['modifyvm', :id, '--memory', '768']

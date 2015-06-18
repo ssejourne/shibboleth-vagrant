@@ -89,6 +89,7 @@ class shibboleth_idp(
       'enableLookups'     => 'false'
     },
   }->
+  # Pb? bloque le demarrage
   tomcat::config::server::context { "${_tomcat_server_name}-context":
     catalina_base           => $tomcat_catalina_base,
     server_config           => $_tomcat_server_config,
