@@ -59,8 +59,10 @@ Vagrant.configure("2") do |config|
 #  end
 
   # Statics hosts entries for VIPs
-  CONF['landrush']['static'].each do |static_host|
-    config.landrush.host static_host['name'], static_host['ip']
+  if CONF['landrush']['static']
+    CONF['landrush']['static'].each do |static_host|
+      config.landrush.host static_host['name'], static_host['ip']
+    end
   end
 
   CONF['servers'].each do |servers|

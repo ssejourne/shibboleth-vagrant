@@ -89,29 +89,29 @@ class shibboleth_idp(
       'enableLookups'     => 'false'
     },
   }->
-  # Pb? bloque le demarrage
-  tomcat::config::server::context { "${_tomcat_server_name}-context":
-    catalina_base           => $tomcat_catalina_base,
-    server_config           => $_tomcat_server_config,
-    context_ensure          => present,
-    doc_base                => "${idp_home}/war/idp.war",
-    parent_service          => 'Catalina',
-    parent_engine           => 'Catalina',
-    parent_host             => 'localhost',
-    additional_attributes   => {
-      'privileged'          => 'true',
-      'antiResourceLocking' => 'false',
-      'antiJARLocking'      => 'false',
-      'unpackWAR'           => 'false',
-      'swallowOutput'       => 'true',
-    },
-  }->
-  tomcat::config::server::tomcat_users { "${_tomcat_server_name}-users":
-    catalina_base => $tomcat_catalina_base,
-    # TODO use $users
-    element_name  => 'shibadmin',
-    password      => 'shibshib',
-  }->
+### TODO Pb? bloque le demarrage
+##  tomcat::config::server::context { "${_tomcat_server_name}-context":
+##    catalina_base           => $tomcat_catalina_base,
+##    server_config           => $_tomcat_server_config,
+##    context_ensure          => present,
+##    doc_base                => "${idp_home}/war/idp.war",
+##    parent_service          => 'Catalina',
+##    parent_engine           => 'Catalina',
+##    parent_host             => 'localhost',
+##    additional_attributes   => {
+##      'privileged'          => 'true',
+##      'antiResourceLocking' => 'false',
+##      'antiJARLocking'      => 'false',
+##      'unpackWAR'           => 'false',
+##    #  'swallowOutput'       => 'true',
+##    },
+##  }->
+  #tomcat::config::server::tomcat_users { "${_tomcat_server_name}-users":
+  #  catalina_base => $tomcat_catalina_base,
+  #  # TODO use $users
+  #  element_name  => 'shibadmin',
+  #  password      => 'shibshib',
+  #}->
   #tomcat::config::server::realm { "${_tomcat_server_name}-realm":
   #  catalina_base => $tomcat_catalina_base,
   #  server_config => $_tomcat_server_config,
@@ -130,6 +130,26 @@ class shibboleth_idp(
   class { 'shibboleth_idp::install': }->
   class { 'shibboleth_idp::shib_config':
     tomcat_service_name => $_tomcat_service_name,
+  }->
+  # Dirty hack...
+  file {"${tomcat_catalina_base}/conf/Catalina/":
+    ensure  => directory,
+    owner   => $tomcat_user,
+    group   => $tomcat_group,
+    mode    => '0755',
+  }->
+  file {"${tomcat_catalina_base}/conf/Catalina/localhost/":
+    ensure  => directory,
+    owner   => $tomcat_user,
+    group   => $tomcat_group,
+    mode    => '0755',
+  }->
+  file {"${tomcat_catalina_base}/conf/Catalina/localhost/idp.xml":
+    ensure  => file,
+    content => "<Context docBase=\"${idp_home}/war/idp.war\" privileged=\"true\" antiResourceLocking=\"false\" antiJARLocking=\"false\" unpackWAR=\"false\" swallowOutput=\"true\"></Context>",
+    owner   => $tomcat_user,
+    group   => $tomcat_group,
+    mode    => '0644',
   }->
   tomcat::service { "${_tomcat_service_name}" :
     catalina_base => $tomcat_catalina_base,

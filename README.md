@@ -8,7 +8,12 @@ Get an instance of [Shibboleth](https://shibboleth.net/products/identity-provide
 
 Before you start, ensure you have [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](http://www.vagrantup.com/) installed and working.
 
-1. `git clone --recursive https://github.com/ssejourne/shibboleth-vagrant.git && cd shibboleth-vagrant`
+* Install [librarian-puppet](https://github.com/rodjek/librarian-puppet) installed to manage puppet modules.
+* Install Vagrant [landrush](https://github.com/phinze/landrush) plugin to manage DNS entries
+
+
+1. `git clone https://github.com/ssejourne/shibboleth-vagrant.git`
+2. `cd shibboleth-vagrant/puppet-contrib && librarian-puppet update && cd ..`
 2. `vagrant up`
 
 That's it! The VM will be created and Puppet will download and configure shibboleth for you.
@@ -58,18 +63,4 @@ On shibboleth-sp.vagrant.dev
 * URLs
   * http://monitor.vagrant.dev/dashboard/ : Dashboards
   * http://monitor.vagrant.dev/render?target=collectd.ha-proxy_vagrant_dev.interface-eth1.*.*&format=csv : Export some data in CSV (or &format=json for JSON)
-
-### REFERENCES
-* https://github.com/puppetlabs/puppetlabs-apache
-* https://github.com/puppetlabs/puppetlabs-apt
-* https://github.com/pdxcat/puppet-module-collectd
-* https://github.com/puppetlabs/puppetlabs-concat
-* https://github.com/echocat/puppet-graphite
-* https://github.com/datacentred/datacentred-ldap
-* https://github.com/puppetlabs/puppetlabs-nodejs
-* https://github.com/hercules-team/augeasproviders_core
-* https://github.com/hercules-team/augeasproviders_shellvar
-* https://github.com/Aethylred/puppet-shibboleth
-* https://github.com/justindowning/puppet-statsd
-* https://github.com/puppetlabs/puppetlabs-stdlib
 
