@@ -58,9 +58,10 @@ Vagrant.configure("2") do |config|
 #    config.librarian_puppet.resolve_options = { :force => true }
 #  end
 
-  # TODO use yaml conf file
-  config.landrush.host 'shibboleth-sp.vagrant.dev', '192.168.66.10'
-  config.landrush.host 'shibboleth-idp.vagrant.dev', '192.168.66.20'
+  # Statics hosts entries for VIPs
+  CONF['landrush']['static'].each do |static_host|
+    config.landrush.host static_host['name'], static_host['ip']
+  end
 
   CONF['servers'].each do |servers|
     config.vm.define servers['name'] do |server|

@@ -1,0 +1,54 @@
+---
+domain: vagrant.dev
+landrush_enabled: true
+hostmanager_enabled: true
+cachier_scope: :box
+box: ubuntu/trusty64        
+synced_folders:
+  /etc/puppet/files: puppet/files
+landrush:
+  static:
+    - 
+      name: shibboleth-sp.vagrant.dev
+      ip: 192.168.66.10
+    - 
+      name: shibboleth-idp.vagrant.dev
+      ip: 192.168.66.20
+servers:
+- name: monitor
+  ram: 768
+  gui: false
+  network:
+    - ip: 192.168.66.2
+    - ip: 192.168.65.2
+- name: ha-proxy
+  ram: 512
+  gui: false
+  network:
+    - ip: 192.168.66.5
+    - ip: 192.168.65.5
+- name: shibboleth-sp1
+  ram: 512
+  gui: false
+  network:
+    - ip: 192.168.65.11
+- name: shibboleth-sp2
+  ram: 512
+  gui: false
+  network:
+    - ip: 192.168.65.12
+- name: shibboleth-idp1
+  ram: 768
+  gui: false
+  network:
+    - ip: 192.168.65.21
+- name: shibboleth-idp2
+  ram: 768
+  gui: false
+  network:
+    - ip: 192.168.65.22
+- name: gatling
+  ram: 768  
+  gui: false
+  network:
+    - ip: 192.168.66.7
