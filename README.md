@@ -45,9 +45,9 @@ Test it by starting to log in https://shibboleth-sp.vagrant.dev/secure
   * https://shibboleth-sp.vagrant.dev/Shibboleth.sso/DiscoveryFeed : ...
 
 ### LDAP
-On shibboleth-sp.vagrant.dev
+The ldap is on the ha-proxy server and accounts can be managed with an LDAP Account Manager on shibboleth-sp.vagrant.dev
 
-* URL (LDAP Account Manager) : https://shibboleth-idp.vagrant.dev/lam
+* URL (LDAP Account Manager) : https://shibboleth-sp.vagrant.dev/lam
   * LDAP Account Manager admin user : lam / lam
 * LDAP Manager : admin / vagrant
 * Logins password are login with '123' at the end

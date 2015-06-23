@@ -2,7 +2,7 @@
 class shibboleth_idp::install(
 ) {
 
-  $shibboleth_src_dir = "/usr/local/src/shibboleth-identityprovider-${::shibboleth_idp::idp_version}"
+  $shibboleth_src_dir = "/usr/local/src/shibboleth-${::shibboleth_idp::idp_string}-${::shibboleth_idp::idp_version}"
 
   file { 'install.properties':
     path    =>
@@ -21,16 +21,31 @@ class shibboleth_idp::install(
     content => template('shibboleth_idp/web.xml.erb')
   }
 
-  exec { 'shibboleth-installer':
-    command     => 'chmod u+x install.sh && ./install.sh',
-    cwd         => $shibboleth_src_dir,
-    user        => 'root',
-    environment => "JAVA_HOME=${::shibboleth_idp::java_home}",
-    creates     => "${::shibboleth_idp::idp_home}/war",
-    require     => [
-      File['install.properties'],
-      File['web.xml']
-    ]
+  if versioncmp($::shibboleth_idp::idp_version, '3.0.0') < 0 {
+    exec { 'shibboleth-installer':
+      command     => 'chmod u+x install.sh && ./install.sh',
+      cwd         => $shibboleth_src_dir,
+      user        => 'root',
+      environment => "JAVA_HOME=${::shibboleth_idp::java_home}",
+      creates     => "${::shibboleth_idp::idp_home}/war",
+      require     => [
+        File['install.properties'],
+        File['web.xml']
+      ]
+    }
+  } else {
+    exec { 'shibboleth-installer':
+      #TODO to finish... not tested
+      command     => './bin/install.sh',
+      cwd         => $shibboleth_src_dir,
+      user        => 'root',
+      environment => "JAVA_HOME=${::shibboleth_idp::java_home}",
+      creates     => "${::shibboleth_idp::idp_home}/war",
+      require     => [
+        File['install.properties'],
+        File['web.xml']
+      ]
+    }
   }
 
   # Allow tomcat to write where it needs to do stuff for us, 

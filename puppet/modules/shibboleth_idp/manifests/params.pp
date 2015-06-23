@@ -29,6 +29,7 @@ class shibboleth_idp::params {
   $tomcat_server_config_filename  = 'idp.xml'
   $tomcat_user                    = 'tomcat'
   $tomcat_group                   = 'tomcat'
+  $tomcat_version                 = '8.0.23'
   $users                          = { 'shibadmin' => 'shibshib' }
 
   case $::osfamily {

@@ -163,26 +163,26 @@ node /^shibboleth-sp\d*.vagrant.dev$/ {
   class{'shibboleth_custom':
   }
 
-  #class { 'ldap::client':
-  #  uri        => $ldap_uri,
-  #  base => $ldap_suffix,
-  #}
+  class { 'ldap::client':
+    uri   => $ldap_uri,
+    base  => $ldap_suffix,
+  }
 
   # Install ldap-account-manager to play with LDAP
-  #package {'ldap-account-manager':
-  #  ensure  => installed ,
-  #  require => [Apache::Vhost['shibboleth-sp-ssl'],Class['ldap::client']],
-  #  notify  => Service['httpd'],
-  #}
+  package {'ldap-account-manager':
+    ensure  => installed ,
+    require => [Apache::Vhost['shibboleth-sp-ssl'],Class['ldap::client']],
+    notify  => Service['httpd'],
+  }
   ##
-  #file { '/var/lib/ldap-account-manager/config/lam.conf':
-  #  ensure  => directory,
-  #  owner   => 'www-data',
-  #  group   => 'root',
-  #  mode    => '0600',
-  #  source  => 'puppet:///files/ldap/lam.conf',
-  #  require => Package['ldap-account-manager'],
-  #}
+  file { '/var/lib/ldap-account-manager/config/lam.conf':
+    ensure  => directory,
+    owner   => 'www-data',
+    group   => 'root',
+    mode    => '0600',
+    source  => 'puppet:///files/ldap/lam.conf',
+    require => Package['ldap-account-manager'],
+  }
   ##
 
   # Create backend certificate, that match the metadatafile for the idp (shibboleth-sp.vagrant.dev.xml)

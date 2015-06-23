@@ -56,6 +56,7 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     download_dir            => '/vagrant',
     idp_hostname            => $::shibboleth_idp_URL,
     idp_version             => '2.4.4',
+    #idp_version             => '3.1.1',
     service_providers       => $service_providers,
     status_page_allowed_ips => '192.168.65.1/32 192.168.65.5/32 127.0.0.1/32 ::1/128',
     tomcat_user             => 'tomcat',
@@ -104,9 +105,6 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
     default_mods  => false,    # Disable large set of modules
   }
 
-  # for lam
-  include apache::mod::php
-    
   include apache::mod::alias
   apache::vhost { 'shibboleth-idp':
     servername           => $::shibboleth_idp_URL,

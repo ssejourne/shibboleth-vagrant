@@ -17,17 +17,23 @@ class shibboleth_idp(
   $tomcat_group                   = $shibboleth_idp::params::tomcat_group,
   $tomcat_server_config_filename  = $shibboleth_idp::params::tomcat_server_config_filename,
   $tomcat_user                    = $shibboleth_idp::params::tomcat_user,
+  $tomcat_version                 = $shibboleth_idp::params::tomcat_version,
   $users                          = $shibboleth_idp::params::users,
 ) inherits shibboleth_idp::params {
 
   $idp_entity_id = "https://${idp_hostname}${idp_entity_id_path}"
+
+  if versioncmp($idp_version, '3.0.0') < 0 {
+    $idp_string = "identityprovider"
+  } else {
+    $idp_string = "identity-provider"
+  }
 
   # TODO : passer ces variables dans params
   #  $_tomcat_package_name = 'tomcat6'
   $_tomcat_instance_name = 'idp'
   $_tomcat_service_name = "tomcat-${_tomcat_instance_name}"
   $_tomcat_server_name = $_tomcat_instance_name
-  #$_tomcat_server_config = "${tomcat_catalina_base}/conf/${tomcat_server_config_filename}"
   $_tomcat_server_config = "${tomcat_catalina_base}/conf/server.xml"
 
   # Install Java
@@ -38,15 +44,15 @@ class shibboleth_idp(
 
   # Initiate tomcat
   class { 'tomcat':
-    catalina_home    => $tomcat_catalina_base,
-    user             => $tomcat_user,
-    group            => $tomcat_group,
+    catalina_home => $tomcat_catalina_base,
+    user          => $tomcat_user,
+    group         => $tomcat_group,
     #purge_connectors => true,
     #purge_realms     => true,
   }
 
   ###  # let's create a certificate for tomcat's TLS
-  ###  # TODO : Use puppetlabs/java_ks instead
+  ###  # TODO : Use puppetlabs/java_ks instead & use something less 'static'
   $tomcat_cert_dname = "CN=${::shibboleth_idp_URL}, OU=vagrant.dev, O=vagrant, L=Rennes, S=Bretagne, C=FR"
   #exec { 'tomcat_genkeypair':
   #  command => "keytool -genkeypair -alias tomcat -keyalg RSA -keysize 2048 -dname '${_tomcat_cert_dname}' -storepass changeit -keypass changeit",
@@ -55,9 +61,12 @@ class shibboleth_idp(
   #  creates => "${_tomcat__catalina_base}/.keystore"
   #}
 
+  # TODO tomcat version as parameter
+  $_tomcat_version_ar = split($tomcat_version, '[.]')
+  $tomcat_version_major = $_tomcat_version_ar[0]
   tomcat::instance { "${_tomcat_instance_name}":
     catalina_base => $tomcat_catalina_base,
-    source_url    => 'http://www.eu.apache.org/dist/tomcat/tomcat-7/v7.0.62/bin/apache-tomcat-7.0.62.tar.gz'
+    source_url    => "http://www.eu.apache.org/dist/tomcat/tomcat-${tomcat_version_major}/v${tomcat_version}/bin/apache-tomcat-${tomcat_version}.tar.gz"
   }->
   #Exec['tomcat_genkeypair']->
   tomcat::config::server { "${_tomcat_server_name}":
@@ -86,7 +95,7 @@ class shibboleth_idp(
     protocol              => 'AJP/1.3',
     additional_attributes => {
 #      'redirectPort'  => '8443',
-      'enableLookups'     => 'false'
+      'enableLookups' => 'false'
     },
   }->
 ### TODO Pb? bloque le demarrage
@@ -103,7 +112,7 @@ class shibboleth_idp(
 ##      'antiResourceLocking' => 'false',
 ##      'antiJARLocking'      => 'false',
 ##      'unpackWAR'           => 'false',
-##    #  'swallowOutput'       => 'true',
+##      'swallowOutput'       => 'true',
 ##    },
 ##  }->
   #tomcat::config::server::tomcat_users { "${_tomcat_server_name}-users":
@@ -133,16 +142,16 @@ class shibboleth_idp(
   }->
   # Dirty hack...
   file {"${tomcat_catalina_base}/conf/Catalina/":
-    ensure  => directory,
-    owner   => $tomcat_user,
-    group   => $tomcat_group,
-    mode    => '0755',
+    ensure => directory,
+    owner  => $tomcat_user,
+    group  => $tomcat_group,
+    mode   => '0755',
   }->
   file {"${tomcat_catalina_base}/conf/Catalina/localhost/":
-    ensure  => directory,
-    owner   => $tomcat_user,
-    group   => $tomcat_group,
-    mode    => '0755',
+    ensure => directory,
+    owner  => $tomcat_user,
+    group  => $tomcat_group,
+    mode   => '0755',
   }->
   file {"${tomcat_catalina_base}/conf/Catalina/localhost/idp.xml":
     ensure  => file,
@@ -150,6 +159,7 @@ class shibboleth_idp(
     owner   => $tomcat_user,
     group   => $tomcat_group,
     mode    => '0644',
+    notify  => Tomcat::Service["${_tomcat_service_name}"]
   }->
   tomcat::service { "${_tomcat_service_name}" :
     catalina_base => $tomcat_catalina_base,
