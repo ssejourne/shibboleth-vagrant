@@ -98,6 +98,7 @@ node /^shibboleth-sp\d*.vagrant.dev$/ {
   apache::mod{'authn_core':}
   class{'apache::mod::shib': }
   class{'apache::mod::php': }
+  class{'apache::mod::alias': }
 
   class { 'apache::mod::status':
     allow_from      => ['127.0.0.1','192.168.65.1','192.168.66.1','::1'],
@@ -161,6 +162,28 @@ node /^shibboleth-sp\d*.vagrant.dev$/ {
   # custom to use a static shibboleth2.xml for tests
   class{'shibboleth_custom':
   }
+
+  #class { 'ldap::client':
+  #  uri        => $ldap_uri,
+  #  base => $ldap_suffix,
+  #}
+
+  # Install ldap-account-manager to play with LDAP
+  #package {'ldap-account-manager':
+  #  ensure  => installed ,
+  #  require => [Apache::Vhost['shibboleth-sp-ssl'],Class['ldap::client']],
+  #  notify  => Service['httpd'],
+  #}
+  ##
+  #file { '/var/lib/ldap-account-manager/config/lam.conf':
+  #  ensure  => directory,
+  #  owner   => 'www-data',
+  #  group   => 'root',
+  #  mode    => '0600',
+  #  source  => 'puppet:///files/ldap/lam.conf',
+  #  require => Package['ldap-account-manager'],
+  #}
+  ##
 
   # Create backend certificate, that match the metadatafile for the idp (shibboleth-sp.vagrant.dev.xml)
   file { 'sp-cert.pem':
