@@ -16,29 +16,29 @@ class baseconfig {
   }
 
   ### a few support packages
-  package { [ 'vim-nox', 'curl' , 'ntp' ]: ensure => installed }
+  #package { [ 'vim-nox', 'curl' , 'ntp' ]: ensure => installed }
 
   ### We don't need the chef-client.
   service {'chef-client':
     ensure   => stopped,
   }
 
-  ### Set timezone (nice to have)
-  file { '/etc/timezone':
-    ensure  => present,
-    content => 'Europe/Paris\n',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    notify  => Exec['set_mytimezone']
-  }
-
-  exec { 'set_mytimezone':
-    command => 'dpkg-reconfigure -f noninteractive tzdata',
-    user    => 'root',
-  }
-
-  File['/etc/timezone'] -> Exec['set_mytimezone']
+  # ### Set timezone (nice to have)
+  #file { '/etc/timezone':
+  #  ensure  => present,
+  #  content => 'Europe/Paris\n',
+  #  owner   => 'root',
+  #  group   => 'root',
+  #  mode    => '0644',
+  #  notify  => Exec['set_mytimezone']
+  #}
+  #
+  #exec { 'set_mytimezone':
+  #  command => 'dpkg-reconfigure -f noninteractive tzdata',
+  #  user    => 'root',
+  #}
+  #
+  #File['/etc/timezone'] -> Exec['set_mytimezone']
 
   ### IMPROVE SYSTEM MEMORY MANAGEMENT ###
   # Do less swapping
@@ -109,5 +109,4 @@ class baseconfig {
 
   #
   sysctl { 'net.ipv4.tcp_slow_start_after_idle': value => '0' }
-
 }

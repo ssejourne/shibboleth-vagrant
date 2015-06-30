@@ -27,7 +27,5 @@ $ldap_admin = 'admin'
 $ldap_admin_pw = 'vagrant'
 $ldap_uri = 'ldap://192.168.65.5'
 
-#include baseconfig
-
 import '02_nodes/*.pp'
 

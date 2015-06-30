@@ -39,6 +39,8 @@ node /^shibboleth-sp\d*.vagrant.dev$/ {
     path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin'
   }
 
+  hiera_include('classes')
+
   include baseconfig
 
   ### Collectd

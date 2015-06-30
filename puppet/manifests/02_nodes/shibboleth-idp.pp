@@ -3,6 +3,9 @@
 ######################
 
 node /^shibboleth-idp\d*.vagrant.dev$/ {
+
+  hiera_include('classes')
+
   include baseconfig
 
   ### Collectd

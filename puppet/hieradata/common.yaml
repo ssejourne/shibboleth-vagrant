@@ -1,0 +1,12 @@
+---
+classes:
+  - timezone
+  - ntp
+timezone::timezone: 'Europe/Paris'
+ntp::restrict:
+  - 'default ignore'
+  - '-6 default ignore'
+  - '127.0.0.1'
+  - '-6 ::1'
+ntp::autoupdate: true
+ntp::enable: true

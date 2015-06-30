@@ -24,7 +24,11 @@ FORGE
     puppetlabs-java_ks (1.3.0)
     puppetlabs-nodejs (0.8.0)
       puppetlabs-stdlib (< 5.0.0, >= 2.2.1)
+    puppetlabs-ntp (4.0.0)
+      puppetlabs-stdlib (< 5.0.0, >= 4.6.0)
     puppetlabs-stdlib (4.6.0)
+    saz-timezone (3.3.0)
+      puppetlabs-stdlib (>= 2.3.0)
     stahnma-epel (1.0.2)
     thias-sysctl (1.0.2)
 
@@ -38,7 +42,7 @@ GIT
 GIT
   remote: git://github.com/echocat/puppet-graphite.git
   ref: master
-  sha: d4570a9e67e17640738490387638440beadd9819
+  sha: 53357aab7bc00ca9bce5ec78f21ac7b79786db02
   specs:
     echocat-graphite (5.13.0)
       puppetlabs-stdlib (>= 3.2.0)
@@ -56,7 +60,7 @@ GIT
 GIT
   remote: git://github.com/pdxcat/puppet-module-collectd.git
   ref: master
-  sha: a1901fb888a9964c9bdc64badc721e033a7d27ce
+  sha: 27adfd35e9c1d81138ee2c93754315e9db5186ac
   specs:
     pdxcat-collectd (3.4.0)
       puppetlabs-concat (>= 1.0.4)
@@ -88,7 +92,9 @@ DEPENDENCIES
   puppetlabs-java (>= 0)
   puppetlabs-java_ks (>= 0)
   puppetlabs-nodejs (>= 0)
+  puppetlabs-ntp (>= 0)
   puppetlabs-stdlib (>= 0)
   puppetlabs-tomcat (>= 0)
+  saz-timezone (>= 0)
   thias-sysctl (>= 0)
 

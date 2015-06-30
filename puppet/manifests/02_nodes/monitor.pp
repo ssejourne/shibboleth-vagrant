@@ -8,6 +8,7 @@ node 'monitor.vagrant.dev' {
     path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin'
   }
 
+  hiera_include('classes')
   include baseconfig
 
   class { 'graphite':
