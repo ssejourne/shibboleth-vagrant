@@ -13,19 +13,6 @@ node 'ha-proxy.vagrant.dev' {
   include baseconfig
 
   ### Collectd
-  class { '::collectd':
-    purge        => true,
-    recurse      => true,
-    purge_config => true,
-  }
-
-  collectd::plugin { 'cpu': }
-  collectd::plugin { 'load': }
-  collectd::plugin { 'memory': }
-  collectd::plugin { 'swap': }
-  collectd::plugin { 'disk': }
-  collectd::plugin { 'interface': }
-  #collectd::plugin { 'apache': }
   collectd::plugin::python::module { 'haproxy':
 #    modulepath    => '/usr/lib/collectd',
     script_source => 'puppet:///files/haproxy/collectd-haproxy/haproxy.py',
@@ -34,10 +21,6 @@ node 'ha-proxy.vagrant.dev' {
     },
     require       => Package['haproxy'],
   }
-  class { 'collectd::plugin::write_graphite':
-    graphitehost => 'monitor.vagrant.dev',
-  }
-
   
   # Need version 1.5
   exec {'add-apt-haproxy':

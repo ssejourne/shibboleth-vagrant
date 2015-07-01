@@ -44,29 +44,12 @@ node /^shibboleth-sp\d*.vagrant.dev$/ {
   include baseconfig
 
   ### Collectd
-  class { '::collectd':
-    purge        => true,
-    recurse      => true,
-    purge_config => true,
-  }
-
-  collectd::plugin { 'cpu': }
-  collectd::plugin { 'load': }
-  collectd::plugin { 'memory': }
-  collectd::plugin { 'swap': }
-  collectd::plugin { 'disk': }
-  collectd::plugin { 'interface': }
-
   class { 'collectd::plugin::apache':
     instances => {
       'apache80' => {
         'url' => 'http://localhost/mod_status?auto',
       },
     },
-  }
-
-  class { 'collectd::plugin::write_graphite':
-    graphitehost => 'monitor.vagrant.dev',
   }
 
 ### Shibboleth SP

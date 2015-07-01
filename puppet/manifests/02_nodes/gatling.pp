@@ -11,25 +11,6 @@ node 'gatling.vagrant.dev' {
   hiera_include('classes')
   include baseconfig
 
-  ### Collectd
-
-  class { '::collectd':
-    purge        => true,
-    recurse      => true,
-    purge_config => true,
-  }
-
-  collectd::plugin { 'cpu': }
-  collectd::plugin { 'load': }
-  collectd::plugin { 'memory': }
-  collectd::plugin { 'swap': }
-  collectd::plugin { 'disk': }
-  collectd::plugin { 'interface': }
-  
-  class { 'collectd::plugin::write_graphite':
-    graphitehost => 'monitor.vagrant.dev',
-  }
-
   include gatling
 }
 
