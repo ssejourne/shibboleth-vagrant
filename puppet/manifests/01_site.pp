@@ -13,19 +13,19 @@ File {
   mode   => '0644',
 }
 
-# Global vars
+## Global settings
 
 # SP 
-$shibboleth_sp_URL = 'shibboleth-sp.vagrant.dev'
+$shibboleth_sp_URL = hiera('shibboleth_sp_URL')
 
 # IdP
-$shibboleth_idp_URL = 'shibboleth-idp.vagrant.dev'
+$shibboleth_idp_URL = hiera('shibboleth_idp_URL')
 
 # LDAP
-$ldap_suffix = 'dc=vagrant,dc=dev'
-$ldap_admin = 'admin'
-$ldap_admin_pw = 'vagrant'
-$ldap_uri = 'ldap://192.168.65.5'
+$ldap_suffix = hiera('ldap_suffix')
+$ldap_admin = hiera('ldap_admin')
+$ldap_admin_pw = hiera('ldap_admin_pw')
+$ldap_uri = hiera('ldap_uri')
 
 import '02_nodes/*.pp'
 

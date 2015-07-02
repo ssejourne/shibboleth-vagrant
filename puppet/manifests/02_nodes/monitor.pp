@@ -2,11 +2,64 @@
 ### MONITOR ###
 ###############
 
+$jmx_shib_objects = [
+  {
+    'name'                             => 'java.lang:type=Memory',
+    'resultAlias'                      => 'Memory',
+    'attrs'                            => {
+      'HeapMemoryUsage'                => {},
+      'NonHeapMemoryUsage'             => {},
+      'ObjectPendingFinalizationCount' => {}
+    },
+  },
+  {
+    'name'                      => 'java.lang:type=Threading',
+    'resultAlias'               => 'Threads',
+    'attrs'                     => {
+      'DaemonThreadCount'       => {},
+      'PeakThreadCount'         => {},
+      'CurrentThreadCpuTime'    => {},
+      'CurrentTheeadUserTime'   => {},
+      'ThreadCount'             => {},
+      'TotalStartedThreadCount' => {}
+    },
+  },
+  {
+    'name'              => 'java.lang:type=GarbageCollector,name=Copy',
+    'resultAlias'       => 'GCCopy',
+    'attrs'             => {
+      'CollectionCount' => {},
+      'CollectionTime'  => {}
+    },
+  },
+  {
+    'name'              => 'java.lang:type=GarbageCollector,name=MarkSweepCompact',
+    'resultAlias'       => 'GCCMS',
+    'attrs'             => { 
+    'CollectionCount' => {},
+    'CollectionTime'  => {}
+    },
+  }
+]
+
+define create_jmxtrans_config {
+  $jmx_host = $name
+
+  jmxtrans::metrics { "${jmx_host}":
+    jmx                  => "${jmx_host}:1105",
+    graphite             => '127.0.0.1:2003',
+    graphite_root_prefix => 'shib',
+    objects              => $jmx_shib_objects,
+  }
+}
+
 # Configure the node now
-node 'monitor.vagrant.dev' {
+node /^monitor.*$/ {
   Exec {
     path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin'
   }
+
+  $download_dir=hiera('download_dir')
 
   hiera_include('classes')
   include baseconfig
@@ -125,40 +178,51 @@ import' /opt/graphite/webapp/graphite",
   }
 
   ### JMXTRANS
-  $jmxtrans_filename = 'jmxtrans_20121016-175251-ab6cfd36e3-1_all.deb'
-  $jmxtrans_remote_url = "https://github.com/downloads/jmxtrans/jmxtrans/${jmxtrans_filename}"
+  $jmxtrans_version = '250'
+  $jmxtrans_remote_url = "http://central.maven.org/maven2/org/jmxtrans/jmxtrans/${jmxtrans_version}/jmxtrans-${jmxtrans_version}.deb"
+  $jmxtrans_filename = "jmxtrans-${jmxtrans_version}.deb"
+  #$jmxtrans_filename = 'jmxtrans_20121016-175251-ab6cfd36e3-1_all.deb'
+  #$jmxtrans_remote_url = "https://github.com/downloads/jmxtrans/jmxtrans/${jmxtrans_filename}"
 
   exec { 'download-jmxtrans':
     timeout => 0,
     command => "wget ${jmxtrans_remote_url}",
-    cwd     => '/vagrant',
-    creates => "/vagrant/${jmxtrans_filename}"
-  }
-
-  package {'jmxtrans':
+    cwd     => $download_dir,
+    creates => "/${download_dir}/${jmxtrans_filename}"
+  }->
+  package {"jmxtrans-${jmxtrans_version}":
     ensure   => installed,
-    provider => dpkg,
-    source   => "/vagrant/${jmxtrans_filename}",
+    provider => 'dpkg',
+    source   => "/${download_dir}/${jmxtrans_filename}",
     require  => [
-  Package['default-jdk'],
-  Exec['download-jmxtrans'],
+      Package['default-jdk'],
     ],
-  }
-
-  service {'jmxtrans':
-    ensure     => running,
-    hasrestart => true,
-    hasstatus  => true,
-    require    => Package['jmxtrans'],
-  }
+    before   => Class['jmxtrans'],
+  }#->
+  #service {"jmxtrans-${jmxtrans_version}":
+  #  ensure     => running,
+  #  hasrestart => true,
+  #  hasstatus  => true,
+  #}
 
   # TODO : manage a dynamic list of hosts/files
-  exec { 'jmxtrans-json-files':
-    command => 'cp /vagrant/puppet/files/monitor/jmxtrans/* /var/lib/jmxtrans/',
-    user    => 'root',
-    creates => '/var/lib/jmxtrans/shibboleth-idp1.vagrant.dev.json',
-    require => Package['jmxtrans'],
-    notify  => Service['jmxtrans'],
-  }
+  $jmxtrans_host_list = hiera('idp_servers')
+  
+#  jmxtrans::metrics { 'shibboleth-idp1.vagrant.dev':
+#    jmx                  => 'shibboleth-idp1.vagrant.dev:1105',
+#    graphite             => '127.0.0.1:2003',
+#    graphite_root_prefix => 'shib',
+#    objects              => $jmx_shib_objects,
+#  }
+#
+#  jmxtrans::metrics { 'shibboleth-idp2.vagrant.dev':
+#    jmx                  => 'shibboleth-idp1.vagrant.dev:1105',
+#    graphite             => '127.0.0.1:2003',
+#    graphite_root_prefix => 'shib',
+#    objects              => $jmx_shib_objects,
+#  }
+  
+ create_jmxtrans_config { $jmxtrans_host_list:; }
+
 }
 

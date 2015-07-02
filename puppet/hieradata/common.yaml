@@ -1,4 +1,21 @@
 ---
+# Global settings
+download_dir: '/vagrant'
+#
+shibboleth_sp_URL: 'shibboleth-sp.vagrant.dev'
+shibboleth_idp_URL: 'shibboleth-idp.vagrant.dev'
+# LDAP
+ldap_suffix: 'dc=vagrant,dc=dev'
+ldap_admin: 'admin'
+ldap_admin_pw: 'vagrant'
+ldap_uri: 'ldap://192.168.65.5'
+# Shibboleth IdP
+idp_download_dir: '/vagrant'
+idp_version: '2.4.4'
+idp_status_page_allowed_ips: '192.168.65.1/32 192.168.65.5/32 127.0.0.1/32 ::1/128'
+idp_servers:
+  - shibboleth-idp1.vagrant.dev
+  - shibboleth-idp2.vagrant.dev
 # Default classes
 classes:
   - timezone

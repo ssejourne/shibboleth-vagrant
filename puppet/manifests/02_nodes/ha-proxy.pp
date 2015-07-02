@@ -3,7 +3,7 @@
 ################
 
 # Configure the node now
-node 'ha-proxy.vagrant.dev' {
+node /^ha-proxy.*$/ {
   Exec {
     path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin'
   }

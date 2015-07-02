@@ -30,3 +30,5 @@ mod 'puppetlabs-java_ks'
 mod 'puppetlabs-tomcat',
   :git => 'git://github.com/puppetlabs/puppetlabs-tomcat.git'
 mod 'thias-sysctl'
+mod 'wikimedia-jmxtrans',
+  :git => 'git://github.com/wikimedia/puppet-jmxtrans.git'

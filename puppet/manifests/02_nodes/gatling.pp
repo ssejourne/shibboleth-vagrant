@@ -3,7 +3,7 @@
 ###############
 
 # Configure the node now
-node 'gatling.vagrant.dev' {
+node /^gatling.*$/ {
   Exec {
     path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin'
   }

@@ -76,6 +76,13 @@ GIT
       puppetlabs-concat (< 2.0.0, >= 1.0.4)
       puppetlabs-stdlib (< 5.0.0, >= 4.2.0)
 
+GIT
+  remote: git://github.com/wikimedia/puppet-jmxtrans.git
+  ref: master
+  sha: e4c66b04b3f4df82569f4d14d0cf74b6fb79e57d
+  specs:
+    wikimedia-jmxtrans (0.0.1)
+
 DEPENDENCIES
   Aethylred-shibboleth (>= 0)
   datacentred-ldap (>= 0)
@@ -97,4 +104,5 @@ DEPENDENCIES
   puppetlabs-tomcat (>= 0)
   saz-timezone (>= 0)
   thias-sysctl (>= 0)
+  wikimedia-jmxtrans (>= 0)
 

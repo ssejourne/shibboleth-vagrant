@@ -2,7 +2,7 @@
 ### Shibboleth IdP ###
 ######################
 
-node /^shibboleth-idp\d*.vagrant.dev$/ {
+node /^shibboleth-idp.*$/ {
 
   hiera_include('classes')
 
@@ -40,12 +40,12 @@ node /^shibboleth-idp\d*.vagrant.dev$/ {
   }
 
   class { 'shibboleth_idp':
-    download_dir            => '/vagrant',
+    download_dir            => hiera('idp_download_dir'),
     idp_hostname            => $::shibboleth_idp_URL,
-    idp_version             => '2.4.4',
+    idp_version             => hiera('idp_version'),
     #idp_version             => '3.1.1',
     service_providers       => $service_providers,
-    status_page_allowed_ips => '192.168.65.1/32 192.168.65.5/32 127.0.0.1/32 ::1/128',
+    status_page_allowed_ips => hiera('idp_status_page_allowed_ips'),
     tomcat_user             => 'tomcat',
     tomcat_group            => 'tomcat',
     users                   => $users,

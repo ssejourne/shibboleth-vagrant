@@ -34,7 +34,7 @@ class shibboleth_custom inherits shibboleth {
 }
 
 # Configure the node now
-node /^shibboleth-sp\d*.vagrant.dev$/ {
+node /^shibboleth-sp.*$/ {
   Exec {
     path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin'
   }
