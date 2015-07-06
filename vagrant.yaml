@@ -21,34 +21,41 @@ servers:
   network:
     - ip: 192.168.66.2
     - ip: 192.168.65.2
+  role: 'monitoring'
 - name: ha-proxy
   ram: 512
   gui: false
   network:
     - ip: 192.168.66.5
     - ip: 192.168.65.5
+  role: 'load-balancer'
 - name: shibboleth-sp1
   ram: 512
   gui: false
   network:
     - ip: 192.168.65.11
+  role: 'webserver'
 - name: shibboleth-sp2
   ram: 512
   gui: false
   network:
     - ip: 192.168.65.12
+  role: 'webserver'
 - name: shibboleth-idp1
   ram: 768
   gui: false
   network:
     - ip: 192.168.65.21
+  role: 'shibidp'
 - name: shibboleth-idp2
   ram: 768
   gui: false
   network:
     - ip: 192.168.65.22
+  role: 'shibidp'
 - name: gatling
   ram: 768  
   gui: false
   network:
     - ip: 192.168.66.7
+  role: 'load-tester'

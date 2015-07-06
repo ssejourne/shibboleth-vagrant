@@ -12,6 +12,7 @@ ldap_uri: 'ldap://192.168.65.5'
 # Shibboleth IdP
 idp_download_dir: '/vagrant'
 idp_version: '2.4.4'
+#idp_version: '3.1.1'
 idp_status_page_allowed_ips: '192.168.65.1/32 192.168.65.5/32 127.0.0.1/32 ::1/128'
 idp_servers:
   - shibboleth-idp1.vagrant.dev
@@ -29,6 +30,7 @@ classes:
   - collectd::plugin::interface
   - collectd::plugin::write_graphite
   - sysctl::base
+    #  - os_hardening
 # Time management
 timezone::timezone: 'Europe/Paris'
 ntp::restrict:
@@ -43,6 +45,9 @@ collectd::purge: true
 collectd::recurse: true
 collectd::purge_config: true
 collectd::plugin::write_graphite::graphitehost: 'monitor.vagrant.dev'
+# ha-proxy
+haproxy_repo: 'ppa:vbernat/haproxy-1.5'
+haproxy_repo_name: 'vbernat-haproxy-1_5-trusty'
 # System tuning & hardening
 sysctl::base::purge: true
 sysctl::base::hiera_merge_values: true

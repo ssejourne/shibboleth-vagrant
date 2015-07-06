@@ -4,4 +4,6 @@
 :yaml:
   :datadir: '/vagrant/puppet/hieradata'
 :hierarchy:
+  - "nodes/%{::hostname}"
+  - "roles/%{::role}"
   - common

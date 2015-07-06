@@ -11,6 +11,8 @@ node /^gatling.*$/ {
   hiera_include('classes')
   include baseconfig
 
+  info("${::hostname} is ${::operatingsystem} with role ${::role}")
+
   include gatling
 }
 

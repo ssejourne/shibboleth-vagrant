@@ -43,6 +43,8 @@ node /^shibboleth-sp.*$/ {
 
   include baseconfig
 
+  info("${::hostname} is ${::operatingsystem} with role ${::role}")
+
   ### Collectd
   class { 'collectd::plugin::apache':
     instances => {

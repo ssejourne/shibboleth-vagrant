@@ -77,16 +77,21 @@ Vagrant.configure("2") do |config|
         vb.customize ['modifyvm', :id, '--memory', servers['ram'] ]
 	vb.gui = servers['gui']
       end
+
+      # Puppet provisionning
+      config.vm.provision :puppet do |puppet|
+        puppet.manifests_path = "puppet/manifests"
+        puppet.manifest_file = "01_site.pp"
+        puppet.module_path = [ "puppet/modules", "puppet-contrib/modules"]
+        puppet.hiera_config_path = "puppet/hiera.yaml"
+        puppet.options="--fileserverconfig=/vagrant/puppet/fileserver.conf"
+        puppet.facter = {
+          "role" => servers['role']
+        }
+      end
+
     end
   end
 
-# Puppet provisionning
-  config.vm.provision :puppet do |puppet|
-      puppet.manifests_path = "puppet/manifests"
-      puppet.manifest_file = "01_site.pp"
-      puppet.module_path = [ "puppet/modules", "puppet-contrib/modules"]
-      puppet.hiera_config_path = "puppet/hiera.yaml"
-      puppet.options="--fileserverconfig=/vagrant/puppet/fileserver.conf"
-    end
 end
 

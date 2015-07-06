@@ -35,7 +35,7 @@ $jmx_shib_objects = [
   {
     'name'              => 'java.lang:type=GarbageCollector,name=MarkSweepCompact',
     'resultAlias'       => 'GCCMS',
-    'attrs'             => { 
+    'attrs'             => {
     'CollectionCount' => {},
     'CollectionTime'  => {}
     },
@@ -49,7 +49,7 @@ define create_jmxtrans_config {
     jmx                  => "${jmx_host}:1105",
     graphite             => '127.0.0.1:2003',
     graphite_root_prefix => 'shib',
-    objects              => $jmx_shib_objects,
+    objects              => $::jmx_shib_objects,
   }
 }
 
@@ -62,7 +62,10 @@ node /^monitor.*$/ {
   $download_dir=hiera('download_dir')
 
   hiera_include('classes')
+
   include baseconfig
+
+  info("${::hostname} is ${::operatingsystem} with role ${::role}")
 
   class { 'graphite':
     gr_max_updates_per_second    => 100,
