@@ -5,10 +5,10 @@ download_dir: '/vagrant'
 shibboleth_sp_URL: 'shibboleth-sp.vagrant.dev'
 shibboleth_idp_URL: 'shibboleth-idp.vagrant.dev'
 # LDAP
-ldap_suffix: 'dc=vagrant,dc=dev'
-ldap_admin: 'admin'
-ldap_admin_pw: 'vagrant'
-ldap_uri: 'ldap://192.168.65.5'
+profiles::ldap::ldap_suffix: 'dc=vagrant,dc=dev'
+profiles::ldap::ldap_admin: 'admin'
+profiles::ldap::ldap_admin_pw: 'vagrant'
+profiles::ldap::ldap_uri: 'ldap://192.168.65.5'
 # Shibboleth IdP
 idp_download_dir: '/vagrant'
 idp_version: '2.4.4'
@@ -17,20 +17,6 @@ idp_status_page_allowed_ips: '192.168.65.1/32 192.168.65.5/32 127.0.0.1/32 ::1/1
 idp_servers:
   - shibboleth-idp1.vagrant.dev
   - shibboleth-idp2.vagrant.dev
-# Default classes
-classes:
-  - timezone
-  - ntp
-  - collectd
-  - collectd::plugin::cpu
-  - collectd::plugin::load
-  - collectd::plugin::memory
-  - collectd::plugin::swap
-  - collectd::plugin::disk
-  - collectd::plugin::interface
-  - collectd::plugin::write_graphite
-  - sysctl::base
-    #  - os_hardening
 # Time management
 timezone::timezone: 'Europe/Paris'
 ntp::restrict:
@@ -38,16 +24,13 @@ ntp::restrict:
   - '-6 default ignore'
   - '127.0.0.1'
   - '-6 ::1'
-ntp::package_ensure: latest
+ntp::package_ensure: 'latest'
 ntp::enable: true
 # Metrics collection
 collectd::purge: true
 collectd::recurse: true
 collectd::purge_config: true
 collectd::plugin::write_graphite::graphitehost: 'monitor.vagrant.dev'
-# ha-proxy
-haproxy_repo: 'ppa:vbernat/haproxy-1.5'
-haproxy_repo_name: 'vbernat-haproxy-1_5-trusty'
 # System tuning & hardening
 sysctl::base::purge: true
 sysctl::base::hiera_merge_values: true
@@ -128,4 +111,189 @@ sysctl::base::values:
     value: '1'
   net.ipv4.tcp_slow_start_after_idle:
     value: '0'
+haproxy::service_ensure: 'running'
+haproxy::package_ensure: '1.5'
+haproxy::global_options:
+  log: '127.0.0.1 local0 notice'
+  maxconn: '120000'
+  spread-checks: '4'
+  user: 'haproxy'
+  group: 'haproxy'
+  chroot: '/var/lib/haproxy'
+  pidfile: '/var/run/haproxy.pid'
+  daemon: ''
+  stats:
+    - 'socket /var/run/haproxy.sock mode 600 level admin'
+    - 'timeout 2m'
+    - 'maxconn 10'
+haproxy::defaults_options:
+  log: 'global'
+  retries: '3'
+  balance: 'roundrobin'
+  maxconn: '10000'
+  option: 
+    - 'redispatch'
+    - 'abortonclose'
+    - 'dontlognull'
+    - 'forwardfor'
+    - 'httplog'
+  timeout: 
+    - 'connect 5s'
+    - 'client 10s'
+    - 'server 10s'
+    - 'queue 30s'
+    - 'check 10s'
+    - 'http-keep-alive 1s'
+    - 'http-request 15s'
+  stats: 'enable'
+profiles::haproxy::listen_services:
+  stats:
+    ipaddress: '192.168.65.5'
+    ports: '80'
+    mode: 'http'
+    collect_exported: 'false'
+    options:
+      stats:
+        - 'enable'
+        - 'uri /haproxy?stats'
+        - 'refresh 5s' 
+        - 'show-legends' 
+        - 'hide-version' 
+profiles::haproxy::frontends:
+  sp_http:
+    ipaddress: '192.168.66.10'
+    ports: '80'
+    mode: 'http'
+    collect_exported: 'false'
+    options:
+      option:
+        - 'httplog clf'
+        - 'http-server-close'
+        - 'forwardfor'
+      default_backend: 'sp_http_farm'
+  sp_https:
+    ipaddress: '192.168.66.10'
+    ports: '443'
+    mode: 'tcp'
+    collect_exported: 'false'
+    options:
+      option:
+        - 'tcplog'
+      default_backend: 'sp_https_farm'
+  idp_http:
+    ipaddress: '192.168.66.20'
+    ports: '80'
+    mode: 'http'
+    collect_exported: 'false'
+    options:
+      option:
+        - 'httplog clf'
+        - 'http-server-close'
+        - 'forwardfor'
+      default_backend: 'idp_http_farm'
+  idp_https:
+    ipaddress: '192.168.66.20'
+    ports: '443'
+    mode: 'tcp'
+    collect_exported: 'false'
+    options:
+      option:
+        - 'tcplog'
+      default_backend: 'idp_https_farm'
+  idp_https_soap:
+    ipaddress: '192.168.66.20'
+    ports: '8443'
+    mode: 'tcp'
+    collect_exported: 'false'
+    options:
+      option:
+        - 'tcplog'
+      default_backend: 'idp_https_soap_farm'
+profiles::haproxy::backends:
+  sp_http_farm:
+    collect_exported: 'false'
+    options:
+      option:
+        - 'httpchk'
+      mode: 'http'
+      server:
+        - 'sp1 192.168.65.11:80 check'
+        - 'sp2 192.168.65.12:80 check'
+  sp_https_farm:
+    collect_exported: 'false'
+    options:
+      # maximum SSL session ID length is 32 bytes.
+      stick-table: 'type binary len 32 size 30k expire 30m'
+      acl:
+        - 'clienthello req_ssl_hello_type 1'
+        - 'serverhello rep_ssl_hello_type 2'
+      # use tcp content accepts to detects ssl client and server hello.
+      tcp-request:
+        - 'inspect-delay 5s'
+        - 'content accept if clienthello'
+      tcp-response: 'content accept if serverhello'
+      # SSL session ID (SSLID) may be present on a client or server hello.
+      # Its length is coded on 1 byte at offset 43 and its value starts
+      # at offset 44.
+      # Match and learn on request if client hello.
+      stick: 
+        - 'on payload_lv(43,1) if clienthello'
+      # Learn on response if server hello.
+        - 'store-response payload_lv(43,1) if serverhello'
+      mode: 'tcp'
+      server:
+        - 'sp1 192.168.65.11:443 check'
+        - 'sp2 192.168.65.12:443 check'
+  idp_http_farm:
+    collect_exported: 'false'
+    options:
+      option:
+        - 'httpchk'
+      mode: 'http'
+      server:
+        - 'sp1 192.168.65.21:80 check'
+        - 'sp2 192.168.65.22:80 check'
+  idp_https_farm:
+    collect_exported: 'false'
+    options:
+      stick-table: 'type binary len 32 size 30k expire 30m'
+      acl:
+        - 'clienthello req_ssl_hello_type 1'
+        - 'serverhello rep_ssl_hello_type 2'
+      tcp-request:
+        - 'inspect-delay 5s'
+        - 'content accept if clienthello'
+      tcp-response: 'content accept if serverhello'
+      stick: 
+        - 'on payload_lv(43,1) if clienthello'
+        - 'store-response payload_lv(43,1) if serverhello'
+      mode: 'tcp'
+      server:
+        - 'sp1 192.168.65.21:443 check'
+        - 'sp2 192.168.65.22:443 check'
 
+  idp_https_soap_farm:
+    collect_exported: 'false'
+    options:
+      stick-table: 'type binary len 32 size 30k expire 30m'
+      acl:
+        - 'clienthello req_ssl_hello_type 1'
+        - 'serverhello rep_ssl_hello_type 2'
+      tcp-request:
+        - 'inspect-delay 5s'
+        - 'content accept if clienthello'
+      tcp-response: 'content accept if serverhello'
+      stick: 
+        - 'on payload_lv(43,1) if clienthello'
+        - 'store-response payload_lv(43,1) if serverhello'
+      mode: 'tcp'
+      server:
+        - 'sp1 192.168.65.21:8443 check'
+        - 'sp2 192.168.65.22:8443 check'
+profiles::haproxy::vip_network_config:
+  vip_idp:
+    interface: 'eth1:1'
+    address: '192.168.66.10'
+  vip_sp:
+    interface: 'eth1:2'
+    address: '192.168.66.20'
