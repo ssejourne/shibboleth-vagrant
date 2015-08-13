@@ -7,15 +7,21 @@ class shibboleth_idp::download(
     $idp_pkg_string = 'shibboleth-identity-provider'
     $filename = "${idp_pkg_string}-${::shibboleth_idp::idp_version}.tar.gz"
   }
+
+  $idp_src_fullpath = "${::shibboleth_idp::idp_src_dir}/${idp_pkg_string}-${::shibboleth_idp::idp_version}"
                           
   $remote_url = "http://shibboleth.net/downloads/identity-provider/${::shibboleth_idp::idp_version}/${filename}"
 
-  package { 'wget':
-    ensure => 'present'
+  if ! defined(Package['wget']) {
+    package { 'wget':
+      ensure => 'present'
+    }
   }
 
-  package { 'tar':
-    ensure => 'present'
+  if ! defined(Package['tar']) {
+    package { 'tar':
+      ensure => 'present'
+    }
   }
 
   exec { 'download-shibboleth':
@@ -28,7 +34,7 @@ class shibboleth_idp::download(
   exec { 'unzip-shibboleth':
     command => "tar xvzf ${::shibboleth_idp::idp_src_dir}/${filename}",
     cwd     => $::shibboleth_idp::idp_src_dir,
-    creates => "${::shibboleth_idp::idp_src_dir}/${idp_pkg_string}-${::shibboleth_idp::idp_version}",
+    creates => $idp_src_fullpath,
     require => Package['tar']
   }
 }

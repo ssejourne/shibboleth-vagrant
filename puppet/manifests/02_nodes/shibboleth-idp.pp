@@ -3,6 +3,7 @@
 ######################
 
 node /^shibboleth-idp.*$/ {
+  $shibboleth_idp_URL = hiera('shibboleth_idp_URL')
 
   #  hiera_include('classes')
 
@@ -36,12 +37,12 @@ node /^shibboleth-idp.*$/ {
 
   include apache::mod::alias
   apache::vhost { 'shibboleth-idp':
-    servername           => $::shibboleth_idp_URL,
-    vhost_name           => $::shibboleth_idp_URL,
+    servername           => $shibboleth_idp_URL,
+    vhost_name           => $shibboleth_idp_URL,
     port                 => 80,
     docroot              => '/var/www/html',
     redirectmatch_regexp => '^(/(?!mod_status).*)$',
-    redirectmatch_dest   => "https://${::shibboleth_idp_URL}\$1",
+    redirectmatch_dest   => "https://${shibboleth_idp_URL}\$1",
     redirectmatch_status => 'permanent',
   }
 
@@ -53,7 +54,7 @@ node /^shibboleth-idp.*$/ {
   $ssl_apache_key_tmp='/vagrant/tmp/apache_idp.key'
   $ssl_apache_crt_tmp='/vagrant/tmp/apache_idp.crt'
   apache::vhost { 'shibboleth-idp-ssl':
-    servername      => $::shibboleth_idp_URL,
+    servername      => $shibboleth_idp_URL,
     ip              => $::ipaddress_eth1,
     port            => 443,
     docroot         => '/var/www/html',
@@ -97,7 +98,7 @@ ProxyPass /idp ajp://localhost:8009/idp retry=5
   }
 
   exec { 'genapacheselfsigned':
-    command => "/usr/bin/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key_tmp} -out ${ssl_apache_crt_tmp} -subj \"/C=FR/ST=Bretagne/L=Rennes/O=vagrant/CN=${::shibboleth_idp_URL}\"",
+    command => "/usr/bin/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${ssl_apache_key_tmp} -out ${ssl_apache_crt_tmp} -subj \"/C=FR/ST=Bretagne/L=Rennes/O=vagrant/CN=${shibboleth_idp_URL}\"",
     user    => 'root',
     cwd     => '/etc/apache2/',
     creates => $ssl_apache_key_tmp,
@@ -105,5 +106,7 @@ ProxyPass /idp ajp://localhost:8009/idp retry=5
   }
 
   class { 'shibboleth_idp':
+    idp_install_dir  => '/opt/shibboleth-idp',
+    idp_service_name => $shibboleth_idp_URL,
   }
 }

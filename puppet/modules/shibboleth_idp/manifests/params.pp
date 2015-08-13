@@ -20,5 +20,8 @@ class shibboleth_idp::params {
   # IdP
   $idp_version = '3.1.2'
 
-  $idp_src_dir = "/usr/local/src"
+  $idp_src_dir = '/usr/local/src'
+  $idp_install_dir = '/opt/shibboleth-idp'
+
+  $idp_service_name = 'idp.example.org'
 }
