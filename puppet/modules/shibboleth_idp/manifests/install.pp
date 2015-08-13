@@ -1,63 +1,58 @@
-#
-class shibboleth_idp::install(
-) {
+class shibboleth_idp::install inherits shibboleth_idp::params {
+  # Java runtime environment
+  include ::java
 
-  $shibboleth_src_dir = "/usr/local/src/shibboleth-${::shibboleth_idp::idp_string}-${::shibboleth_idp::idp_version}"
+  # Servlet container: Apache Tomcat
+  case $::osfamily {
+    'Debian': {
+      include ::apt
 
-  file { 'install.properties':
-    path    =>
-"${shibboleth_src_dir}/src/installer/resources/install.properties",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0600',
-    content => template('shibboleth_idp/install.properties.erb')
-  }
+      class { 'tomcat':
+        catalina_home       => $::shibboleth_idp::catalina_home,
+        install_from_source => false,
+        purge_connectors    => true,
+        purge_realms        => true,
+      }
+                                        
+      tomcat::instance{ 'default':
+        install_from_source => false,
+        package_ensure      => $::shibboleth_idp::tomcat_package_ensure,
+        package_name        => $::shibboleth_idp::tomcat_package_name,
+      }
 
-  file { 'web.xml':
-    path    => "${shibboleth_src_dir}/src/main/webapp/WEB-INF/web.xml",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template('shibboleth_idp/web.xml.erb')
-  }
-
-  if versioncmp($::shibboleth_idp::idp_version, '3.0.0') < 0 {
-    exec { 'shibboleth-installer':
-      command     => 'chmod u+x install.sh && ./install.sh',
-      cwd         => $shibboleth_src_dir,
-      user        => 'root',
-      environment => "JAVA_HOME=${::shibboleth_idp::java_home}",
-      creates     => "${::shibboleth_idp::idp_home}/war",
-      require     => [
-        File['install.properties'],
-        File['web.xml']
-      ]
+      tomcat::service { 'default':
+        use_jsvc     => false,
+        use_init     => true,
+        service_name => $::shibboleth_idp::tomcat_package_name,
+      }
     }
-  } else {
-    exec { 'shibboleth-installer':
-      #TODO to finish... not tested
-      command     => './bin/install.sh',
-      cwd         => $shibboleth_src_dir,
-      user        => 'root',
-      environment => "JAVA_HOME=${::shibboleth_idp::java_home}",
-      creates     => "${::shibboleth_idp::idp_home}/war",
-      require     => [
-        File['install.properties'],
-        File['web.xml']
-      ]
+    default: {
+      fail("Unsupported ${::osfamily}")
     }
   }
 
-  # Allow tomcat to write where it needs to do stuff for us, 
-  # like log and fetch metadata.
-  file { [
-    "${::shibboleth_idp::idp_home}/logs",
-    "${::shibboleth_idp::idp_home}/metadata"
-  ]:
-    ensure  => directory,
-    owner   => 'root',
-    group   => $::shibboleth_idp::tomcat_group,
-    mode    => '0775',
-    require => Exec['shibboleth-installer']
-  }
+  # https://www.switch.ch/aai/guides/idp/installation/
+  Tomcat::Instance['default']->
+  tomcat::config::server{ 'default': }->
+  tomcat::config::server::connector { 'default-ajp':
+    port     => '8109',
+    protocol => 'AJP/1.3',
+  }->
+  #  tomcat::config::server::connector { 'default-http':
+  #  port             => '8080',
+  #  connector_ensure => 'absent',
+  #}->
+  tomcat::config::server::host { 'default-localhost':
+    host_ensure           => 'present',
+    host_name             => 'localhost',
+    app_base              => 'webapps',
+    additional_attributes => {
+      'unpackWARs'        => 'true',
+      'autoDeploy'        => 'false'
+    }
+  }->
+  Tomcat::Service['default']
+
+  # IdP
+
 }

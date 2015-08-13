@@ -11,8 +11,7 @@ profiles::ldap::ldap_admin_pw: 'vagrant'
 profiles::ldap::ldap_uri: 'ldap://192.168.65.5'
 # Shibboleth IdP
 idp_download_dir: '/vagrant'
-idp_version: '2.4.4'
-#idp_version: '3.1.1'
+idp_version: '3.1.2'
 idp_status_page_allowed_ips: '192.168.65.1/32 192.168.65.5/32 127.0.0.1/32 ::1/128'
 idp_servers:
   - shibboleth-idp1.vagrant.dev

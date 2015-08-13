@@ -4,20 +4,20 @@
 
 node /^shibboleth-idp.*$/ {
 
-  hiera_include('classes')
+  #  hiera_include('classes')
 
-  include baseconfig
+  # include baseconfig
 
   info("${::hostname} is ${::operatingsystem} with role ${::role}")
 
   ### Collectd
-  class { 'collectd::plugin::apache':
-    instances => {
-      'apache80' => {
-        'url' => 'http://localhost/mod_status?auto',
-      },
-    },
-  }
+#  class { 'collectd::plugin::apache':
+#    instances => {
+#      'apache80' => {
+#        'url' => 'http://localhost/mod_status?auto',
+#      },
+#    },
+#  }
 
   ### The IdP is a LDAP client
   class { 'ldap::client':
@@ -25,67 +25,7 @@ node /^shibboleth-idp.*$/ {
     base => $ldap_suffix,
   }
 
-  ### Shibboleth IdP
-  # Services to be configured in the IdP
-  #   key   - short name for service (used for config file names etc)
-  #   value - URL where IdP can fetch metadata for said service
-  $service_providers = {
-#    'shibboleth-sp.vagrant.dev' => "${shibboleth_sp_URL}/Shibboleth.sso/Metadata"
-    "${shibboleth_sp_URL}" => "${shibboleth_sp_URL}.xml"
-  }
-
-  # Users to be configured in the IdP (via tomcat container-based auth)
-  #   key   - username
-  #   value - password
-  $users = {
-    'shibadmin' => 'shibshib'
-  }
-
-  class { 'shibboleth_idp':
-    download_dir            => hiera('idp_download_dir'),
-    idp_hostname            => $::shibboleth_idp_URL,
-    idp_version             => hiera('idp_version'),
-    #idp_version             => '3.1.1',
-    service_providers       => $service_providers,
-    status_page_allowed_ips => hiera('idp_status_page_allowed_ips'),
-    tomcat_user             => 'tomcat',
-    tomcat_group            => 'tomcat',
-    users                   => $users,
-  }->
-
-  # use static credentials for all idp
-  file {'idp.crt':
-    ensure => present,
-    path   => '/opt/shibboleth-idp/credentials/idp.crt',
-    source => 'puppet:///files/idp/credentials/idp.crt',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0644',
-#    notify  => Tomcat::Service[$_tomcat_instance_name]
-  }->
-
-  file {'idp.jks':
-    ensure => present,
-    path   => '/opt/shibboleth-idp/credentials/idp.jks',
-    source => 'puppet:///files/idp/credentials/idp.jks',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0644',
-#    notify  => Tomcat::Service[$_tomcat_instance_name]
-  }->
-
-  file {'idp.key':
-    ensure => present,
-    path   => '/opt/shibboleth-idp/credentials/idp.key',
-    source => 'puppet:///files/idp/credentials/idp.key',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0644',
-#    notify  => Tomcat::Service[$_tomcat_instance_name]
-  }
-
   ### Configure Apache frontend
-  # Set up Apache
   # https://github.com/puppetlabs/puppetlabs-apache
   class{ 'apache':
     default_vhost => false,
@@ -105,6 +45,7 @@ node /^shibboleth-idp.*$/ {
     redirectmatch_status => 'permanent',
   }
 
+  include apache::mod::proxy
   include apache::mod::proxy_ajp
 
   $ssl_apache_key='/etc/apache2/ssl/apache.key'
@@ -112,15 +53,21 @@ node /^shibboleth-idp.*$/ {
   $ssl_apache_key_tmp='/vagrant/tmp/apache_idp.key'
   $ssl_apache_crt_tmp='/vagrant/tmp/apache_idp.crt'
   apache::vhost { 'shibboleth-idp-ssl':
-    servername => $::shibboleth_idp_URL,
-    vhost_name => $::shibboleth_idp_URL,
-    ip         => $::ipaddress_eth1,
-    port       => 443,
-    docroot    => '/var/www/html',
-    ssl        => true,
-    ssl_cert   => $ssl_apache_crt,
-    ssl_key    => $ssl_apache_key,
-    proxy_dest => 'ajp://localhost:8009',
+    servername      => $::shibboleth_idp_URL,
+    ip              => $::ipaddress_eth1,
+    port            => 443,
+    docroot         => '/var/www/html',
+    ssl             => true,
+    ssl_cipher      => 'HIGH:MEDIUM:!aNULL:!kRSA:!MD5:!RC4',
+    ssl_cert        => $ssl_apache_crt,
+    ssl_chain       => $ssl_apache_crt,
+    ssl_key         => $ssl_apache_key,
+    custom_fragment => '
+ProxyPass /idp ajp://localhost:8009/idp retry=5
+<Proxy ajp://localhost:8009>
+    Require all granted
+</Proxy>
+'
   }
 
   class { 'apache::mod::status':
@@ -155,5 +102,8 @@ node /^shibboleth-idp.*$/ {
     cwd     => '/etc/apache2/',
     creates => $ssl_apache_key_tmp,
     notify  => Service['httpd'],
+  }
+
+  class { 'shibboleth_idp':
   }
 }
