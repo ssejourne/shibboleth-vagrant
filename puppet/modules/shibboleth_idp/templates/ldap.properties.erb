@@ -1,4 +1,4 @@
-# !! Warning this file is managed by Puppet !!
+# !! File managed by Puppet !!
 # LDAP authentication configuration, see authn/ldap-authn-config.xml
 
 ## Authenticator strategy, either anonSearchAuthenticator, bindSearchAuthenticator, directAuthenticator, adAuthenticator
@@ -9,6 +9,7 @@ idp.authn.LDAP.authenticator                   = bindSearchAuthenticator
 #idp.authn.LDAP.ldapURL                          = ldap://localhost:10389
 idp.authn.LDAP.ldapURL                          = <%= @ldap_uri %>
 #idp.authn.LDAP.useStartTLS                     = true
+idp.authn.LDAP.useStartTLS                     = <%= @ldap_use_ssl %>
 #idp.authn.LDAP.useSSL                          = false
 idp.authn.LDAP.useSSL                          = <%= @ldap_use_ssl %>
 #idp.authn.LDAP.connectTimeout                  = 3000

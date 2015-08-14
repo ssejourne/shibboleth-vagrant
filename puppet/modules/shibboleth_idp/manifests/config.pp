@@ -37,7 +37,7 @@ class shibboleth_idp::config inherits shibboleth_idp {
     -Didp.conf.filemode=644 \
     -Didp.host.name=${shibboleth_idp::idp_service_name} \
     -Didp.scope=${shibboleth_idp::idp_service_name}",
-    environment => "JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64",
+    environment => "JAVA_HOME=/usr/lib/jvm/default-java",
     cwd         => "${shibboleth_idp::download::idp_src_fullpath}",
     creates     => "${shibboleth_idp::idp_install_dir}",
     require     => [ File['credentials.properties'], File['temp.properties'] ]
@@ -54,7 +54,7 @@ class shibboleth_idp::config inherits shibboleth_idp {
     --keyfile ${shibboleth_idp::idp_install_dir}/credentials/idp.key \
     --hostname ${shibboleth_idp::idp_service_name} \
     --uriAltName https://${shibboleth_idp::idp_service_name}/idp/shibboleth",
-    environment => "JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64",
+    environment => "JAVA_HOME=/usr/lib/jvm/default-java",
     cwd         => "${shibboleth_idp::download::idp_src_fullpath}",
     creates     => "${shibboleth_idp::idp_install_dir}/credentials/idp.key",
     require     => Exec['shib_run_installer']
@@ -100,6 +100,21 @@ class shibboleth_idp::config inherits shibboleth_idp {
     path    => "${shibboleth_idp::idp_install_dir}/conf/access-control.xml",
     content => template('shibboleth_idp/access-control.xml.erb'),
     mode    => 0644,
+    notify  =>  ::Tomcat::Service['default'],
+  }
+
+  file {'attribute-resolver-ldap.xml':
+    ensure  => file,
+    path    => "${shibboleth_idp::idp_install_dir}/conf/attribute-resolver-ldap.xml",
+    content => template('shibboleth_idp/attribute-resolver-ldap.xml.erb'),
+    mode    => 0644,
+    notify  =>  ::Tomcat::Service['default'],
+  }
+
+  augeas {'services.xml':
+    lens    => 'Xml.lns',
+    incl    => "${shibboleth_idp::idp_install_dir}/conf/services.xml",
+    changes => "set /files/opt/shibboleth-idp/conf/services.xml/beans/util:list[4]/value/#text \"%{idp.home}/conf/attribute-resolver-ldap.xml\"",
     notify  =>  ::Tomcat::Service['default'],
   }
 
