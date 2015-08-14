@@ -106,7 +106,13 @@ ProxyPass /idp ajp://localhost:8009/idp retry=5
   }
 
   class { 'shibboleth_idp':
-    idp_install_dir  => '/opt/shibboleth-idp',
-    idp_service_name => $shibboleth_idp_URL,
+    idp_install_dir             => '/opt/shibboleth-idp',
+    idp_service_name            => $shibboleth_idp_URL,
+    idp_status_page_allowed_ips => hiera('idp_status_page_allowed_ips'),
+    ldap_admin                  => hiera('profiles::ldap::ldap_admin'),
+    ldap_admin_pw               => hiera('profiles::ldap::ldap_admin_pw'),
+    ldap_suffix                 => hiera('profiles::ldap::ldap_suffix'),
+    ldap_uri                    => hiera('profiles::ldap::ldap_uri'),
+    ldap_use_ssl                => hiera('profiles::ldap::ldap_use_ssl'),
   }
 }

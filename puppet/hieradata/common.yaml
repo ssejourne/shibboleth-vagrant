@@ -9,10 +9,11 @@ profiles::ldap::ldap_suffix: 'dc=vagrant,dc=dev'
 profiles::ldap::ldap_admin: 'admin'
 profiles::ldap::ldap_admin_pw: 'vagrant'
 profiles::ldap::ldap_uri: 'ldap://192.168.65.5'
+profiles::ldap::ldap_use_ssl: 'false'
 # Shibboleth IdP
 idp_download_dir: '/vagrant'
 idp_version: '3.1.2'
-idp_status_page_allowed_ips: '192.168.65.1/32 192.168.65.5/32 127.0.0.1/32 ::1/128'
+idp_status_page_allowed_ips: "'192.168.65.0/24', '127.0.0.1/32', '::1/128'"
 idp_servers:
   - shibboleth-idp1.vagrant.dev
   - shibboleth-idp2.vagrant.dev

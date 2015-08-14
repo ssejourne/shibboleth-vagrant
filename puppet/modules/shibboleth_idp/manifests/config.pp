@@ -1,5 +1,5 @@
 # Freely adapted from https://www.switch.ch/aai/guides/idp/installation/idp-install.sh
-class shibboleth_idp::config inherits shibboleth_idp::params {
+class shibboleth_idp::config inherits shibboleth_idp {
   if ! defined(Package['openssl']) {
     package {'openssl':
       ensure => installed,
@@ -7,7 +7,8 @@ class shibboleth_idp::config inherits shibboleth_idp::params {
   }
 
   exec {'create_credentials.properties':
-    command => "echo \"idp.sealer.password = \$(openssl rand -base64 12)\" > ${shibboleth_idp::params::idp_src_dir}/credentials.properties",
+    command => "echo \"idp.sealer.password = \$(openssl rand -base64 12)\" > credentials.properties",
+    cwd     => "${shibboleth_idp::download::idp_src_fullpath}",
     creates => "${shibboleth_idp::download::idp_src_fullpath}/credentials.properties",
     require => Package['openssl']
   }->
@@ -43,7 +44,8 @@ class shibboleth_idp::config inherits shibboleth_idp::params {
   }->
   exec {'copy_credentials':
     command => "cp ${shibboleth_idp::download::idp_src_fullpath}/credentials.properties ${shibboleth_idp::idp_install_dir}/conf \
-    && chown ${shibboleth_idp::tomcat_package_name} ${shibboleth_idp::idp_install_dir}/conf/credentials.properties"
+    && chown ${shibboleth_idp::tomcat_package_name} ${shibboleth_idp::idp_install_dir}/conf/credentials.properties",
+    creates => "${shibboleth_idp::idp_install_dir}/conf/credentials.properties"
   }
 
   exec {'shib_create_ss_certifs':
@@ -83,5 +85,35 @@ class shibboleth_idp::config inherits shibboleth_idp::params {
       ensure => directory,
       path   => "${shibboleth_idp::idp_install_dir}/logs",
       owner  => "${shibboleth_idp::tomcat_package_name}";
+  }
+
+  file {'ldap.properties':
+    ensure  => file,
+    path    => "${shibboleth_idp::idp_install_dir}/conf/ldap.properties",
+    content => template('shibboleth_idp/ldap.properties.erb'),
+    mode    => 0644,
+    notify  =>  ::Tomcat::Service['default'],
+  }
+
+  file {'access-control.xml':
+    ensure  => file,
+    path    => "${shibboleth_idp::idp_install_dir}/conf/access-control.xml",
+    content => template('shibboleth_idp/access-control.xml.erb'),
+    mode    => 0644,
+    notify  =>  ::Tomcat::Service['default'],
+  }
+
+  file {'idp.xml':
+    ensure => file,
+    path   => "${::shibboleth_idp::catalina_home}/conf/Catalina/localhost/idp.xml",
+    content   => "<!-- This file is managed by Puppet -->
+<Context docBase=\"/opt/shibboleth-idp/war/idp.war\"
+    unpackWAR=\"false\"
+    swallowOutput=\"true\">
+  <Manager pathname=\"\" />
+</Context>
+",
+    mode    => '0644',
+    notify  =>  ::Tomcat::Service['default'],
   }
 }

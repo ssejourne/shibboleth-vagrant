@@ -24,4 +24,14 @@ class shibboleth_idp::params {
   $idp_install_dir = '/opt/shibboleth-idp'
 
   $idp_service_name = 'idp.example.org'
+
+  $idp_status_page_allowed_ips = "'127.0.0.1/32', '::1/128'"
+
+  # Ldap
+  $ldap_admin = 'admin'
+  $ldap_admin_pw = 'admin'
+  $ldap_suffix = 'dc=exemple,dc=org'
+  $ldap_uri = 'ldap://127.0.0.1'
+  $ldap_use_ssl = 'false'
+
 }
