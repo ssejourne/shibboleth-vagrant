@@ -111,8 +111,6 @@ sysctl::base::values:
     value: '1'
   net.ipv4.tcp_slow_start_after_idle:
     value: '0'
-haproxy::service_ensure: 'running'
-haproxy::package_ensure: '1.5'
 haproxy::global_options:
   log: '127.0.0.1 local0 notice'
   maxconn: '120000'

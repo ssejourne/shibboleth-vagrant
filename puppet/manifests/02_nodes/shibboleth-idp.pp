@@ -7,18 +7,18 @@ node /^shibboleth-idp.*$/ {
 
   #  hiera_include('classes')
 
-  # include baseconfig
+  include profiles::baseconfig
 
   info("${::hostname} is ${::operatingsystem} with role ${::role}")
 
   ### Collectd
-#  class { 'collectd::plugin::apache':
-#    instances => {
-#      'apache80' => {
-#        'url' => 'http://localhost/mod_status?auto',
-#      },
-#    },
-#  }
+  class { 'collectd::plugin::apache':
+    instances => {
+      'apache80' => {
+        'url' => 'http://localhost/mod_status?auto',
+      },
+    },
+  }
 
   ### The IdP is a LDAP client
   class { 'ldap::client':
@@ -41,9 +41,15 @@ node /^shibboleth-idp.*$/ {
     vhost_name           => $shibboleth_idp_URL,
     port                 => 80,
     docroot              => '/var/www/html',
-    redirectmatch_regexp => '^(/(?!mod_status).*)$',
-    redirectmatch_dest   => "https://${shibboleth_idp_URL}\$1",
-    redirectmatch_status => 'permanent',
+    #redirectmatch_regexp => '^(/(?!mod_status).*)$',
+    #redirectmatch_dest   => "https://${shibboleth_idp_URL}\$1",
+    #redirectmatch_status => 'permanent',
+    custom_fragment => '
+ProxyPass /idp ajp://localhost:8009/idp retry=5
+<Proxy ajp://localhost:8009>
+    Require all granted
+</Proxy>
+'
   }
 
   include apache::mod::proxy

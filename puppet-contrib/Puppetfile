@@ -33,4 +33,4 @@ mod 'thias-sysctl'
 mod 'hardening-os_hardening'
 mod 'wikimedia-jmxtrans',
   :git => 'git://github.com/wikimedia/puppet-jmxtrans.git'
-mode 'nanliu-staging'
+mod 'nanliu-staging'
