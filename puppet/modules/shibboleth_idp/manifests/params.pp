@@ -20,11 +20,15 @@ class shibboleth_idp::params {
   # IdP
   $idp_version = '3.1.2'
 
+  ## Where to put sources, and where to install IdP
   $idp_src_dir = '/usr/local/src'
   $idp_install_dir = '/opt/shibboleth-idp'
 
+  ## IdP service name (required)
   $idp_service_name = 'idp.example.org'
 
+  ## Do we want idp status page (require JSP Standard Tag Library)
+  $idp_status_page = false
   $idp_status_page_allowed_ips = "'127.0.0.1/32', '::1/128'"
 
   # Ldap

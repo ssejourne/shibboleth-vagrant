@@ -1,8 +1,9 @@
 class shibboleth_idp::download(
 ) {
-  if versioncmp($::shibboleth_idp::idp_version, '3.0.0') < 0 {
+  if versioncmp($::shibboleth_idp::idp_version, '3.1.1') < 0 {
     $idp_pkg_string = 'shibboleth-identityprovider'
     $filename = "${idp_pkg_string}-${::shibboleth_idp::idp_version}-bin.tar.gz"
+    fail('Shibboleth IdP <3.1 is deprecated and not supported by this module')
   } else {
     $idp_pkg_string = 'shibboleth-identity-provider'
     $filename = "${idp_pkg_string}-${::shibboleth_idp::idp_version}.tar.gz"

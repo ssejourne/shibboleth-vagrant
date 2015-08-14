@@ -4,6 +4,7 @@ class shibboleth_idp (
   $idp_install_dir              = $shibboleth_idp::params::idp_install_dir,
   $idp_service_name             = $shibboleth_idp::params::idp_service_name,
   $idp_src_dir                  = $shibboleth_idp::params::idp_src_dir,
+  $idp_status_page              = $shibboleth_idp::params::idp_status_page,
   $idp_status_page_allowed_ips  = $shibboleth_idp::params::idp_status_page_allowed_ips,
   $idp_version                  = $shibboleth_idp::params::idp_version,
   $ldap_admin                   = $shibboleth_idp::params::ldap_admin,

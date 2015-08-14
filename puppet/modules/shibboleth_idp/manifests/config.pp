@@ -116,4 +116,20 @@ class shibboleth_idp::config inherits shibboleth_idp {
     mode    => '0644',
     notify  =>  ::Tomcat::Service['default'],
   }
+
+  # Install JSP Standard Tag Library if we want status page
+  if ($idp_status_page) {
+    exec{'download-jstl':
+      command => 'curl -O https://repo1.maven.org/maven2/jstl/jstl/1.2/jstl-1.2.jar',
+      cwd     => "${shibboleth_idp::idp_install_dir}/edit-webapp/WEB-INF/lib",
+      creates => "${shibboleth_idp::idp_install_dir}/edit-webapp/WEB-INF/lib/jstl-1.2.jar"
+    }->
+    exec {'rebuild-idp-jstl':
+      command     => "${shibboleth_idp::idp_install_dir}/bin/build.sh -Didp.target.dir=${shibboleth_idp::idp_install_dir}",
+      environment => ['JAVACMD=/usr/bin/java'],
+      cwd         => "${shibboleth_idp::idp_install_dir}",
+      creates     => "${shibboleth_idp::idp_install_dir}/webapp/WEB-INF/lib/jstl-1.2.jar",
+      notify      => ::Tomcat::Service['default'],
+    }
+  }
 }
