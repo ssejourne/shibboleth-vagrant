@@ -92,7 +92,8 @@ class shibboleth_idp::config inherits shibboleth_idp {
     path    => "${shibboleth_idp::idp_install_dir}/conf/ldap.properties",
     content => template('shibboleth_idp/ldap.properties.erb'),
     mode    => 0644,
-    notify  =>  ::Tomcat::Service['default'],
+    require => Exec['shib_run_installer'],
+    notify  => ::Tomcat::Service['default'],
   }
 
   file {'access-control.xml':
@@ -100,7 +101,8 @@ class shibboleth_idp::config inherits shibboleth_idp {
     path    => "${shibboleth_idp::idp_install_dir}/conf/access-control.xml",
     content => template('shibboleth_idp/access-control.xml.erb'),
     mode    => 0644,
-    notify  =>  ::Tomcat::Service['default'],
+    require => Exec['shib_run_installer'],
+    notify  => ::Tomcat::Service['default'],
   }
 
   file {'attribute-resolver-ldap.xml':
@@ -108,14 +110,16 @@ class shibboleth_idp::config inherits shibboleth_idp {
     path    => "${shibboleth_idp::idp_install_dir}/conf/attribute-resolver-ldap.xml",
     content => template('shibboleth_idp/attribute-resolver-ldap.xml.erb'),
     mode    => 0644,
-    notify  =>  ::Tomcat::Service['default'],
+    require => Exec['shib_run_installer'],
+    notify  => ::Tomcat::Service['default'],
   }
 
   augeas {'services.xml':
     lens    => 'Xml.lns',
     incl    => "${shibboleth_idp::idp_install_dir}/conf/services.xml",
     changes => "set /files${shibboleth_idp::idp_install_dir}/conf/services.xml/beans/util:list[4]/value/#text \"%{idp.home}/conf/attribute-resolver-ldap.xml\"",
-    notify  =>  ::Tomcat::Service['default'],
+    require => Exec['shib_run_installer'],
+    notify  => ::Tomcat::Service['default'],
   }
 
   file {'idp.xml':
@@ -129,15 +133,17 @@ class shibboleth_idp::config inherits shibboleth_idp {
 </Context>
 ",
     mode    => '0644',
-    notify  =>  ::Tomcat::Service['default'],
+    require => [ Exec['shib_run_installer'], ::Tomcat::Instance['default'] ],
+    notify  => ::Tomcat::Service['default'],
   }
 
   # Install JSP Standard Tag Library if we want status page
   if ($idp_status_page) {
     exec{'download-jstl':
-      command => 'curl -O https://repo1.maven.org/maven2/jstl/jstl/1.2/jstl-1.2.jar',
-      cwd     => "${shibboleth_idp::idp_install_dir}/edit-webapp/WEB-INF/lib",
-      creates => "${shibboleth_idp::idp_install_dir}/edit-webapp/WEB-INF/lib/jstl-1.2.jar"
+      command       => 'curl -O https://repo1.maven.org/maven2/jstl/jstl/1.2/jstl-1.2.jar',
+      cwd           => "${shibboleth_idp::idp_install_dir}/edit-webapp/WEB-INF/lib",
+      creates       => "${shibboleth_idp::idp_install_dir}/edit-webapp/WEB-INF/lib/jstl-1.2.jar",
+      require => Exec['shib_run_installer'],
     }->
     exec {'rebuild-idp-jstl':
       command     => "${shibboleth_idp::idp_install_dir}/bin/build.sh -Didp.target.dir=${shibboleth_idp::idp_install_dir}",
@@ -147,4 +153,26 @@ class shibboleth_idp::config inherits shibboleth_idp {
       notify      => ::Tomcat::Service['default'],
     }
   }
+
+  # Configure metadata for the sp
+  exec {'get_sp_metadata':
+    command => "wget -q --no-check-certificate -O ${shibboleth_idp::idp_service_providers}.xml https://${shibboleth_idp::idp_service_providers}/Shibboleth.sso/Metadata",
+    cwd     => "${shibboleth_idp::idp_install_dir}/metadata",
+    creates => "${shibboleth_idp::idp_install_dir}/metadata/${shibboleth_idp::idp_service_providers}.xml",
+    require => Exec['shib_run_installer'],
+    notify  => ::Tomcat::Service['default'],
+  }->
+  augeas {'metadata-providers.xml':
+    lens    => 'Xml.lns',
+    incl    => "${shibboleth_idp::idp_install_dir}/conf/metadata-providers.xml",
+    changes => [
+      "set /files${shibboleth_idp::idp_install_dir}/conf/metadata-providers.xml/MetadataProvider/MetadataProvider[./#attribute/id = \"${shibboleth_idp::idp_service_providers}\"]/#attribute/id \"${shibboleth_idp::idp_service_providers}\"",
+      "set /files${shibboleth_idp::idp_install_dir}/conf/metadata-providers.xml/MetadataProvider/MetadataProvider[./#attribute/id = \"${shibboleth_idp::idp_service_providers}\"]/#comment 'This entry is managed by Puppet'",
+      "set /files${shibboleth_idp::idp_install_dir}/conf/metadata-providers.xml/MetadataProvider/MetadataProvider[./#attribute/id = \"${shibboleth_idp::idp_service_providers}\"]/#attribute/xsi:type 'FilesystemMetadataProvider'",
+      "set /files${shibboleth_idp::idp_install_dir}/conf/metadata-providers.xml/MetadataProvider/MetadataProvider[./#attribute/id = \"${shibboleth_idp::idp_service_providers}\"]/#attribute/metadataFile \"${shibboleth_idp::idp_install_dir}/metadata/${shibboleth_idp::idp_service_providers}.xml\"",
+    ],
+    require => Exec['shib_run_installer'],
+    notify  => ::Tomcat::Service['default'],
+  }
+
 }

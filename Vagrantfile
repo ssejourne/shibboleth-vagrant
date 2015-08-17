@@ -84,7 +84,7 @@ Vagrant.configure("2") do |config|
         puppet.manifest_file = "01_site.pp"
         puppet.module_path = [ "puppet/modules", "puppet-contrib/modules"]
         puppet.hiera_config_path = "puppet/hiera.yaml"
-        puppet.options="--fileserverconfig=/vagrant/puppet/fileserver.conf"
+        puppet.options="--fileserverconfig=/vagrant/puppet/fileserver.conf --verbose"
         puppet.facter = {
           "role" => servers['role']
         }

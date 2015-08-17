@@ -7,10 +7,4 @@ idp.encryption.key= %{idp.home}/credentials/idp.key
 idp.encryption.cert= %{idp.home}/credentials/idp.crt
 idp.entityID= https://<%= scope.lookupvar('shibboleth_idp::idp_service_name') %>/idp/shibboleth
 idp.scope= <%= scope.lookupvar('shibboleth_idp::idp_service_name') %>
-idp.consent.StorageService= shibboleth.JPAStorageService
-idp.consent.userStorageKey= shibboleth.consent.AttributeConsentStorageKey
-idp.consent.userStorageKeyAttribute= %{idp.persistentId.sourceAttribute}
-idp.consent.allowGlobal= false
-idp.consent.compareValues= true
-idp.consent.maxStoredRecords= -1
 idp.ui.fallbackLanguages= fr,en,de

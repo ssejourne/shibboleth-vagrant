@@ -27,6 +27,9 @@ class shibboleth_idp::params {
   ## IdP service name (required)
   $idp_service_name = 'idp.example.org'
 
+  ## SP to declare (for metadata)
+  $idp_service_providers = 'sp.example.org'
+
   ## Do we want idp status page (require JSP Standard Tag Library)
   $idp_status_page = false
   $idp_status_page_allowed_ips = "'127.0.0.1/32', '::1/128'"

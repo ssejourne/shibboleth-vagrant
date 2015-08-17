@@ -5,8 +5,6 @@
 node /^shibboleth-idp.*$/ {
   $shibboleth_idp_URL = hiera('shibboleth_idp_URL')
 
-  #  hiera_include('classes')
-
   include profiles::baseconfig
 
   info("${::hostname} is ${::operatingsystem} with role ${::role}")
@@ -37,14 +35,14 @@ node /^shibboleth-idp.*$/ {
 
   include apache::mod::alias
   apache::vhost { 'shibboleth-idp':
-    servername           => $shibboleth_idp_URL,
-    vhost_name           => $shibboleth_idp_URL,
-    port                 => 80,
-    docroot              => '/var/www/html',
+    servername            => $shibboleth_idp_URL,
+    vhost_name            => $shibboleth_idp_URL,
+    port                  => 80,
+    docroot               => '/var/www/html',
     #redirectmatch_regexp => '^(/(?!mod_status).*)$',
     #redirectmatch_dest   => "https://${shibboleth_idp_URL}\$1",
     #redirectmatch_status => 'permanent',
-    custom_fragment => '
+    custom_fragment       => '
 ProxyPass /idp ajp://localhost:8009/idp retry=5
 <Proxy ajp://localhost:8009>
     Require all granted
@@ -114,6 +112,7 @@ ProxyPass /idp ajp://localhost:8009/idp retry=5
   class { 'shibboleth_idp':
     idp_install_dir             => '/opt/shibboleth-idp',
     idp_service_name            => $shibboleth_idp_URL,
+    idp_service_providers       => hiera('shibboleth_sp_URL'),
     idp_status_page             => hiera('idp_status_page'),
     idp_status_page_allowed_ips => hiera('idp_status_page_allowed_ips'),
     ldap_admin                  => hiera('profiles::ldap::ldap_admin'),

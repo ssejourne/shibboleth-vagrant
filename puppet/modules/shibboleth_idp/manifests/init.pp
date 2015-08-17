@@ -7,6 +7,7 @@ class shibboleth_idp (
   $idp_status_page              = $shibboleth_idp::params::idp_status_page,
   $idp_status_page_allowed_ips  = $shibboleth_idp::params::idp_status_page_allowed_ips,
   $idp_version                  = $shibboleth_idp::params::idp_version,
+  $idp_service_providers        = $shibboleth_idp::params::idp_service_providers,
   $ldap_admin                   = $shibboleth_idp::params::ldap_admin,
   $ldap_admin_pw                = $shibboleth_idp::params::ldap_admin_pw,
   $ldap_suffix                  = $shibboleth_idp::params::ldap_suffix,
