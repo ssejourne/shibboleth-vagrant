@@ -39,4 +39,21 @@ class shibboleth_idp::tomcat inherits shibboleth_idp {
     connector_ensure => 'absent',
     notify           => ::Tomcat::Service['default']
   }
+
+  # Tomcat7 pb workaround (http://shibboleth.1660669.n2.nabble.com/IDP-metadata-in-3-0-td7610819.html)
+  if ($::shibboleth_idp::tomcat_package_name == 'tomcat7') {
+    augeas {'web.xml':
+      lens    => 'Xml.lns',
+      incl    => "${::shibboleth_idp::catalina_home}/conf/web.xml",
+      changes => [
+        "set /files${::shibboleth_idp::catalina_home}/conf/web.xml/web-app/servlet[servlet-name/#text='jsp']/init-param[./param-name/#text = 'compilerSourceVM']/param-name/#text 'compilerSourceVM'",
+        "set /files${::shibboleth_idp::catalina_home}/conf/web.xml/web-app/servlet[servlet-name/#text='jsp']/init-param[./param-name/#text = 'compilerSourceVM']/param-value/#text '1.7'",
+        "set /files${::shibboleth_idp::catalina_home}/conf/web.xml/web-app/servlet[servlet-name/#text='jsp']/init-param[./param-name/#text = 'compilerTargetVM']/param-name/#text 'compilerTargetVM'",
+        "set /files${::shibboleth_idp::catalina_home}/conf/web.xml/web-app/servlet[servlet-name/#text='jsp']/init-param[./param-name/#text = 'compilerTargetVM']/param-value/#text '1.7'",
+      ],
+      #      onlyif  => "match /files/${::shibboleth_idp::catalina_home}/conf/web.xml/web-app/servlet[servlet-name/#text='jsp']/init-param/param-name/#text not_include 'compilerSourceVM'",
+      require => ::Tomcat::Instance['default'],
+      notify  => ::Tomcat::Service['default']
+    }
+  }
 }

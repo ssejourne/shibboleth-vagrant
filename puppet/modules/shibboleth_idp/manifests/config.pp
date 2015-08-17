@@ -114,7 +114,7 @@ class shibboleth_idp::config inherits shibboleth_idp {
   augeas {'services.xml':
     lens    => 'Xml.lns',
     incl    => "${shibboleth_idp::idp_install_dir}/conf/services.xml",
-    changes => "set /files/opt/shibboleth-idp/conf/services.xml/beans/util:list[4]/value/#text \"%{idp.home}/conf/attribute-resolver-ldap.xml\"",
+    changes => "set /files${shibboleth_idp::idp_install_dir}/conf/services.xml/beans/util:list[4]/value/#text \"%{idp.home}/conf/attribute-resolver-ldap.xml\"",
     notify  =>  ::Tomcat::Service['default'],
   }
 

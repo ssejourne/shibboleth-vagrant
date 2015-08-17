@@ -32,7 +32,7 @@ Test it by starting to log in https://shibboleth-sp.vagrant.dev/secure
 
 * URLs
   * https://shibboleth-idp.vagrant.dev/idp/status
-  * https://shibboleth-idp.vagrant.dev/idp/profile/Metadata/SAML : Metadataprovider
+  * https://shibboleth-idp.vagrant.dev/idp/shibboleth : Metadataprovider
 
 ### SP - shibboleth-sp.vagrant.dev
 

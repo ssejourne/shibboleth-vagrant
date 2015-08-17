@@ -78,7 +78,7 @@
             <MetadataFilter type="Signature" certificate="fedsigner.pem"/>
         </MetadataProvider>
         -->
-        <MetadataProvider type="XML" uri="https://shibboleth-idp.vagrant.dev/idp/profile/Metadata/SAML"
+        <MetadataProvider type="XML" uri="https://shibboleth-idp.vagrant.dev/idp/shibboleth"
               backingFilePath="shibboleth-idp-test-metadata.xml" reloadInterval="7200">
         <!--    <MetadataFilter type="RequireValidUntil" maxValidityInterval="2419200"/>
             <MetadataFilter type="Signature" certificate="idp.crt"/> -->

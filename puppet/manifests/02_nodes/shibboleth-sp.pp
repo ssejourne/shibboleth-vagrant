@@ -39,9 +39,8 @@ node /^shibboleth-sp.*$/ {
     path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin'
   }
 
-  hiera_include('classes')
+  include ::profiles::baseconfig
 
-  include baseconfig
 
   info("${::hostname} is ${::operatingsystem} with role ${::role}")
 
@@ -77,7 +76,7 @@ node /^shibboleth-sp.*$/ {
   # https://github.com/puppetlabs/puppetlabs-apache
   class{'apache':
     default_vhost => false,
-    mpm_module    => 'prefork',
+    mpm_module    => 'worker',
     keepalive     => 'On',
     default_mods  => false,    # Disable large set of modules
   }
@@ -113,12 +112,12 @@ node /^shibboleth-sp.*$/ {
     ssl             => true,
     ssl_cert        => $ssl_apache_crt,
     ssl_key         => $ssl_apache_key,
-    aliases         => [
-      {
-        alias => '/lam',
-        path  => '/usr/share/ldap-account-manager',
-      }
-    ],
+    #aliases         => [
+    #  {
+    #    alias => '/lam',
+    #    path  => '/usr/share/ldap-account-manager',
+    #  }
+    #],
     custom_fragment => '  UseCanonicalName On
 
   <Location /secure>
@@ -156,20 +155,20 @@ node /^shibboleth-sp.*$/ {
   }
 
   # Install ldap-account-manager to play with LDAP
-  package {'ldap-account-manager':
-    ensure  => installed ,
-    require => [Apache::Vhost['shibboleth-sp-ssl'],Class['ldap::client']],
-    notify  => Service['httpd'],
-  }
-  ##
-  file { '/var/lib/ldap-account-manager/config/lam.conf':
-    ensure  => directory,
-    owner   => 'www-data',
-    group   => 'root',
-    mode    => '0600',
-    source  => 'puppet:///files/ldap/lam.conf',
-    require => Package['ldap-account-manager'],
-  }
+##  package {'ldap-account-manager':
+##    ensure  => installed ,
+##    require => [Apache::Vhost['shibboleth-sp-ssl'],Class['ldap::client']],
+##    notify  => Service['httpd'],
+##  }
+##  ##
+##  file { '/var/lib/ldap-account-manager/config/lam.conf':
+##    ensure  => directory,
+##    owner   => 'www-data',
+##    group   => 'root',
+##    mode    => '0600',
+##    source  => 'puppet:///files/ldap/lam.conf',
+##    require => Package['ldap-account-manager'],
+##  }
   ##
 
   # Create backend certificate, that match the metadatafile for the idp (shibboleth-sp.vagrant.dev.xml)
